@@ -1,6 +1,6 @@
 ---
 name: re-make
-description: Rebuilds a piece of work from scratch, scores it, and pits it head-to-head (VS) against the previous version. Runs in rounds; each round challenges the reigning champion, and the loop continues until a challenger fails to win on both score and VS. Ends with a full analysis plus a round-by-round summary table. Use when the user says "/re-make", "redo this from scratch", "rewrite it and compare", "try a different approach and see which is better".
+description: Rebuilds a piece of work from scratch, scores it, and pits it head-to-head (VS) against the previous version. Runs in rounds; each round challenges the reigning champion, and the loop continues until a challenger fails to win on both score and VS. Ends with a full analysis plus a round-by-round summary table. Use when the user says "/re-make", "redo this from scratch", "rewrite it and compare", "try a different approach and see which is better". For improving existing code in place use re-master; for redesigning an interface use re-design.
 ---
 
 # re-make
@@ -11,6 +11,10 @@ the winner takes the throne; repeat until a challenger loses; finish with an **a
 The goal is not "polish it a bit" — it is to **measure whether rewriting it a different way is
 actually better**. That is why copy-paste between rounds is banned and every verdict comes from a
 rubric frozen before the first round.
+
+Siblings, same tournament, different move: **re-master** improves the existing code in place with
+reviewable diffs; **re-design** redesigns an interface and judges the pixels. If the honest answer
+here turns out to be *"the design is fine, it just needs sharpening"*, hand off to `re-master`.
 
 ---
 
