@@ -165,10 +165,47 @@ Five headings, always:
 
 ## Installation
 
+Two ways: **as a plugin** (one command, updates itself) or **by copying the skill folders** (nothing
+to register, easy to edit). Pick one — installing both gives you two copies of every skill.
+
+### Option 1 — as a plugin (recommended)
+
+This repo is its own marketplace. In Claude Code:
+
+```
+/plugin marketplace add olcayseygan/reforge
+/plugin install reforge@reforge
+```
+
+Or from the terminal:
+
+```bash
+claude plugin marketplace add olcayseygan/reforge
+claude plugin install reforge@reforge
+```
+
+The `/plugin` UI works too: **Marketplaces → Add**, paste `https://github.com/olcayseygan/reforge`,
+then install **reforge** from the Plugins tab.
+
+Updating later:
+
+```bash
+claude plugin marketplace update reforge
+```
+
+Removing it:
+
+```bash
+claude plugin uninstall reforge
+claude plugin marketplace remove reforge
+```
+
+### Option 2 — copy the skill folders
+
 A skill is just a folder with a `SKILL.md` in it. Installing one means putting that folder where
 Claude Code looks — there is nothing to build, register or configure.
 
-### Pick a scope first
+#### Pick a scope first
 
 | Scope | Where it goes | Use it when |
 | --- | --- | --- |
@@ -177,7 +214,7 @@ Claude Code looks — there is nothing to build, register or configure.
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-### Install all four
+#### Install all four
 
 ```bash
 git clone https://github.com/olcayseygan/reforge.git
@@ -196,7 +233,7 @@ Copy-Item -Recurse -Force reforge\skills\* "$env:USERPROFILE\.claude\skills\"
 For the project scope instead, swap the destination for `.claude/skills/` inside your repo and commit
 it.
 
-### Install just one
+#### Install just one
 
 They are fully independent — take one, take all four:
 
@@ -204,7 +241,7 @@ They are fully independent — take one, take all four:
 cp -r reforge/skills/re-view ~/.claude/skills/
 ```
 
-### What it should look like afterwards
+#### What it should look like afterwards
 
 ```
 ~/.claude/skills/
@@ -218,13 +255,13 @@ The folder name and the `name:` field in the file's front matter must match, and
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
 rather than a note.
 
-### Verify
+#### Verify
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
 appear in a running session. Then type `/` and look for `re-make`, `re-master`, `re-design`,
 `re-view`, or just ask *"which skills do you have?"*.
 
-### Update
+#### Update
 
 ```bash
 cd reforge && git pull
@@ -233,12 +270,12 @@ cp -r skills/* ~/.claude/skills/
 
 Restart afterwards, same reason.
 
-### Uninstall
+#### Uninstall
 
 Delete the folder — `rm -rf ~/.claude/skills/re-view`. Nothing else is touched; skills leave no state
 behind.
 
-### Troubleshooting
+#### Troubleshooting
 
 - **The slash command doesn't show up.** You didn't restart, or the file is at
   `~/.claude/skills/SKILL.md` instead of `~/.claude/skills/<name>/SKILL.md`.
