@@ -1,6 +1,6 @@
 # reforge
 
-Three [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
+Four [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
 beats the champion** — then hand back an honest post-mortem and a round-by-round table.
 
@@ -9,6 +9,7 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | **`re-make`** | throws the code away and rebuilds it from a blank file | *is a different design better?* |
 | **`re-master`** | keeps the code and sharpens it with reviewable diffs | *how good can **this** design get?* |
 | **`re-design`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
+| **`re-view`** | builds nothing; several lenses review it, then fight | *what is actually wrong with it?* |
 
 Redoing something "to see if it comes out better" usually ends in a vibe-based verdict: the new one
 *feels* cleaner, so it ships. These skills replace the vibe with a frozen rubric, head-to-head
@@ -35,6 +36,10 @@ Round 2   another attempt                    →  score + VS champion  →  winn
 - **The repo stays clean** until the final champion is decided, and only then is it applied and
   verified.
 - **Six rounds, hard cap.**
+
+`re-view` is the odd one out: it produces nothing to score, so the fight happens between *lenses*
+instead of versions — but the discipline is identical. Nothing reaches you until something tried to
+kill it.
 
 ## `re-make` — rebuild it
 
@@ -109,6 +114,33 @@ something, contrast you can read.
 ```
 /re-design the settings panel
 /re-design the match HUD
+```
+
+## `re-view` — judge it
+
+No rewriting, no diffs, no pixels: a panel of 4-7 **lenses** reads the code, then argues.
+
+- **Blind first.** Each lens reviews on its own and writes its findings down *before* reading the
+  others. A lens that starts by reading the previous one just agrees with it — that is one review
+  wearing five hats.
+- **A finding needs `file:line`, a concrete failure scenario, a severity and a confidence.** *"On the
+  second cast in the same frame `_pending` is still set, so the second hit is dropped."* No scenario,
+  no finding.
+- **Then the fight.** Every finding is handed to a *different* lens whose job is to **refute** it.
+  Survivors are `CONFIRMED`, unsettled ones `PLAUSIBLE` (with what would settle them), the rest
+  `REFUTED` — and refuted findings stay in the report with their reason, because "we checked and it's
+  fine" is worth knowing.
+- **Conflicts are decided, not averaged.** *Cache it* vs. *keep it simple* gets written out as a
+  trade-off with a winner; a split difference usually delivers neither side's benefit.
+- **Dissent is recorded.** If a lens still disagrees at the end, its objection is printed by name.
+  Manufactured unanimity hides the one comment the author needed.
+- Default panel: Correctness · Lifecycle & robustness · Performance & memory · Design & simplicity ·
+  House rules · Maintainability · Security & trust · Testability — swapped to fit the target.
+- It **reviews only**; fixes happen only if you ask.
+
+```
+/re-view src/parser.ts
+/re-view the working diff
 ```
 
 ## What you get at the end

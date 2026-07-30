@@ -13,8 +13,9 @@ actually better**. That is why copy-paste between rounds is banned and every ver
 rubric frozen before the first round.
 
 Siblings, same tournament, different move: **re-master** improves the existing code in place with
-reviewable diffs; **re-design** redesigns an interface and judges the pixels. If the honest answer
-here turns out to be *"the design is fine, it just needs sharpening"*, hand off to `re-master`.
+reviewable diffs; **re-design** redesigns an interface and judges the pixels; **re-view** builds
+nothing and judges what is already there. If the honest answer here turns out to be *"the design is
+fine, it just needs sharpening"*, hand off to `re-master`.
 
 ---
 
