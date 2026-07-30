@@ -163,22 +163,90 @@ Five headings, always:
 
 …followed by one sentence on **why the loop ended**.
 
-## Install
+## Installation
+
+A skill is just a folder with a `SKILL.md` in it. Installing one means putting that folder where
+Claude Code looks — there is nothing to build, register or configure.
+
+### Pick a scope first
+
+| Scope | Where it goes | Use it when |
+| --- | --- | --- |
+| **Personal** | `~/.claude/skills/` (Windows: `%USERPROFILE%\.claude\skills\`) | You want these in **every** project on your machine. Recommended. |
+| **Project** | `<repo>/.claude/skills/` | You want them only in one repo — and committed, so your teammates get them too. |
+
+Both work at the same time; if a name exists in both, the project copy wins.
+
+### Install all four
 
 ```bash
 git clone https://github.com/olcayseygan/reforge.git
+mkdir -p ~/.claude/skills
 cp -r reforge/skills/* ~/.claude/skills/
 ```
 
-On Windows (PowerShell):
+Windows (PowerShell):
 
 ```powershell
 git clone https://github.com/olcayseygan/reforge.git
-Copy-Item -Recurse reforge\skills\* "$env:USERPROFILE\.claude\skills\"
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills" | Out-Null
+Copy-Item -Recurse -Force reforge\skills\* "$env:USERPROFILE\.claude\skills\"
 ```
 
-Restart Claude Code so the skill list is picked up. Copy them into `.claude/skills/` inside a repo
-instead if you only want them for that project. They are independent — take one, take all three.
+For the project scope instead, swap the destination for `.claude/skills/` inside your repo and commit
+it.
+
+### Install just one
+
+They are fully independent — take one, take all four:
+
+```bash
+cp -r reforge/skills/re-view ~/.claude/skills/
+```
+
+### What it should look like afterwards
+
+```
+~/.claude/skills/
+├── re-make/SKILL.md
+├── re-master/SKILL.md
+├── re-design/SKILL.md
+└── re-view/SKILL.md
+```
+
+The folder name and the `name:` field in the file's front matter must match, and the file must stay
+named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
+rather than a note.
+
+### Verify
+
+**Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
+appear in a running session. Then type `/` and look for `re-make`, `re-master`, `re-design`,
+`re-view`, or just ask *"which skills do you have?"*.
+
+### Update
+
+```bash
+cd reforge && git pull
+cp -r skills/* ~/.claude/skills/
+```
+
+Restart afterwards, same reason.
+
+### Uninstall
+
+Delete the folder — `rm -rf ~/.claude/skills/re-view`. Nothing else is touched; skills leave no state
+behind.
+
+### Troubleshooting
+
+- **The slash command doesn't show up.** You didn't restart, or the file is at
+  `~/.claude/skills/SKILL.md` instead of `~/.claude/skills/<name>/SKILL.md`.
+- **It's listed but never triggers on its own.** Invoke it explicitly with `/re-view …`. The
+  description is what makes Claude reach for it unprompted; if you edited it, keep the trigger
+  phrases in there.
+- **You already have a skill with one of these names.** Rename the folder *and* the `name:` field to
+  match, e.g. `re-view-panel`.
 
 ## Why bother
 
