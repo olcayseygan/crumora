@@ -1,9 +1,9 @@
-# skills
+# crumora
 
 > This repo is also a [Claude Code](https://claude.com/claude-code) marketplace named `olcayseygan` —
-> take all four with one command: `claude plugin install skills@olcayseygan`.
+> take all five with one command: `claude plugin install crumora@olcayseygan`.
 
-Four [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
+Five [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
 beats the champion** — then hand back an honest post-mortem and a round-by-round table.
 
@@ -13,10 +13,11 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | **`refactor`** | keeps the code and sharpens it with reviewable diffs | *how good can **this** design get?* |
 | **`reskin`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
 | **`audit`** | builds nothing; several lenses review it, then fight | *what is actually wrong with it?* |
+| **`report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
 
-The names are the plain engineering moves — rewrite, refactor, reskin, audit. What these skills add
-is the tournament around them: every attempt is scored, fought against the version it wants to
-replace, and thrown away if it doesn't win.
+The names are the plain engineering moves — rewrite, refactor, reskin, audit, report. What these
+skills add is the tournament around them: every attempt is scored, fought against the version it
+wants to replace, and thrown away if it doesn't win.
 
 Redoing something "to see if it comes out better" usually ends in a vibe-based verdict: the new one
 *feels* cleaner, so it ships. These skills replace the vibe with a frozen rubric, head-to-head
@@ -44,9 +45,10 @@ Round 2   another attempt                    →  score + VS champion  →  winn
   verified.
 - **Six rounds, hard cap.**
 
-`audit` is the odd one out: it produces nothing to score, so the fight happens between *lenses*
-instead of versions — but the discipline is identical. Nothing reaches you until something tried to
-kill it.
+`audit` and `report` are the odd ones out: neither produces a version to score. In `audit` the fight
+happens between *lenses* instead of versions; in `report` it happens between a claim and the data
+that has to back it. The discipline is identical — nothing reaches you until something tried to kill
+it.
 
 ## `rewrite` — rebuild it
 
@@ -150,6 +152,32 @@ No rewriting, no diffs, no pixels: a panel of 4-7 **lenses** reads the code, the
 /audit the working diff
 ```
 
+## `report` — measure it
+
+The one that never touches code: it answers a question **with numbers**, then delivers a dated,
+self-contained single-file HTML report an executive and an engineer can read the same copy of.
+
+- **Read-only, always.** Source data and the project's runtime code come out unchanged; intermediates
+  live in the scratchpad, never in your repo.
+- **The name is a hint, the content is the evidence.** A column called `duration_ms` holding seconds,
+  a file named `run-30fps-high` recorded at another setting — every field and file is opened and
+  confirmed before it is allowed into the report.
+- **Confounds are never presented as results.** Sample count, duration, volume and version drift get
+  normalised; whatever can't be normalised is written out in Notes rather than quietly averaged in.
+- **One primary metric** that isolates the question, plus at most two or three supporting ones —
+  stated along with what it normalises and what it is blind to. Sample counts are always visible and
+  no claim rests on a single sample.
+- **A decision study owes you a recommendation** — which option, under which condition, resting on
+  which number. A descriptive one gets a conclusion and no box.
+- **The file is self-contained and verified so**: charts embedded as base64, no external `link`,
+  `script src` or remote image, and it survives print-to-PDF without splitting a chart in half.
+- Report language follows the language you are speaking, not the skill's.
+
+```
+/report compare the two tuning runs in data/
+/report what happened to p99 latency last week
+```
+
 ## What you get at the end
 
 Five headings, always:
@@ -170,6 +198,10 @@ Five headings, always:
 
 …followed by one sentence on **why the loop ended**.
 
+`report` writes the same five into the document instead of the chat: Objective is *what we set out to
+do*, Findings and Conclusion are *what we found*, Method is *how we found it*, and Notes & Caveats is
+*possible mistakes* — the section most reports quietly drop.
+
 ## Installation
 
 Two ways: **as a plugin** (one command, updates itself) or **by copying the skill folders** (nothing
@@ -177,23 +209,24 @@ to register, easy to edit). Pick one — installing both gives you two copies of
 
 ### Option 1 — as a plugin (recommended)
 
-This repo is a Claude Code marketplace named `olcayseygan`, holding a single plugin called `skills`.
+This repo is a Claude Code marketplace named `olcayseygan`, holding a single plugin called `crumora`
+— so the skills show up as `crumora:rewrite`, `crumora:audit`, `crumora:report` and so on.
 In Claude Code:
 
 ```
-/plugin marketplace add olcayseygan/skills
-/plugin install skills@olcayseygan
+/plugin marketplace add olcayseygan/crumora
+/plugin install crumora@olcayseygan
 ```
 
 Or from the terminal:
 
 ```bash
-claude plugin marketplace add olcayseygan/skills
-claude plugin install skills@olcayseygan
+claude plugin marketplace add olcayseygan/crumora
+claude plugin install crumora@olcayseygan
 ```
 
-The `/plugin` UI works too: **Marketplaces → Add**, paste `https://github.com/olcayseygan/skills`,
-then install **skills** from the Plugins tab.
+The `/plugin` UI works too: **Marketplaces → Add**, paste `https://github.com/olcayseygan/crumora`,
+then install **crumora** from the Plugins tab.
 
 Updating later:
 
@@ -204,7 +237,7 @@ claude plugin marketplace update olcayseygan
 Removing it:
 
 ```bash
-claude plugin uninstall skills
+claude plugin uninstall crumora
 claude plugin marketplace remove olcayseygan
 ```
 
@@ -222,20 +255,20 @@ Claude Code looks — there is nothing to build, register or configure.
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-#### Install all four
+#### Install all five
 
 ```bash
-git clone https://github.com/olcayseygan/skills.git olcayseygan-skills
+git clone https://github.com/olcayseygan/crumora.git crumora
 mkdir -p ~/.claude/skills
-cp -r olcayseygan-skills/skills/* ~/.claude/skills/
+cp -r crumora/skills/* ~/.claude/skills/
 ```
 
 Windows (PowerShell):
 
 ```powershell
-git clone https://github.com/olcayseygan/skills.git olcayseygan-skills
+git clone https://github.com/olcayseygan/crumora.git crumora
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills" | Out-Null
-Copy-Item -Recurse -Force olcayseygan-skills\skills\* "$env:USERPROFILE\.claude\skills\"
+Copy-Item -Recurse -Force crumora\skills\* "$env:USERPROFILE\.claude\skills\"
 ```
 
 For the project scope instead, swap the destination for `.claude/skills/` inside your repo and commit
@@ -243,10 +276,10 @@ it.
 
 #### Install just one
 
-They are fully independent — take one, take all four:
+They are fully independent — take one, take all five:
 
 ```bash
-cp -r olcayseygan-skills/skills/audit ~/.claude/skills/
+cp -r crumora/skills/audit ~/.claude/skills/
 ```
 
 #### What it should look like afterwards
@@ -256,23 +289,28 @@ cp -r olcayseygan-skills/skills/audit ~/.claude/skills/
 ├── rewrite/SKILL.md
 ├── refactor/SKILL.md
 ├── reskin/SKILL.md
-└── audit/SKILL.md
+├── audit/SKILL.md
+└── report/
+    ├── SKILL.md
+    ├── references/
+    └── scripts/
 ```
 
 The folder name and the `name:` field in the file's front matter must match, and the file must stay
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
-rather than a note.
+rather than a note. `report` is the only one with `references/` and `scripts/` alongside it — copy
+the whole folder, not just its `SKILL.md`.
 
 #### Verify
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
-appear in a running session. Then type `/` and look for `rewrite`, `refactor`, `reskin`, `audit`, or
-just ask *"which skills do you have?"*.
+appear in a running session. Then type `/` and look for `rewrite`, `refactor`, `reskin`, `audit`,
+`report`, or just ask *"which skills do you have?"*.
 
 #### Update
 
 ```bash
-cd olcayseygan-skills && git pull
+cd crumora && git pull
 cp -r skills/* ~/.claude/skills/
 ```
 

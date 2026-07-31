@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
+ body{font-family:'Segoe UI',Arial,sans-serif;line-height:1.65;color:#1a1a1a;
+      max-width:900px;margin:0 auto;padding:40px 28px;background:#fff;}
+ h1{font-size:26px;color:#0d3b66;margin-bottom:4px;}
+ h2{font-size:20px;color:#0d3b66;border-bottom:2px solid #e0e6ed;padding-bottom:6px;margin-top:38px;}
+ h3{font-size:16px;color:#2a5a84;margin-top:24px;}
+ .meta{color:#666;font-size:14px;margin-bottom:24px;}
+ .summary{background:#f0f6ff;border-left:5px solid #2a7fff;padding:16px 20px;border-radius:6px;margin:20px 0;}
+ .reco{background:#eafaf0;border-left:5px solid #22aa55;padding:16px 20px;border-radius:6px;margin:20px 0;}
+ .warn{background:#fff6e8;border-left:5px solid #ff9500;padding:14px 20px;border-radius:6px;margin:20px 0;font-size:14px;}
+ table{border-collapse:collapse;width:100%;margin:18px 0;font-size:14px;}
+ th,td{border:1px solid #d5dbe2;padding:9px 12px;text-align:center;}
+ th{background:#0d3b66;color:#fff;font-weight:600;}
+ tr:nth-child(even){background:#f6f8fa;}
+ td.left,th.left{text-align:left;}
+ .win{background:#eafaf0;font-weight:700;color:#178048;}
+ .kpi{display:flex;gap:14px;flex-wrap:wrap;margin:20px 0;}
+ .kpi>div{flex:1 1 150px;background:#f6f8fa;border:1px solid #e0e6ed;border-radius:6px;padding:12px 14px;}
+ .kpi .v{font-size:22px;font-weight:700;color:#0d3b66;display:block;}
+ .kpi .l{font-size:12px;color:#666;text-transform:uppercase;letter-spacing:.3px;}
+ img{max-width:100%;border:1px solid #e0e6ed;border-radius:6px;margin:14px 0;}
+ .cap{font-size:13px;color:#666;font-style:italic;margin-top:-6px;margin-bottom:20px;}
+ .big{font-size:17px;font-weight:600;}
+ code{background:#f0f2f5;padding:1px 6px;border-radius:4px;font-size:13px;}
+ footer{margin-top:44px;padding-top:16px;border-top:1px solid #e0e6ed;color:#888;font-size:12px;}
+ @media print{
+   body{padding:0;max-width:none;}
+   h2{page-break-after:avoid;}
+   img,table,.summary,.reco,.warn,.kpi{page-break-inside:avoid;}
+ }
+</style></head><body>
+
+<!--
+ Section headings are translated into the report language. Turkish equivalents:
+ Executive Summary = Yönetici Özeti | Recommendation = Öneri | Objective = Amaç
+ Method = Yöntem | Findings = Bulgular | Conclusion = Sonuç
+ Notes & Caveats = Notlar ve Uyarılar | Appendix: Data Detail = Ek: Veri Detayı
+ Update the lang="en" attribute to match the language as well.
+-->
+
+<h1>{{TITLE}}</h1>
+<div class="meta">
+ <b>Project:</b> {{PROJECT}} &nbsp;|&nbsp;
+ <b>Subject:</b> {{SUBJECT}}<br>
+ <b>Analysis date:</b> {{DATE_LONG}} &nbsp;|&nbsp;
+ <b>Data source:</b> {{DATA_SOURCE}}
+</div>
+
+<div class="summary">
+<span class="big">Executive Summary</span><br>
+{{SUMMARY: what was done, what was found — the conclusion in one glance. 3-5 sentences, no jargon.}}
+</div>
+
+<!-- Mandatory for a decision study; delete it for a descriptive one -->
+<div class="reco">
+<b>RECOMMENDATION:</b> {{RECO: which option, under which condition, resting on which number.}}
+</div>
+
+<h2>1. Objective</h2>
+<p>{{OBJECTIVE: which question was being answered, why it matters.}}</p>
+
+<h2>2. Method</h2>
+<p>{{METHOD: what was measured, how, and why that measurement is sound. State what was normalised here.}}</p>
+<p>{{RANGE: which range or condition it was measured over, and why that range.}}</p>
+
+<h2>3. Findings</h2>
+
+<div class="kpi">
+ <div><span class="v">{{VALUE}}</span><span class="l">{{LABEL}}</span></div>
+ <div><span class="v">{{VALUE}}</span><span class="l">{{LABEL}}</span></div>
+ <div><span class="v">{{VALUE}}</span><span class="l">{{LABEL}}</span></div>
+</div>
+
+<p>{{Introduce the chart in one sentence: what to look at, what "high" means here.}}</p>
+{{IMG_TAG_1}}
+<div class="cap">{{Figure 1: what it shows + one sentence of interpretation.}}</div>
+
+<table>
+ <tr><th class="left">{{Record/Condition}}</th><th>{{Metric}}</th><th>{{Samples}}</th><th>{{Note}}</th></tr>
+ <tr><td class="left">{{...}}</td><td>{{...}}</td><td>{{...}}</td><td>{{...}}</td></tr>
+</table>
+
+<h2>4. Conclusion</h2>
+<p>{{CONCLUSION: the findings summarised and how certain they are. What was proven, what was not.}}</p>
+
+<h2>5. Notes &amp; Caveats</h2>
+<div class="warn">
+<ul>
+ <li>{{Assumption.}}</li>
+ <li>{{Limit / something not measured.}}</li>
+ <li>{{Confound and how it was handled.}}</li>
+</ul>
+</div>
+
+<h2>6. Appendix: Data Detail</h2>
+<table>
+ <tr><th class="left">Record</th><th>Date</th><th>Duration</th><th>Samples</th><th class="left">Condition</th></tr>
+ <tr><td class="left">{{...}}</td><td>{{...}}</td><td>{{...}}</td><td>{{...}}</td><td class="left">{{...}}</td></tr>
+</table>
+
+<footer>
+ Raw charts and analysis scripts: <code>{{ANALYSIS_DIR}}</code><br>
+ {{PROJECT}} &mdash; {{DATE_LONG}}
+</footer>
+
+</body></html>
