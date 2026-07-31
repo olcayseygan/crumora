@@ -1,5 +1,8 @@
 # skills
 
+> This repo is also a [Claude Code](https://claude.com/claude-code) marketplace named `olcayseygan`;
+> the four skills ship as the **reforge** plugin — `claude plugin install reforge@olcayseygan`.
+
 Four [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
 beats the champion** — then hand back an honest post-mortem and a round-by-round table.
@@ -169,11 +172,48 @@ Five headings, always:
 
 ## Installation
 
-A skill is just a folder with a `SKILL.md` in it. Installing one means putting that folder where
-Claude Code looks — there is nothing to build, register or configure. Each folder in this repo is one
-skill.
+Two ways: **as a plugin** (one command, updates itself) or **by copying the skill folders** (nothing
+to register, easy to edit). Pick one — installing both gives you two copies of every skill.
 
-### Pick a scope first
+### Option 1 — as a plugin (recommended)
+
+This repo is a Claude Code marketplace named `olcayseygan`; **reforge** is the plugin in it. In
+Claude Code:
+
+```
+/plugin marketplace add olcayseygan/skills
+/plugin install reforge@olcayseygan
+```
+
+Or from the terminal:
+
+```bash
+claude plugin marketplace add olcayseygan/skills
+claude plugin install reforge@olcayseygan
+```
+
+The `/plugin` UI works too: **Marketplaces → Add**, paste `https://github.com/olcayseygan/skills`,
+then install **reforge** from the Plugins tab.
+
+Updating later:
+
+```bash
+claude plugin marketplace update olcayseygan
+```
+
+Removing it:
+
+```bash
+claude plugin uninstall reforge
+claude plugin marketplace remove olcayseygan
+```
+
+### Option 2 — copy the skill folders
+
+A skill is just a folder with a `SKILL.md` in it. Installing one means putting that folder where
+Claude Code looks — there is nothing to build, register or configure.
+
+#### Pick a scope first
 
 | Scope | Where it goes | Use it when |
 | --- | --- | --- |
@@ -182,42 +222,34 @@ skill.
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-### Install all four
-
-If you have no `~/.claude/skills/` yet, the repo *is* that folder — clone it straight in:
+#### Install all four
 
 ```bash
-git clone https://github.com/olcayseygan/skills.git ~/.claude/skills
-```
-
-Otherwise clone next to it and copy the skill folders across:
-
-```bash
-git clone https://github.com/olcayseygan/skills.git
+git clone https://github.com/olcayseygan/skills.git olcayseygan-skills
 mkdir -p ~/.claude/skills
-cp -r skills/*/ ~/.claude/skills/
+cp -r olcayseygan-skills/skills/* ~/.claude/skills/
 ```
 
 Windows (PowerShell):
 
 ```powershell
-git clone https://github.com/olcayseygan/skills.git
+git clone https://github.com/olcayseygan/skills.git olcayseygan-skills
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills" | Out-Null
-Copy-Item -Recurse -Force skills\rewrite, skills\refactor, skills\reskin, skills\audit "$env:USERPROFILE\.claude\skills\"
+Copy-Item -Recurse -Force olcayseygan-skills\skills\* "$env:USERPROFILE\.claude\skills\"
 ```
 
 For the project scope instead, swap the destination for `.claude/skills/` inside your repo and commit
 it.
 
-### Install just one
+#### Install just one
 
 They are fully independent — take one, take all four:
 
 ```bash
-cp -r skills/audit ~/.claude/skills/
+cp -r olcayseygan-skills/skills/audit ~/.claude/skills/
 ```
 
-### What it should look like afterwards
+#### What it should look like afterwards
 
 ```
 ~/.claude/skills/
@@ -231,28 +263,27 @@ The folder name and the `name:` field in the file's front matter must match, and
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
 rather than a note.
 
-### Verify
+#### Verify
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
 appear in a running session. Then type `/` and look for `rewrite`, `refactor`, `reskin`, `audit`, or
 just ask *"which skills do you have?"*.
 
-### Update
+#### Update
 
 ```bash
-cd skills && git pull
-cp -r */ ~/.claude/skills/
+cd olcayseygan-skills && git pull
+cp -r skills/* ~/.claude/skills/
 ```
 
-If you cloned straight into `~/.claude/skills/`, `git pull` in there is the whole update. Restart
-afterwards, same reason.
+Restart afterwards, same reason.
 
-### Uninstall
+#### Uninstall
 
 Delete the folder — `rm -rf ~/.claude/skills/audit`. Nothing else is touched; skills leave no state
 behind.
 
-### Troubleshooting
+#### Troubleshooting
 
 - **The slash command doesn't show up.** You didn't restart, or the file is at
   `~/.claude/skills/SKILL.md` instead of `~/.claude/skills/<name>/SKILL.md`.
