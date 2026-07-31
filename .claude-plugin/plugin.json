@@ -1,5 +1,5 @@
 {
-  "name": "reforge",
+  "name": "skills",
   "description": "Four skills that redo your work as a tournament: rewrite rebuilds it from scratch, refactor sharpens it in place, reskin redesigns the interface, audit puts it on trial with a panel of lenses. Every attempt is scored against a frozen rubric, fought head-to-head against the reigning champion, and reported with a round-by-round table.",
   "version": "3.0.0",
   "author": {

@@ -1,7 +1,7 @@
 # skills
 
-> This repo is also a [Claude Code](https://claude.com/claude-code) marketplace named `olcayseygan`;
-> the four skills ship as the **reforge** plugin — `claude plugin install reforge@olcayseygan`.
+> This repo is also a [Claude Code](https://claude.com/claude-code) marketplace named `olcayseygan` —
+> take all four with one command: `claude plugin install skills@olcayseygan`.
 
 Four [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
@@ -177,23 +177,23 @@ to register, easy to edit). Pick one — installing both gives you two copies of
 
 ### Option 1 — as a plugin (recommended)
 
-This repo is a Claude Code marketplace named `olcayseygan`; **reforge** is the plugin in it. In
-Claude Code:
+This repo is a Claude Code marketplace named `olcayseygan`, holding a single plugin called `skills`.
+In Claude Code:
 
 ```
 /plugin marketplace add olcayseygan/skills
-/plugin install reforge@olcayseygan
+/plugin install skills@olcayseygan
 ```
 
 Or from the terminal:
 
 ```bash
 claude plugin marketplace add olcayseygan/skills
-claude plugin install reforge@olcayseygan
+claude plugin install skills@olcayseygan
 ```
 
 The `/plugin` UI works too: **Marketplaces → Add**, paste `https://github.com/olcayseygan/skills`,
-then install **reforge** from the Plugins tab.
+then install **skills** from the Plugins tab.
 
 Updating later:
 
@@ -204,7 +204,7 @@ claude plugin marketplace update olcayseygan
 Removing it:
 
 ```bash
-claude plugin uninstall reforge
+claude plugin uninstall skills
 claude plugin marketplace remove olcayseygan
 ```
 
