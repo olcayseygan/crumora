@@ -1,4 +1,4 @@
-# reforge
+# skills
 
 Four [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
@@ -6,10 +6,14 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 
 | Skill | Move | Answers |
 | --- | --- | --- |
-| **`re-make`** | throws the code away and rebuilds it from a blank file | *is a different design better?* |
-| **`re-master`** | keeps the code and sharpens it with reviewable diffs | *how good can **this** design get?* |
-| **`re-design`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
-| **`re-view`** | builds nothing; several lenses review it, then fight | *what is actually wrong with it?* |
+| **`rewrite`** | throws the code away and rebuilds it from a blank file | *is a different design better?* |
+| **`refactor`** | keeps the code and sharpens it with reviewable diffs | *how good can **this** design get?* |
+| **`reskin`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
+| **`audit`** | builds nothing; several lenses review it, then fight | *what is actually wrong with it?* |
+
+The names are the plain engineering moves — rewrite, refactor, reskin, audit. What these skills add
+is the tournament around them: every attempt is scored, fought against the version it wants to
+replace, and thrown away if it doesn't win.
 
 Redoing something "to see if it comes out better" usually ends in a vibe-based verdict: the new one
 *feels* cleaner, so it ships. These skills replace the vibe with a frozen rubric, head-to-head
@@ -37,11 +41,11 @@ Round 2   another attempt                    →  score + VS champion  →  winn
   verified.
 - **Six rounds, hard cap.**
 
-`re-view` is the odd one out: it produces nothing to score, so the fight happens between *lenses*
+`audit` is the odd one out: it produces nothing to score, so the fight happens between *lenses*
 instead of versions — but the discipline is identical. Nothing reaches you until something tried to
 kill it.
 
-## `re-make` — rebuild it
+## `rewrite` — rebuild it
 
 Each round starts from a blank file and the spec, never from the existing code, and must try a
 *genuinely different* approach: different data structure, different split of responsibility,
@@ -56,11 +60,11 @@ different axis of simplification.
 | Maintainability | 10 |
 
 ```
-/re-make GameUI cast ring
-/re-make src/parser.ts
+/rewrite GameUI cast ring
+/rewrite src/parser.ts
 ```
 
-## `re-master` — sharpen it
+## `refactor` — sharpen it
 
 Same tournament, opposite move: every round starts from the champion's actual code and produces a
 diff a reviewer could approve.
@@ -69,7 +73,7 @@ diff a reviewer could approve.
   begins with "let me clean this up a bit".
 - **No scope creep.** Adding capability is not improving.
 - **A diff touching more than ~60% of the target is a rewrite in disguise** — it says so and hands
-  off to `re-make`.
+  off to `rewrite`.
 - **Regression check:** Correctness may never drop; no other criterion may drop more than a point.
 - Taking the throne needs **+2 score, a VS win and a clean regression check** — all three, so
   diminishing returns end the loop instead of dragging it on.
@@ -77,11 +81,11 @@ diff a reviewer could approve.
 - **Measurable claims need measurements.** "Faster" with no number scores zero.
 
 ```
-/re-master src/parser.ts
-/re-master the reconcile loop
+/refactor src/parser.ts
+/refactor the reconcile loop
 ```
 
-## `re-design` — redesign it
+## `reskin` — redesign it
 
 The pixel-level sibling: redesigns a surface from a blank canvas and obsesses over the boring things
 that actually decide whether a UI reads — edges that line up, one spacing scale, sizes that mean
@@ -112,11 +116,11 @@ something, contrast you can read.
   craft lives; this skill is the harness.
 
 ```
-/re-design the settings panel
-/re-design the match HUD
+/reskin the settings panel
+/reskin the match HUD
 ```
 
-## `re-view` — judge it
+## `audit` — judge it
 
 No rewriting, no diffs, no pixels: a panel of 4-7 **lenses** reads the code, then argues.
 
@@ -139,8 +143,8 @@ No rewriting, no diffs, no pixels: a panel of 4-7 **lenses** reads the code, the
 - It **reviews only**; fixes happen only if you ask.
 
 ```
-/re-view src/parser.ts
-/re-view the working diff
+/audit src/parser.ts
+/audit the working diff
 ```
 
 ## What you get at the end
@@ -165,47 +169,11 @@ Five headings, always:
 
 ## Installation
 
-Two ways: **as a plugin** (one command, updates itself) or **by copying the skill folders** (nothing
-to register, easy to edit). Pick one — installing both gives you two copies of every skill.
-
-### Option 1 — as a plugin (recommended)
-
-This repo is its own marketplace. In Claude Code:
-
-```
-/plugin marketplace add olcayseygan/reforge
-/plugin install reforge@reforge
-```
-
-Or from the terminal:
-
-```bash
-claude plugin marketplace add olcayseygan/reforge
-claude plugin install reforge@reforge
-```
-
-The `/plugin` UI works too: **Marketplaces → Add**, paste `https://github.com/olcayseygan/reforge`,
-then install **reforge** from the Plugins tab.
-
-Updating later:
-
-```bash
-claude plugin marketplace update reforge
-```
-
-Removing it:
-
-```bash
-claude plugin uninstall reforge
-claude plugin marketplace remove reforge
-```
-
-### Option 2 — copy the skill folders
-
 A skill is just a folder with a `SKILL.md` in it. Installing one means putting that folder where
-Claude Code looks — there is nothing to build, register or configure.
+Claude Code looks — there is nothing to build, register or configure. Each folder in this repo is one
+skill.
 
-#### Pick a scope first
+### Pick a scope first
 
 | Scope | Where it goes | Use it when |
 | --- | --- | --- |
@@ -214,76 +182,85 @@ Claude Code looks — there is nothing to build, register or configure.
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-#### Install all four
+### Install all four
+
+If you have no `~/.claude/skills/` yet, the repo *is* that folder — clone it straight in:
 
 ```bash
-git clone https://github.com/olcayseygan/reforge.git
+git clone https://github.com/olcayseygan/skills.git ~/.claude/skills
+```
+
+Otherwise clone next to it and copy the skill folders across:
+
+```bash
+git clone https://github.com/olcayseygan/skills.git
 mkdir -p ~/.claude/skills
-cp -r reforge/skills/* ~/.claude/skills/
+cp -r skills/*/ ~/.claude/skills/
 ```
 
 Windows (PowerShell):
 
 ```powershell
-git clone https://github.com/olcayseygan/reforge.git
+git clone https://github.com/olcayseygan/skills.git
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills" | Out-Null
-Copy-Item -Recurse -Force reforge\skills\* "$env:USERPROFILE\.claude\skills\"
+Copy-Item -Recurse -Force skills\rewrite, skills\refactor, skills\reskin, skills\audit "$env:USERPROFILE\.claude\skills\"
 ```
 
 For the project scope instead, swap the destination for `.claude/skills/` inside your repo and commit
 it.
 
-#### Install just one
+### Install just one
 
 They are fully independent — take one, take all four:
 
 ```bash
-cp -r reforge/skills/re-view ~/.claude/skills/
+cp -r skills/audit ~/.claude/skills/
 ```
 
-#### What it should look like afterwards
+### What it should look like afterwards
 
 ```
 ~/.claude/skills/
-├── re-make/SKILL.md
-├── re-master/SKILL.md
-├── re-design/SKILL.md
-└── re-view/SKILL.md
+├── rewrite/SKILL.md
+├── refactor/SKILL.md
+├── reskin/SKILL.md
+└── audit/SKILL.md
 ```
 
 The folder name and the `name:` field in the file's front matter must match, and the file must stay
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
 rather than a note.
 
-#### Verify
+### Verify
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
-appear in a running session. Then type `/` and look for `re-make`, `re-master`, `re-design`,
-`re-view`, or just ask *"which skills do you have?"*.
+appear in a running session. Then type `/` and look for `rewrite`, `refactor`, `reskin`, `audit`, or
+just ask *"which skills do you have?"*.
 
-#### Update
+### Update
 
 ```bash
-cd reforge && git pull
-cp -r skills/* ~/.claude/skills/
+cd skills && git pull
+cp -r */ ~/.claude/skills/
 ```
 
-Restart afterwards, same reason.
+If you cloned straight into `~/.claude/skills/`, `git pull` in there is the whole update. Restart
+afterwards, same reason.
 
-#### Uninstall
+### Uninstall
 
-Delete the folder — `rm -rf ~/.claude/skills/re-view`. Nothing else is touched; skills leave no state
+Delete the folder — `rm -rf ~/.claude/skills/audit`. Nothing else is touched; skills leave no state
 behind.
 
-#### Troubleshooting
+### Troubleshooting
 
 - **The slash command doesn't show up.** You didn't restart, or the file is at
   `~/.claude/skills/SKILL.md` instead of `~/.claude/skills/<name>/SKILL.md`.
-- **It's listed but never triggers on its own.** Invoke it explicitly with `/re-view …`. The
+- **It's listed but never triggers on its own.** Invoke it explicitly with `/audit …`. The
   description is what makes Claude reach for it unprompted; if you edited it, keep the trigger
   phrases in there.
 - **You already have a skill with one of these names.** Rename the folder *and* the `name:` field to
-  match, e.g. `re-view-panel`.
+  match, e.g. `audit-panel`.
 
 ## Why bother
 

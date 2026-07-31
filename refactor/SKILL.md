@@ -1,15 +1,15 @@
 ---
-name: re-master
-description: Improves existing work in scored rounds instead of rewriting it. Each round attacks the champion's weakest criterion with a reviewable diff, scores the result, and fights it head-to-head (VS) against the current champion; the loop runs until a challenger fails to beat it on both score and VS, then reports a full analysis plus a round-by-round table. Use when the user says "/re-master", "make this better", "polish this", "optimize it", "improve it until it can't be improved". For throwing the code away and starting over, use re-make instead.
+name: refactor
+description: Improves existing work in scored rounds instead of rewriting it. Each round attacks the champion's weakest criterion with a reviewable diff, scores the result, and fights it head-to-head (VS) against the current champion; the loop runs until a challenger fails to beat it on both score and VS, then reports a full analysis plus a round-by-round table. Use when the user says "/refactor", "refactor this and compare", "make this better", "polish this", "sharpen it", "refine it", "optimize it", "improve it until it can't be improved". For throwing the code away and starting over, use rewrite instead.
 ---
 
-# re-master
+# refactor — sharpen it in place
 
 Take what exists and **sharpen it, round after round**, until another pass stops being worth it.
 
-Sibling of **re-make**. Same tournament, opposite move:
+Sibling of **rewrite**. Same tournament, opposite move:
 
-| | re-make | re-master |
+| | rewrite | refactor |
 | --- | --- | --- |
 | Starting point | blank file, spec only | the champion's actual code |
 | Round output | a whole new version | a **reviewable diff** |
@@ -17,14 +17,14 @@ Sibling of **re-make**. Same tournament, opposite move:
 | Ends when | a fresh attempt stops winning | a diff stops being worth its cost |
 
 If mid-run the honest answer becomes *"this needs to be thrown away, not patched"*, **stop and say
-so**, then recommend `re-make`. Grinding polish onto the wrong design is the failure mode this skill
+so**, then recommend `rewrite`. Grinding polish onto the wrong design is the failure mode this skill
 has to avoid.
 
 ---
 
 ## 0. Pick the target
 
-If the user passed an argument, that is the target (`/re-master src/parser.ts`). If not, ask **one
+If the user passed an argument, that is the target (`/refactor src/parser.ts`). If not, ask **one
 question**: what should be improved.
 
 Then write the **behaviour contract** — 3-8 bullets of what must stay true no matter what changes.
@@ -42,9 +42,9 @@ comparison.
    table and the bar everything else has to clear.
 3. The rubric scores immediately produce the **work queue**: the lowest-scoring criteria, worst
    first. That queue drives round order — it stops the loop from repainting whatever is already good.
-4. **Work folder:** `<scratchpad>/re-master/<target-slug>/`. Each round keeps its diff and full file
+4. **Work folder:** `<scratchpad>/refactor/<target-slug>/`. Each round keeps its diff and full file
    in `r<N>/`. The repo stays **untouched** until the final champion is decided.
-5. **Round log:** `<scratchpad>/re-master/<target-slug>/rounds.md`, one line per finished round. If
+5. **Round log:** `<scratchpad>/refactor/<target-slug>/rounds.md`, one line per finished round. If
    context gets compacted, the state survives here.
 
 ## 2. The round loop
@@ -61,7 +61,7 @@ diff a reviewer could approve. Two hard limits:
 - **No scope creep.** Adding capability is not improving. If the fix needs new behaviour, it belongs
   in the contract, agreed before the round.
 - **If the diff touches more than ~60% of the target, it is a rewrite wearing a diff's clothes** —
-  say so out loud, and either narrow it or hand off to `re-make`.
+  say so out loud, and either narrow it or hand off to `rewrite`.
 
 **(c) Score + regression check.** Score the challenger with the frozen rubric. Then check it against
 the champion **criterion by criterion**:
@@ -121,7 +121,7 @@ The loop ends on **any** of these — say which one happened:
 
 - a challenger failed the verdict (§2e),
 - every criterion sits at **9 or 10** and the remaining gaps are taste, not quality,
-- the target turned out to need a rewrite (hand off to `re-make`),
+- the target turned out to need a rewrite (hand off to `rewrite`),
 - **6 rounds** — the hard cap.
 
 Then:
@@ -171,7 +171,7 @@ One sentence after the table: **why the loop ended**, using the §5 wording.
 
 ## MUST summary
 
-- Improve in place; a >60% diff is a rewrite — declare it and hand off to `re-make`.
+- Improve in place; a >60% diff is a rewrite — declare it and hand off to `rewrite`.
 - No scope creep; behaviour changes go in the contract *before* the round.
 - Rubric freezes before round 1; a winner carries its own score forward, nothing is re-scored.
 - Correctness may never drop; no other criterion may drop more than 1.

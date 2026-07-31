@@ -1,14 +1,14 @@
 ---
-name: re-view
-description: Analyses code from several independent perspectives, then makes those perspectives argue with each other until they converge on a shared verdict. Each lens reviews blind, every finding is cross-examined by a lens that wants to kill it, conflicts are resolved as explicit trade-offs rather than averaged away, and the result is a ranked findings table with recorded dissent plus a full analysis. Use when the user says "/re-view", "review this code", "analyse this", "what's wrong with this", "look at this from every angle", "is this any good". For rewriting use re-make, for improving in place use re-master, for UI use re-design.
+name: audit
+description: Analyses code from several independent perspectives, then makes those perspectives argue with each other until they converge on a shared verdict. Each lens reviews blind, every finding is cross-examined by a lens that wants to kill it, conflicts are resolved as explicit trade-offs rather than averaged away, and the result is a ranked findings table with recorded dissent plus a full analysis. Use when the user says "/audit", "audit this code", "red-team this", "review this code from every angle", "review this code", "critique this", "analyse this", "what's wrong with this", "look at this from every angle", "is this any good". For rewriting use rewrite, for improving in place use refactor, for UI use reskin.
 ---
 
-# re-view
+# audit — put it on trial
 
 Read the code through **several independent pairs of eyes**, then put those eyes **in a fight**, and
 report only what survives.
 
-Fourth sibling of **re-make**, **re-master** and **re-design**. Those three build; this one judges.
+Fourth sibling of **rewrite**, **refactor** and **reskin**. Those three build; this one judges.
 Same house style: rounds, evidence over vibes, an explicit table at the end, and no pretending to be
 more certain than the evidence allows.
 
@@ -23,7 +23,7 @@ The two failure modes it exists to prevent:
 
 ## 0. Pick the target and the panel
 
-If the user passed an argument, that is the target (`/re-view src/parser.ts`, `/re-view the working
+If the user passed an argument, that is the target (`/audit src/parser.ts`, `/audit the working
 diff`). If not, ask **one question**: what to review — and default to the uncommitted diff if the
 repo has one.
 
@@ -100,7 +100,7 @@ because a defect three lenses found independently is usually the important one.
 - Rank the survivors: **severity first, confidence second, blast radius third**.
 - Reach a **shared verdict** on the target as a whole, one of: *ship it* · *ship it with the
   blockers fixed* · *needs rework* · *wrong approach, rebuild* (in the last case, hand off to
-  `re-make`).
+  `rewrite`).
 - **Record dissent (MUST).** If a lens still disagrees after the fight, print its objection as a
   named dissent line. Do not manufacture unanimity — a suppressed objection is exactly the one the
   author needed to hear.

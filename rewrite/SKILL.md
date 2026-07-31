@@ -1,9 +1,9 @@
 ---
-name: re-make
-description: Rebuilds a piece of work from scratch, scores it, and pits it head-to-head (VS) against the previous version. Runs in rounds; each round challenges the reigning champion, and the loop continues until a challenger fails to win on both score and VS. Ends with a full analysis plus a round-by-round summary table. Use when the user says "/re-make", "redo this from scratch", "rewrite it and compare", "try a different approach and see which is better". For improving existing code in place use re-master; for redesigning an interface use re-design.
+name: rewrite
+description: Rebuilds a piece of work from scratch, scores it, and pits it head-to-head (VS) against the previous version. Runs in rounds; each round challenges the reigning champion, and the loop continues until a challenger fails to win on both score and VS. Ends with a full analysis plus a round-by-round summary table. Use when the user says "/rewrite", "rewrite this from scratch", "remake it", "redo this from scratch", "rewrite it and compare", "try a different approach and see which is better". For improving existing code in place use refactor; for redesigning an interface use reskin.
 ---
 
-# re-make
+# rewrite — rebuild it from scratch
 
 Do the work **once more, from scratch**; **score** it; **fight** it against the previous version;
 the winner takes the throne; repeat until a challenger loses; finish with an **analysis and a table**.
@@ -12,16 +12,16 @@ The goal is not "polish it a bit" — it is to **measure whether rewriting it a 
 actually better**. That is why copy-paste between rounds is banned and every verdict comes from a
 rubric frozen before the first round.
 
-Siblings, same tournament, different move: **re-master** improves the existing code in place with
-reviewable diffs; **re-design** redesigns an interface and judges the pixels; **re-view** builds
+Siblings, same tournament, different move: **refactor** improves the existing code in place with
+reviewable diffs; **reskin** redesigns an interface and judges the pixels; **audit** builds
 nothing and judges what is already there. If the honest answer here turns out to be *"the design is
-fine, it just needs sharpening"*, hand off to `re-master`.
+fine, it just needs sharpening"*, hand off to `refactor`.
 
 ---
 
 ## 0. Pick the target
 
-If the user passed an argument, that is the target (`/re-make GameUI cast ring`). If not, ask **one
+If the user passed an argument, that is the target (`/rewrite GameUI cast ring`). If not, ask **one
 question**: what should be remade. A target can be a file, a class, a function, a system, or a
 document.
 
@@ -34,9 +34,9 @@ mid-run makes the comparison meaningless.
 1. **Champion = what exists now.** Take the target's current code as-is; that is "Round 0 /
    incumbent". If nothing exists yet, there is no Round 0 and the first version written becomes
    champion outright.
-2. **Open a work folder:** `<scratchpad>/re-make/<target-slug>/`. Each round's output lives in
+2. **Open a work folder:** `<scratchpad>/rewrite/<target-slug>/`. Each round's output lives in
    `r<N>/` as its **own file**. The repo stays **untouched** until the final champion is decided.
-3. **Round log:** `<scratchpad>/re-make/<target-slug>/rounds.md`. Append one line per finished round
+3. **Round log:** `<scratchpad>/rewrite/<target-slug>/rounds.md`. Append one line per finished round
    (round no, approach summary, scores, VS result, champion). If context gets compacted, the state
    survives here.
 4. **Freeze the rubric** (§3). It is written before round 1 and **never changed after**.
@@ -78,7 +78,7 @@ Five criteria, each **0-10**, weighted total **0-100**:
 Rules (MUST):
 
 - **No score without a reason**: half a sentence of justification next to each criterion.
-- The rubric **may be tailored to the target before round 1** (e.g. for a document remake, swap
+- The rubric **may be tailored to the target before round 1** (e.g. for a document rebuild, swap
   "Robustness" for "Fidelity to source"), but **once frozen it does not change**.
 - Score by the criterion, **not by authorship**. Newer is not automatically better.
 
@@ -101,7 +101,7 @@ When the loop ends:
 
 1. **Apply the final champion to the repo.** If the champion is Round 0, **change nothing** and say
    so plainly ("the existing version survived 3 rounds of challenge").
-2. After applying, verify the build / console output and fix anything red — a remake must not leave
+2. After applying, verify the build / console output and fix anything red — a rebuild must not leave
    the repo broken.
 3. **Do not delete** the scratchpad round files; the user may want to see a losing version. Print
    the path.

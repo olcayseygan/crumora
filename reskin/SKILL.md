@@ -1,14 +1,14 @@
 ---
-name: re-design
-description: Redesigns an interface from scratch in scored rounds, obsessing over alignment, layout, sizing, spacing, hierarchy, contrast and states. Each round designs a fresh version, renders it, scores it against a frozen design rubric, and fights it head-to-head (VS) against the reigning design; the loop runs until a challenger fails to win on both score and VS, then reports a full analysis plus a round-by-round table. Use when the user says "/re-design", "redesign this screen", "make this UI better", "the layout looks off", "fix the spacing/alignment". For rewriting logic use re-make; for improving existing code in place use re-master.
+name: reskin
+description: Redesigns an interface from scratch in scored rounds, obsessing over alignment, layout, sizing, spacing, hierarchy, contrast and states. Each round designs a fresh version, renders it, scores it against a frozen design rubric, and fights it head-to-head (VS) against the reigning design; the loop runs until a challenger fails to win on both score and VS, then reports a full analysis plus a round-by-round table. Use when the user says "/reskin", "redesign this screen", "restyle it", "make this UI better", "the layout looks off", "fix the spacing/alignment". For rewriting logic use rewrite; for improving existing code in place use refactor.
 ---
 
-# re-design
+# reskin — redesign the interface
 
 Design the thing **again, from a blank canvas**; **render it**; **score it**; **fight it** against
 the current design; repeat until a fresh attempt stops winning.
 
-Third sibling of **re-make** (rewrite the code) and **re-master** (improve it in place). This one
+Third sibling of **rewrite** (rewrite the code) and **refactor** (improve it in place). This one
 judges *what it looks like and how it reads*, and it is ruthless about the boring things — edges that
 line up, one spacing scale, sizes that mean something, contrast you can actually read.
 
@@ -20,7 +20,7 @@ tournament harness; those carry the craft.
 
 ## 0. Pick the target and pin the content
 
-If the user passed an argument, that is the target (`/re-design the settings panel`). If not, ask
+If the user passed an argument, that is the target (`/reskin the settings panel`). If not, ask
 **one question**: which screen, panel or component.
 
 Then pin down three things — all frozen for the whole run:
@@ -39,9 +39,9 @@ Then pin down three things — all frozen for the whole run:
    current design, there is no Round 0 and the first attempt becomes champion outright.
 2. **Freeze the rubric** (§3) and **score the champion now**, with the alignment audit (§4) run
    against it. Its weak criteria are the first things later rounds have to beat.
-3. **Work folder:** `<scratchpad>/re-design/<target-slug>/`, one `r<N>/` per round holding the
+3. **Work folder:** `<scratchpad>/reskin/<target-slug>/`, one `r<N>/` per round holding the
    source *and* the rendered screenshot. The repo stays **untouched** until the final design wins.
-4. **Round log:** `<scratchpad>/re-design/<target-slug>/rounds.md`, one line per round.
+4. **Round log:** `<scratchpad>/reskin/<target-slug>/rounds.md`, one line per round.
 
 ## 2. The round loop
 
