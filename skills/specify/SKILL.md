@@ -27,7 +27,7 @@ The three failure modes it exists to prevent:
 ## Invariants
 
 - **One sentence = one requirement (MUST).** See *and*, *also*, *as well as*, *both … and*, or a
-  comma list of verbs — split. Each half gets its own ID.
+  comma list of verbs — split. Each half becomes its own row.
 - **Subject is the system, voice is active (MUST).** `The system must <behaviour>.` Never passive
   (*it must be recorded*) — passive hides who is responsible.
 - **One modality vocabulary, no synonyms.**
@@ -57,11 +57,14 @@ The three failure modes it exists to prevent:
   by people who were not in the meeting.
 - **Never invent (MUST).** Anything the source text does not settle goes under *Clarifications
   needed*, not into the table as a guess.
-- **English by default; another language only on request.** The requirement text, the headings and
-  the IDs (`REQ-001`) are English unless the user explicitly asks for a different language. When they
-  do, translate the headings, keep the ID scheme, and use a single fixed modality vocabulary in that
-  language — one word per level, chosen up front and never varied. Every other invariant holds
-  unchanged.
+- **No identifiers unless asked.** The table carries no ID column — the rows are already numbered by
+  whatever renders them. Add an `ID` column (`REQ-001`, sequential) only when the user asks for
+  identifiers or traceability; from then on the numbers are stable, retired when a requirement is
+  dropped, never reused and never renumbered, because external documents already point at them.
+- **English by default; another language only on request.** The requirement text and the headings are
+  English unless the user explicitly asks for a different language. When they do, translate the
+  headings and use a single fixed modality vocabulary in that language — one word per level, chosen
+  up front and never varied. Every other invariant holds unchanged.
 
 ## EARS patterns
 
@@ -143,24 +146,23 @@ soft requirements are worth less than four hard ones.
 
 ## Output
 
-Exactly this table, four columns, nothing added:
+Exactly this table, three columns, nothing added:
 
-| ID | Requirement | Priority | Acceptance Criterion |
-| --- | --- | --- | --- |
-| REQ-001 | When a user submits a sign-in request, the system must validate the submitted credentials. | M | Given a registered account exists / When a sign-in request is submitted with the correct password / Then the system returns a session identifier. |
-| REQ-002 | The system must return the sign-in response in 200 ms or less at the 95th percentile, measured over 10 minutes with 100 concurrent users. | S | Given 100 concurrent users / When sign-in requests are sent for 10 minutes / Then the 95th-percentile response time is 200 ms or less. |
-| REQ-003 | If the password is entered incorrectly three times, the system must lock the account for 15 minutes. | M | Given an active account / When three incorrect passwords are entered / Then the fourth attempt returns error code E-17. |
+| Requirement | Priority | Acceptance Criterion |
+| --- | --- | --- |
+| When a user submits a sign-in request, the system must validate the submitted credentials. | M | Given a registered account exists / When a sign-in request is submitted with the correct password / Then the system returns a session identifier. |
+| The system must return the sign-in response in 200 ms or less at the 95th percentile, measured over 10 minutes with 100 concurrent users. | S | Given 100 concurrent users / When sign-in requests are sent for 10 minutes / Then the 95th-percentile response time is 200 ms or less. |
+| If the password is entered incorrectly three times, the system must lock the account for 15 minutes. | M | Given an active account / When three incorrect passwords are entered / Then the fourth attempt returns error code E-17. |
 
-IDs are stable and sequential; when a requirement is dropped its number is retired, never reused and
-never renumbered — external documents already point at it.
+An `ID` column joins the front of the table only when the user asks for identifiers.
 
 Then, when there is anything to say:
 
 - **Glossary** — only when a term carries more than one meaning in the source text. One line each,
   the meaning that is now frozen.
-- **Clarifications needed** — numbered. Each entry: the ambiguity, which requirement IDs it blocks,
-  and **what would change depending on the answer**. An open question with no consequence attached
-  gets ignored by every stakeholder who reads it.
+- **Clarifications needed** — each entry: the ambiguity, which requirement it blocks (quote enough of
+  the requirement to find it), and **what would change depending on the answer**. An open question
+  with no consequence attached gets ignored by every stakeholder who reads it.
 - **Out of scope** — sentences from the source text deliberately not turned into requirements, with
   the reason. This is how you prove nothing was silently dropped.
 
@@ -185,4 +187,4 @@ questions, 2 sentences out of scope"* — and nothing else. Do not restate the t
 - The hostile pass runs before output; anything untestable is fixed or dropped.
 - English is the default output language; another language only when the user asks — and every
   invariant holds there too.
-- The table has exactly four columns.
+- The table has three columns; identifiers appear only when the user asks for them.
