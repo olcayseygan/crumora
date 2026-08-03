@@ -1,9 +1,9 @@
 # crumora
 
 > This repo is also a [Claude Code](https://claude.com/claude-code) marketplace named `olcayseygan` —
-> take all five with one command: `claude plugin install crumora@olcayseygan`.
+> take all six with one command: `claude plugin install crumora@olcayseygan`.
 
-Five [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
+Six [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
 beats the champion** — then hand back an honest post-mortem and a round-by-round table.
 
@@ -14,8 +14,9 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | **`reskin`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
 | **`audit`** | builds nothing; several lenses review it, then fight | *what is actually wrong with it?* |
 | **`report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
+| **`specify`** | touches nothing; turns a need text into testable requirements | *what exactly did they ask for?* |
 
-The names are the plain engineering moves — rewrite, refactor, reskin, audit, report. What these
+The names are the plain engineering moves — rewrite, refactor, reskin, audit, report, specify. What these
 skills add is the tournament around them: every attempt is scored, fought against the version it
 wants to replace, and thrown away if it doesn't win.
 
@@ -45,10 +46,11 @@ Round 2   another attempt                    →  score + VS champion  →  winn
   verified.
 - **Six rounds, hard cap.**
 
-`audit` and `report` are the odd ones out: neither produces a version to score. In `audit` the fight
-happens between *lenses* instead of versions; in `report` it happens between a claim and the data
-that has to back it. The discipline is identical — nothing reaches you until something tried to kill
-it.
+`audit`, `report` and `specify` are the odd ones out: none of them produces a version to score. In
+`audit` the fight happens between *lenses* instead of versions; in `report` it happens between a
+claim and the data that has to back it; in `specify` it happens between a sentence and a tester who
+has to be able to fail it. The discipline is identical — nothing reaches you until something tried to
+kill it.
 
 ## `rewrite` — rebuild it
 
@@ -255,7 +257,7 @@ Claude Code looks — there is nothing to build, register or configure.
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-#### Install all five
+#### Install all six
 
 ```bash
 git clone https://github.com/olcayseygan/crumora.git crumora
@@ -276,7 +278,7 @@ it.
 
 #### Install just one
 
-They are fully independent — take one, take all five:
+They are fully independent — take one, take all six:
 
 ```bash
 cp -r crumora/skills/audit ~/.claude/skills/
@@ -290,6 +292,7 @@ cp -r crumora/skills/audit ~/.claude/skills/
 ├── refactor/SKILL.md
 ├── reskin/SKILL.md
 ├── audit/SKILL.md
+├── specify/SKILL.md
 └── report/
     ├── SKILL.md
     ├── references/
@@ -305,7 +308,7 @@ the whole folder, not just its `SKILL.md`.
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
 appear in a running session. Then type `/` and look for `rewrite`, `refactor`, `reskin`, `audit`,
-`report`, or just ask *"which skills do you have?"*.
+`report`, `specify`, or just ask *"which skills do you have?"*.
 
 #### Update
 
