@@ -1,9 +1,9 @@
 # crumora
 
 > This repo is also a [Claude Code](https://claude.com/claude-code) marketplace named `olcayseygan` —
-> take all six with one command: `claude plugin install crumora@olcayseygan`.
+> take all seven with one command: `claude plugin install crumora@olcayseygan`.
 
-Six [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
+Seven [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
 beats the champion** — then hand back an honest post-mortem and a round-by-round table.
 
@@ -15,8 +15,10 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | **`audit`** | builds nothing; several lenses review it, then fight | *what is actually wrong with it?* |
 | **`report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
 | **`specify`** | touches nothing; turns a need text into testable requirements | *what exactly did they ask for?* |
+| **`diagram`** | writes no code; draws the process in the library you name | *how does this actually work?* |
 
-The names are the plain engineering moves — rewrite, refactor, reskin, audit, report, specify. What these
+The names are the plain engineering moves — rewrite, refactor, reskin, audit, report, specify,
+diagram. What these
 skills add is the tournament around them: every attempt is scored, fought against the version it
 wants to replace, and thrown away if it doesn't win.
 
@@ -46,11 +48,12 @@ Round 2   another attempt                    →  score + VS champion  →  winn
   verified.
 - **Six rounds, hard cap.**
 
-`audit`, `report` and `specify` are the odd ones out: none of them produces a version to score. In
-`audit` the fight happens between *lenses* instead of versions; in `report` it happens between a
-claim and the data that has to back it; in `specify` it happens between a sentence and a tester who
-has to be able to fail it. The discipline is identical — nothing reaches you until something tried to
-kill it.
+`audit`, `report`, `specify` and `diagram` are the odd ones out: none of them produces a version to
+score. In `audit` the fight happens between *lenses* instead of versions; in `report` it happens
+between a claim and the data that has to back it; in `specify` between a sentence and a tester who
+has to be able to fail it; in `diagram` between the picture and a node budget that forces a split
+rather than a wall. The discipline is identical — nothing reaches you until something tried to kill
+it.
 
 ## `rewrite` — rebuild it
 
@@ -180,6 +183,32 @@ self-contained single-file HTML report an executive and an engineer can read the
 /report what happened to p99 latency last week
 ```
 
+## `diagram` — draw it
+
+The one that writes no code and measures nothing: it answers *how does this work?* with a picture, in
+the library you name — **Mermaid** by default, otherwise Graphviz, D2 or PlantUML.
+
+- **One question per diagram, and the title is that question.** *"How a request becomes a rendered
+  frame"*. If that sentence can't be written, the diagram doesn't know what it is for.
+- **Ten nodes, fifteen edges — hard cap.** Over it, the answer splits into an overview plus named
+  detail diagrams instead of one wall nobody reads. Branches are never deleted to fit; that is lying,
+  not simplifying.
+- **The type comes from the question, not from habit.** Boxes that keep naming *who* does the step
+  are a sequence diagram; boxes that are adjectives (`idle`, `loading`, `failed`) are a state machine.
+- **Only verified steps get drawn.** Same rule as `report` — anything unconfirmed is dashed and
+  listed under *Not verified*, never quietly boxed in to complete the picture.
+- **Failure paths are part of the process**: timeout, retry, rejection, empty state. Happy-path-only
+  diagrams are the ones that get believed and then contradicted by production.
+- **Every branch edge is labelled**, no decoration without meaning, and the syntax is actually
+  rendered before it reaches you.
+- Every diagram ships with a 2-5 line walkthrough that says what the picture can't — why a branch
+  exists, what a condition really compares, what the box is called in the code.
+
+```
+/diagram the auth flow in src/api/
+/diagram this state machine as graphviz
+```
+
 ## What you get at the end
 
 Five headings, always:
@@ -257,7 +286,7 @@ Claude Code looks — there is nothing to build, register or configure.
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-#### Install all six
+#### Install all seven
 
 ```bash
 git clone https://github.com/olcayseygan/crumora.git crumora
@@ -278,7 +307,7 @@ it.
 
 #### Install just one
 
-They are fully independent — take one, take all six:
+They are fully independent — take one, take all seven:
 
 ```bash
 cp -r crumora/skills/audit ~/.claude/skills/
@@ -293,6 +322,9 @@ cp -r crumora/skills/audit ~/.claude/skills/
 ├── reskin/SKILL.md
 ├── audit/SKILL.md
 ├── specify/SKILL.md
+├── diagram/
+│   ├── SKILL.md
+│   └── references/
 └── report/
     ├── SKILL.md
     ├── references/
@@ -301,14 +333,14 @@ cp -r crumora/skills/audit ~/.claude/skills/
 
 The folder name and the `name:` field in the file's front matter must match, and the file must stay
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
-rather than a note. `report` is the only one with `references/` and `scripts/` alongside it — copy
-the whole folder, not just its `SKILL.md`.
+rather than a note. `report` and `diagram` carry `references/` (and `report` a `scripts/`) alongside
+their `SKILL.md` — copy the whole folder, not just the one file.
 
 #### Verify
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
 appear in a running session. Then type `/` and look for `rewrite`, `refactor`, `reskin`, `audit`,
-`report`, `specify`, or just ask *"which skills do you have?"*.
+`report`, `specify`, `diagram`, or just ask *"which skills do you have?"*.
 
 #### Update
 
