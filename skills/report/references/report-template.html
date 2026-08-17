@@ -35,11 +35,15 @@
 </style></head><body>
 
 <!--
- Section headings are translated into the report language. Turkish equivalents:
- Executive Summary = Yönetici Özeti | Recommendation = Öneri | Objective = Amaç
- Method = Yöntem | Findings = Bulgular | Conclusion = Sonuç
- Notes & Caveats = Notlar ve Uyarılar | Appendix: Data Detail = Ek: Veri Detayı
- Update the lang="en" attribute to match the language as well.
+ THREE LAYERS, THREE READERS. Each layer reads on its own; nothing is repeated between them.
+   1. anyone            — the answer, in practice, no jargon, no method
+   2. knows the field   — the question in context, the numbers, the conclusion
+   3. engineers         — how it was measured, limits, data detail; reproducible from here alone
+
+ EVERY heading below is a placeholder. Name each one after what is in it — the subject, the
+ number, the decision. NEVER "Executive Summary", "Yönetici Özeti", "Yönetim Özeti", "Özet",
+ "Overview", "Genel Bakış", "TL;DR", or any label that only announces its abstraction level.
+ Headings are written in the report language; update lang="en" to match it too.
 -->
 
 <h1>{{TITLE}}</h1>
@@ -50,9 +54,12 @@
  <b>Data source:</b> {{DATA_SOURCE}}
 </div>
 
+<!-- ============ LAYER 1 — anyone ============ -->
+
 <div class="summary">
-<span class="big">Executive Summary</span><br>
-{{SUMMARY: what was done, what was found — the conclusion in one glance. 3-5 sentences, no jargon.}}
+<span class="big">{{LEAD_HEADING: the answer in a few words, e.g. "B setting halves the drop rate".}}</span><br>
+{{LEAD: what was asked, what came out, what it means in practice. 3-5 sentences, no jargon,
+ no method, no unit a reader has to decode.}}
 </div>
 
 <!-- Mandatory for a decision study; delete it for a descriptive one -->
@@ -60,14 +67,16 @@
 <b>RECOMMENDATION:</b> {{RECO: which option, under which condition, resting on which number.}}
 </div>
 
-<h2>1. Objective</h2>
-<p>{{OBJECTIVE: which question was being answered, why it matters.}}</p>
+<!-- Optional, at most one: a single at-a-glance shape. No axis that needs explaining. Delete if none. -->
+{{IMG_TAG_GLANCE}}
+<div class="cap">{{One sentence: what this picture says.}}</div>
 
-<h2>2. Method</h2>
-<p>{{METHOD: what was measured, how, and why that measurement is sound. State what was normalised here.}}</p>
-<p>{{RANGE: which range or condition it was measured over, and why that range.}}</p>
+<!-- ============ LAYER 2 — knows the field, not this study ============ -->
 
-<h2>3. Findings</h2>
+<h2>1. {{Heading naming the question that was asked}}</h2>
+<p>{{OBJECTIVE: which question was being answered, why it matters, what decision hangs on it.}}</p>
+
+<h2>2. {{Heading naming what the numbers show}}</h2>
 
 <div class="kpi">
  <div><span class="v">{{VALUE}}</span><span class="l">{{LABEL}}</span></div>
@@ -84,10 +93,19 @@
  <tr><td class="left">{{...}}</td><td>{{...}}</td><td>{{...}}</td><td>{{...}}</td></tr>
 </table>
 
-<h2>4. Conclusion</h2>
+<h2>3. {{Heading naming the verdict}}</h2>
 <p>{{CONCLUSION: the findings summarised and how certain they are. What was proven, what was not.}}</p>
 
-<h2>5. Notes &amp; Caveats</h2>
+<!-- ============ LAYER 3 — engineers ============ -->
+
+<h2>4. {{Heading naming how it was measured}}</h2>
+<p>{{METHOD: what was measured, how, and why that measurement is sound. State what was normalised here.}}</p>
+<p>{{RANGE: which range or condition it was measured over, and why that range.}}</p>
+<!-- Optional: mechanism / diagnostic charts — raw traces, residuals, the normalised confound. -->
+{{IMG_TAG_DIAG}}
+<div class="cap">{{Figure N: what it shows + one sentence of interpretation.}}</div>
+
+<h2>5. {{Heading naming what this study cannot tell you}}</h2>
 <div class="warn">
 <ul>
  <li>{{Assumption.}}</li>
@@ -96,7 +114,7 @@
 </ul>
 </div>
 
-<h2>6. Appendix: Data Detail</h2>
+<h2>6. {{Heading naming the underlying data}}</h2>
 <table>
  <tr><th class="left">Record</th><th>Date</th><th>Duration</th><th>Samples</th><th class="left">Condition</th></tr>
  <tr><td class="left">{{...}}</td><td>{{...}}</td><td>{{...}}</td><td>{{...}}</td><td class="left">{{...}}</td></tr>

@@ -11,14 +11,18 @@
 - [ ] Sample counts appear in the Appendix table; no claim rests on a single sample.
 
 ## Report content
-- [ ] The Executive Summary carries the conclusion when read on its own, with no jargon.
+- [ ] Layer one reads on its own and carries the answer, with no jargon and no method.
 - [ ] If there is a decision, the `.reco` box exists and rests on a number.
-- [ ] Objective / Method / Findings / Conclusion / Notes / Appendix order kept; no section left empty.
+- [ ] The three layers are in order — anyone, then the informed, then engineers — and nothing is said
+      twice across them; no section left empty.
+- [ ] Every heading names its own content. No "executive summary", "yönetici özeti", "özet",
+      "overview", "genel bakış", "TL;DR" or any label that only states an abstraction level.
+- [ ] Every chart sits in the layer whose reader can act on it, carries one idea, and appears once.
 - [ ] Every chart has a sentence of interpretation under it in `.cap`.
 - [ ] Every chart's axes are in the report language and carry units.
-- [ ] Headings and boxes are translated into the report language and the `lang` attribute matches.
+- [ ] Headings and boxes are written in the report language and the `lang` attribute matches.
 - [ ] Every `{{...}}` placeholder from the template is filled in or deleted.
-- [ ] An engineer could reproduce the study from Method + Appendix (record names, script path present).
+- [ ] An engineer could reproduce the study from layer three alone (record names, script path present).
 
 ## The file
 - [ ] Name format `YYYY-MM-DD_<subject>.html`, dated today.

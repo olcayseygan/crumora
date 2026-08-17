@@ -12,8 +12,8 @@ this one acts on *data*. Same house discipline — evidence over vibes, stated l
 be more certain than the measurement allows — but the artefact is a report rather than a diff.
 
 Domain-agnostic. Two outputs: **(1)** a verified set of findings, **(2)** a shareable single-file
-HTML report. The report goes to a mixed audience — an executive and an engineer read the same
-document.
+HTML report. The report goes to a mixed audience — someone with no background in the subject and the
+engineer who has to reproduce it read the same document, so it is written in three layers.
 
 The two failure modes it exists to prevent:
 
@@ -104,28 +104,42 @@ Chart rules: axis labels carry units and are in the report language, one explana
 every chart (`.cap`), and more than 6 series or bars means small multiples (`small_multiples`). If
 the `dataviz` skill is available in the session, follow it for categorical colour choices.
 
+**Each chart belongs to one layer** (see below) and carries one idea. A chart that needs a paragraph
+of setup is in the wrong layer. Never repeat the same chart at two resolutions in two layers.
+
+- Layer one: a single at-a-glance shape — the comparison, the trend, the pass/fail band. No axis a
+  reader has to decode. Often no chart at all is the right call here.
+- Layer two: distribution and comparison — per condition, per group, per period; ratios with their
+  sample counts.
+- Layer three: mechanism and diagnostics — raw traces, residuals, the confound that had to be
+  normalised, the range that was cut and why.
+
 ### 6. Write the report
 
-Copy `references/report-template.html` and fill it in. Section order (drop what doesn't fit the
-subject; don't invent new ones):
+Copy `references/report-template.html` and fill it in. It runs in **three layers, three readers**,
+each readable on its own — someone who stops after layer one still knows what was decided, someone
+who starts at layer three does not have to scroll back. Nothing is said twice in three registers.
 
-1. **Executive Summary** — at the top, the conclusion in one glance. If there is a decision, the
-   **Recommendation** box goes immediately after.
-2. **Objective** — which question, why it matters.
-3. **Method** — plain language, why the measurement is sound; what was normalised goes here.
-4. **Findings** — charts, tables, KPIs; a sentence of interpretation under every visual.
-5. **Conclusion** — the findings summarised, with a level of certainty.
-6. **Notes & Caveats** — assumptions, limits, confounds, what was not measured.
-7. **Appendix** — data detail: dates, durations, source names, sample counts, script path.
+**Layer one — anyone.** The answer up front: what was asked, what came out, what it means in
+practice. Plain language, no jargon, no method, no units a reader has to decode. If there is a
+decision, the **Recommendation** box sits here.
 
-These map onto the house five headings, which is deliberate: Objective is *what we set out to do*,
-Findings and Conclusion are *what we found*, Method is *how we found it*, and Notes & Caveats is
-*possible mistakes* — the section the other four siblings insist on and the one most reports leave
-out.
+**Layer two — people who know the field but not this study.** The question in its context, the
+numbers — KPIs, charts, tables, a sentence of interpretation under every visual — and the conclusion
+with its level of certainty.
 
-Writing: an executive must be able to read the summary and decide; an engineer must be able to
-reproduce the study from Method plus Appendix. Explain jargon in one parenthesised word the first
-time it appears.
+**Layer three — engineers.** How it was measured and why that measurement is sound, what was
+normalised, the range it was measured over, assumptions, limits, confounds, what was not measured,
+and the data detail: dates, durations, source names, sample counts, script path. Someone must be able
+to reproduce the study from this layer alone.
+
+**Headings name their own content (MUST)** — the subject, the number, the decision. They follow this
+particular study, not a template. **Banned outright:** "executive summary", "management summary",
+"yönetici özeti", "yönetim özeti", "easy summary", "kolay özet", "quick summary", "TL;DR",
+"overview", "genel bakış", and any heading whose whole content is *summary* plus an audience name.
+Label a layer with its finding — *"B setting halves the drop rate"* — not with its abstraction level.
+
+Explain jargon in one parenthesised word the first time it appears.
 
 ### 7. Deliver
 
@@ -157,6 +171,9 @@ Walk `references/checklist.md` before delivering.
 - Normalise confounds, or state the ones you couldn't in Notes.
 - State the range you measured over and why.
 - Decision study → a Recommendation box backed by a number.
+- Three layers — anyone, then the informed, then engineers — each standing on its own, nothing
+  repeated between them; every chart belongs to exactly one layer.
+- Headings name their own content; generic summary labels are banned.
 - Report language follows the user; headings get translated.
 - The HTML is self-contained — no external `link`, `script src` or remote images — and verified so.
 - Raw charts and scripts land in a visible folder, referenced from the footer.
