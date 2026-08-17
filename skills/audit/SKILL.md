@@ -117,29 +117,54 @@ if the user says yes, and if they do, re-run the affected lens afterwards.
 If a `ReportFindings` tool is available in the session, call it **once** with the confirmed findings,
 most severe first — and then do not repeat them as prose. Otherwise print the tables below.
 
-The final message carries exactly these five headings:
+### Three layers, three audiences (MUST)
 
-```
-## What we set out to do
-The target, the panel of lenses and why those lenses, plus what was out of scope.
+The write-up is delivered in **three consecutive parts**, each written for a different reader, each
+readable on its own. A reader who stops after part one must still know what was decided; a reader who
+starts at part three must not have to scroll back.
 
-## What we found
-The verdict sentence (ship it / ship with blockers fixed / needs rework / rebuild),
-then the findings table.
+**Part one — anyone.** Plain language, no jargon, no file paths, no `file:line`, no severity labels.
+What was looked at, what the verdict is, and what it means in practice — what breaks, for whom, and
+whether the thing can go out as it stands. A handful of sentences. If a number belongs here it is a
+count or a "one in ten requests", never a profiler figure.
 
-## How we found it
-How the panel behaved: which lens carried the review, what the cross-examination
-killed, which conflicts had to be decided and how.
+**Part two — people who know the field but not this code.** The ranked findings, what each one costs
+if left alone, the trade-offs that had to be decided and which way they went, the dissent, and how
+much of the target the review actually covered. Findings table lives here.
 
-## Possible mistakes
-Honest limits of this review: code paths not read, behaviour assumed rather than run,
-claims not measured, PLAUSIBLE findings still open, areas no lens covered.
+**Part three — engineers.** `file:line`, the concrete failure scenario per finding, what the
+cross-examination killed and on what evidence, the round table, and the honest limits — paths not
+read, behaviour assumed rather than run, claims not measured, PLAUSIBLE findings still open.
 
-## Rounds
-<round table>
-```
+Every beat of the review lands in exactly one part. Nothing is said twice in three registers.
 
-Findings table:
+### Headings
+
+**Name the headings after what is actually in them** — the subject, the system, the decision. They
+follow the shape of this particular review, not a template.
+
+**Banned outright:** "executive summary", "management summary", "yönetim özeti", "easy summary",
+"kolay özet", "quick summary", "TL;DR", "overview", "summary of the summary", and any heading whose
+whole content is the word *summary* plus an audience name. A heading that announces its own
+abstraction level tells the reader nothing about the code. If a part needs a label, label it with its
+finding: *"The second cast never lands"*, not *"Technical details"*.
+
+### Visuals
+
+Charts are optional. When one is used, it belongs to the part whose reader can act on it, and only
+one idea per chart:
+
+- Part one: a single at-a-glance shape — severity counts, a pass/fail band. No axes that need
+  explaining.
+- Part two: distribution and comparison — findings by lens, by severity, by subsystem; what the
+  rounds killed.
+- Part three: mechanism — call flow, state transitions, the timeline of the failing sequence,
+  measured numbers with their units.
+
+A chart that would need a paragraph of setup is in the wrong part. Never repeat the same chart across
+parts at different resolutions.
+
+Findings table (part two):
 
 | # | Severity | Finding | Where | Raised by | Verdict |
 | --- | --- | --- | --- | --- | --- |
@@ -148,7 +173,7 @@ Findings table:
 | 3 | minor | two flags encode one state | `BotPath.cs:41` | Design | PLAUSIBLE — needs a run |
 | 4 | — | "leaks on despawn" | `Registry.cs:60` | Lifecycle | REFUTED — deregistered in `OnDestroy` |
 
-Round table:
+Round table (part three):
 
 | Round | What happened | New confirmed | Killed | Open conflicts |
 | --- | --- | --- | --- | --- |
@@ -172,4 +197,7 @@ Then, if any: **Dissent —** *Performance still argues finding 3 is a blocker a
 - Record dissent; never fake unanimity.
 - Stop after a dry round or 3 fighting rounds.
 - Review only — fix only if the user asks.
-- Final analysis: five headings, findings table, round table.
+- Write it up in three parts — anyone, then the informed, then engineers — each standing on its own,
+  nothing repeated between them.
+- Headings name their own content; generic summary labels are banned. Charts go to the part whose
+  reader can act on them, one idea each.
