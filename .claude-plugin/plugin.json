@@ -1,7 +1,7 @@
 {
   "name": "crumora",
-  "description": "Eight skills that redo your work as a tournament: review checks code against a fixed ten-rule checklist, rewrite rebuilds it from scratch, refactor sharpens it in place, reskin redesigns the interface, audit puts it on trial with a panel of lenses, report measures the data and writes the result up as a self-contained HTML report, specify turns a raw need text into atomic, testable requirements, and diagram draws how it works without letting the picture turn into a wall. Every attempt is scored against a frozen rubric, fought head-to-head against the reigning champion, and reported with a round-by-round table.",
-  "version": "4.5.0",
+  "description": "Eight skills that redo your work as a tournament: rewrite rebuilds it from scratch, sharpen improves it in place with reviewable diffs, reskin redesigns and re-lays-out the interface, tribunal puts the code on trial before a panel of lenses that argue with each other, checklist gates it against ten fixed rules with PASS or FAIL, report measures the data and writes the result up as a self-contained HTML report, specify turns a raw need text into atomic testable requirements, and diagram draws how it works without letting the picture turn into a wall. Every attempt is scored against a frozen rubric, fought head-to-head against the reigning champion, and reported with a round-by-round table.",
+  "version": "5.0.0",
   "author": {
     "name": "Olcay Seygan",
     "url": "https://github.com/olcayseygan"
@@ -10,7 +10,7 @@
   "repository": "https://github.com/olcayseygan/crumora",
   "license": "MIT",
   "keywords": [
-    "review",
+    "code-review",
     "refactoring",
     "code-quality",
     "design",
