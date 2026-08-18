@@ -41,11 +41,47 @@ Every parameter, return value, field and exported binding carries a declared typ
 implicit `any`, no untyped `dict`/`object`/`Dictionary` standing in for a shape, no `var` where the
 type is not obvious from the initialiser, no untyped `**kwargs` crossing a public boundary.
 
-**How to check:** grep the target for `any`, `object`, `dynamic`, `interface{}`, bare `dict`/`list`,
-and for functions whose signature carries no return annotation. Check the compiler or linter is
-actually in strict mode — a green build under a loose config proves nothing.
+**How to check:** grep the target for `any`, `object`, `dynamic`, `interface{}`, and for functions
+whose signature carries no return annotation. In Python grep for `: list`, `: dict`, `: tuple`,
+`np.ndarray`, `Any`, and for `def` lines with an unannotated parameter or no `->`. Check the
+compiler or type checker is actually in strict mode — a green build under a loose config, or a
+repo with no `mypy`/`pyright` at all, proves nothing.
 
 **FAIL evidence:** `parser.ts:44 — parse(input): any`.
+
+**In Python the bar is higher, not lower.** A dynamic language is exactly where the annotation has to
+carry the whole contract:
+
+- **`typing` containers, never the bare builtins.** `List[str]`, `Dict[str, int]`, `Tuple[int, int]`,
+  `Set[str]`, `Optional[User]`, `Callable[[int], str]`, `Iterable[Path]`. Bare `list`, `dict`,
+  `tuple`, `set` FAIL, and so does a `List` with no element type — the container without its element
+  type says nothing.
+- **numpy arrays are typed with `numpy.typing`, with the dtype spelled out.**
+  `NDArray[np.float64]`, `NDArray[np.float32]`, `NDArray[np.uint8]`, `NDArray[np.int32]`. A bare
+  `np.ndarray` FAILs; so does `NDArray` with no dtype parameter. `float` is not a dtype — `float32`
+  and `float64` are different contracts, and the code that mixes them silently upcasts.
+- **Shape and dimension count are part of the type.** Every array parameter and return states how
+  many axes it has and what each axis means, next to the annotation: `# (batch, height, width, 3)`,
+  `# (n_points, 3) in world frame, metres`. A matrix says 2-D and which axis is rows; a batch says
+  where the batch axis sits. "It's an array" is not a contract.
+- **A shape used more than once becomes a named alias**, so the meaning lives in one place:
+  `ImageArray = NDArray[np.uint8]  # (height, width, 3), BGR, 0-255`.
+- **Same rule for the neighbours.** A `torch.Tensor` states dtype, device and shape; a
+  `pd.DataFrame` states its column contract; a dict with fixed keys is a `TypedDict`, not
+  `Dict[str, Any]`.
+- **`Any` is a FAIL in Python too**, including the implicit `Any` of an unannotated parameter and of
+  a function with no return annotation — `-> None` is written out.
+
+| Bad | Good |
+| --- | --- |
+| `def load(paths: list):` | `def load(paths: List[Path]) -> List[ImageArray]:` |
+| `def solve(matrix, vector):` | `def solve(matrix: NDArray[np.float64], vector: NDArray[np.float64]) -> NDArray[np.float64]:` |
+| `points: np.ndarray` | `points: NDArray[np.float32]  # (n_points, 3), camera frame, metres` |
+| `config: dict` | `config: Dict[str, str]` |
+| `def render(frame) -> np.ndarray:` | `def render(frame: ImageArray) -> ImageArray:  # (height, width, 3), BGR` |
+
+**FAIL evidence:** `solver.py:31 — def solve(matrix, vector) has no annotations and returns a bare
+np.ndarray with no dtype, no shape`.
 
 ### 2 · Names mean something — no abbreviations
 
