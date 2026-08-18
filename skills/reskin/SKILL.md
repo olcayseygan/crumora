@@ -67,7 +67,9 @@ window, the component, the scene view. **Never score a design you have not seen 
 from source is how misaligned, overflowing, unreadable layouts get called "clean". Render the stress
 content too, and every declared viewport.
 
-**(d) Run the alignment audit** (§4) and write the findings down. Fix what it catches before scoring.
+**(d) Run the alignment audit** (§4) and walk `references/checklist.md` in full — accessibility,
+responsive, mathematical alignment, contrast, dark/light, components, variants. Write the findings
+down. Fix what they catch before scoring.
 
 **(e) Score** with the frozen rubric (§3), then **VS** the champion (§5).
 
@@ -190,7 +192,8 @@ or the round cap was reached).
 - Declare the spacing/type/size/colour scales per round and never step outside them; obey existing
   project tokens.
 - **Render it and look at it** — never score a design from source alone.
-- Run the alignment audit every round; unfixed misses cap Layout & alignment at 7.
+- Run the alignment audit and `references/checklist.md` every round; unfixed alignment misses cap
+  Layout & alignment at 7.
 - Ties go to the champion; red lines are an automatic loss.
 - 6 rounds maximum.
 - Final analysis: five headings plus the table, nothing skipped.
