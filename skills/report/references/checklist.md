@@ -20,7 +20,7 @@
 - [ ] Every chart sits in the layer whose reader can act on it, carries one idea, and appears once.
 - [ ] Every chart has a sentence of interpretation under it in `.cap`.
 - [ ] Every chart's axes are in the report language and carry units.
-- [ ] Headings and boxes are written in the report language and the `lang` attribute matches.
+- [ ] Headings and boxes are written fresh in the report language and the `lang` attribute matches.
 - [ ] Every `{{...}}` placeholder from the template is filled in or deleted.
 - [ ] An engineer could reproduce the study from layer three alone (record names, script path present).
 

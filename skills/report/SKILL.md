@@ -36,8 +36,9 @@ The two failure modes it exists to prevent:
 - **Do not force a dirty metric.** If a metric carries leakage or an artefact, say so and change the
   metric. A conclusion drawn from a bad metric is worse than no conclusion.
 - **Report language = the language the user is speaking** (their language, not necessarily English).
-  Translate the template headings into it. The prose and headings follow the user; code, identifiers
-  and commits still follow the project's own rules.
+  Headings are written in that language, and they are written fresh for this study — there is no
+  canonical heading set to translate. The prose follows the user; code, identifiers and commits still
+  follow the project's own rules.
 - Raw charts and analysis scripts are copied to a **visible** folder. The user does not go looking in
   the scratchpad.
 
@@ -174,7 +175,7 @@ Walk `references/checklist.md` before delivering.
 - Three layers — anyone, then the informed, then engineers — each standing on its own, nothing
   repeated between them; every chart belongs to exactly one layer.
 - Headings name their own content; generic summary labels are banned.
-- Report language follows the user; headings get translated.
+- Report language follows the user; headings are written fresh in it, never copied off a template.
 - The HTML is self-contained — no external `link`, `script src` or remote images — and verified so.
 - Raw charts and scripts land in a visible folder, referenced from the footer.
 - Closing message is a path plus one sentence, not the report.
