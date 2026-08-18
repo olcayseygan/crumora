@@ -43,7 +43,8 @@ type is not obvious from the initialiser, no untyped `**kwargs` crossing a publi
 
 **How to check:** grep the target for `any`, `object`, `dynamic`, `interface{}`, and for functions
 whose signature carries no return annotation. In Python grep for `: list`, `: dict`, `: tuple`,
-`np.ndarray`, `Any`, and for `def` lines with an unannotated parameter or no `->`. Check the
+`np.ndarray`, `Any`, `os.path.join`, path-ish names annotated `str`, and for `def` lines with an
+unannotated parameter or no `->`. Check the
 compiler or type checker is actually in strict mode — a green build under a loose config, or a
 repo with no `mypy`/`pyright` at all, proves nothing.
 
@@ -69,6 +70,12 @@ carry the whole contract:
 - **Same rule for the neighbours.** A `torch.Tensor` states dtype, device and shape; a
   `pd.DataFrame` states its column contract; a dict with fixed keys is a `TypedDict`, not
   `Dict[str, Any]`.
+- **A filesystem path is a `Path`, never a `str`.** `pathlib.Path` in the annotation, in the field and
+  in the variable; `os.path.join`, `+ "/" +` and `f"{directory}/{name}"` all FAIL, because
+  `path / name`, `.stem`, `.suffix`, `.exists()` are the whole point. A function that accepts a path
+  from a caller may widen to `Union[str, Path]` at that one boundary and converts to `Path`
+  immediately; everything downstream is `Path`. Same rule outside Python: whatever the language's
+  path type is, the string is not it.
 - **`Any` is a FAIL in Python too**, including the implicit `Any` of an unannotated parameter and of
   a function with no return annotation — `-> None` is written out.
 
@@ -78,6 +85,8 @@ carry the whole contract:
 | `def solve(matrix, vector):` | `def solve(matrix: NDArray[np.float64], vector: NDArray[np.float64]) -> NDArray[np.float64]:` |
 | `points: np.ndarray` | `points: NDArray[np.float32]  # (n_points, 3), camera frame, metres` |
 | `config: dict` | `config: Dict[str, str]` |
+| `def read(path: str):` | `def read(path: Path) -> str:` |
+| `os.path.join(out_dir, name)` | `output_directory / name` |
 | `def render(frame) -> np.ndarray:` | `def render(frame: ImageArray) -> ImageArray:  # (height, width, 3), BGR` |
 
 **FAIL evidence:** `solver.py:31 — def solve(matrix, vector) has no annotations and returns a bare

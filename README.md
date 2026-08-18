@@ -165,8 +165,9 @@ The fixed-checklist sibling of `audit`. `audit` opens the question and hunts for
 `review` closes it — **ten rules, known in advance, each ending in PASS or FAIL.**
 
 1. **Types everywhere** — no `any`, no implicit `any`, no untyped bag standing in for a shape. In
-   Python that means `typing` containers over bare builtins and `NDArray[np.float64]` with the shape
-   and axis meaning written down, never a bare `np.ndarray`.
+   Python that means `typing` containers over bare builtins, `NDArray[np.float64]` with the shape and
+   axis meaning written down rather than a bare `np.ndarray`, and `Path` wherever a path travels —
+   never a `str`.
 2. **Names mean something** — spelled out, no `cfg`, `mgr`, `tmp`, `idx`, no single letters.
 3. **No repetition** — the same logic never lives in two places.
 4. **SOLID** — SRP, OCP, LSP, ISP and DIP each get their own verdict line.
