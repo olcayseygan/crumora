@@ -1,11 +1,11 @@
 ---
 name: review
-description: Reviews code against a fixed nine-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/review", "review this code", "check the code", "does this follow the rules", "check naming", "is this SOLID", "checklist review", or the Turkish equivalents "kodu incele", "kontrol et", "kurallara uyuyor mu". For an open-ended multi-perspective critique use audit; for improving code in place use refactor; for rewriting use rewrite.
+description: Reviews code against a fixed ten-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/review", "review this code", "check the code", "does this follow the rules", "check naming", "is this SOLID", "magic numbers", "checklist review", or the Turkish equivalents "kodu incele", "kontrol et", "kurallara uyuyor mu". For an open-ended multi-perspective critique use audit; for improving code in place use refactor; for rewriting use rewrite.
 ---
 
 # review — the checklist gate
 
-Nine rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
+Ten rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
 
 Sibling of **audit**, and deliberately the opposite of it. `audit` opens the question — several
 lenses hunt for whatever is wrong. `review` closes it: the rules are fixed, known in advance, and the
@@ -33,7 +33,7 @@ reported as `NOT CHECKED`, never as PASS.
 
 ---
 
-## The nine rules
+## The ten rules
 
 ### 1 · Types — everything is typed
 
@@ -125,13 +125,37 @@ Every boolean — variable, field, property, or predicate function — is prefix
 `should`, or `was`: `isActive`, `hasPermission`, `canRetry`, `shouldRefresh`, `wasDeleted`. A boolean
 named `active`, `permission`, `flag`, `status` or `state` FAILs.
 
+### 10 · No magic numbers or strings
+
+Every literal that carries meaning is a named constant. A bare `86400`, `0.15`, `3`, `"pending"`,
+`"application/json"`, `"#ff0000"` or a raw route path inside the logic FAILs. The name is where the
+meaning lives; the literal is where it hides.
+
+Named once, at the boundary that owns it, and reused — a constant repeated in two files is also a
+rule 3 violation.
+
+| Bad | Good |
+| --- | --- |
+| `if (retries > 3)` | `if (retryCount > MAX_RETRY_COUNT)` |
+| `setTimeout(fn, 86400000)` | `setTimeout(fn, ONE_DAY_IN_MILLISECONDS)` |
+| `status === "pending"` | `status === OrderStatus.Pending` |
+| `price * 0.15` | `price * VAT_RATE` |
+
+Allowed bare: the identity values `0`, `1`, `-1` where they mean exactly nothing/one/last, an empty
+string, and a literal in a test that is *the point of the test*.
+
+**How to check:** grep the target for numeric literals outside constant declarations, and for string
+literals compared with `==`/`===`/`switch` or passed as a mode/kind/status argument.
+
+**FAIL evidence:** `orders.ts:60 — price * 0.15`.
+
 ---
 
 ## Finding shape (MUST)
 
 A finding is only a finding when it carries all four:
 
-- **Rule** — which of the nine, by number.
+- **Rule** — which of the ten, by number.
 - **Where** — `file:line`. Not "the module".
 - **What** — one sentence naming the violation.
 - **Fix** — the concrete replacement. For a naming rule that means writing the new name out.
@@ -171,6 +195,7 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 7 | Function names are verbs | PASS | 0 |
 | 8 | Variable names are nouns | FAIL | 1 |
 | 9 | Booleans prefixed is/has/can | FAIL | 4 |
+| 10 | No magic numbers or strings | FAIL | 5 |
 
 ### 2 — the findings
 
@@ -181,6 +206,7 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 3 | 9 | `user.ts:8` | boolean named `active` | `isActive` |
 | 4 | 4 SRP | `Report.ts:1-210` | class parses, formats and writes files | split writing into `ReportWriter` |
 | 5 | 6 | `orders.ts:60` | discount branch has no test | test asserting discount at the boundary value |
+| 6 | 10 | `orders.ts:60` | bare `0.15` in the price calculation | `const VAT_RATE = 0.15` |
 
 ### 3 — the verdict
 
@@ -195,10 +221,10 @@ usually needs the test suite run), and anything assumed rather than verified.
 ## MUST summary
 
 - Read the whole target — a diff in its surrounding file — before judging.
-- Check all nine rules against all files. Unchecked is `NOT CHECKED`, never PASS.
+- Check all ten rules against all files. Unchecked is `NOT CHECKED`, never PASS.
 - Every finding carries rule number, `file:line`, the violation, and the concrete fix.
 - Try to kill every FAIL before printing it; drop the ones that do not survive, and say so.
-- Print the full nine-row checklist even when rows pass.
+- Print the full ten-row checklist even when rows pass.
 - Verdict is mechanical: one FAIL means not yet.
 - State what was not checked.
 - Review only — fix only if the user asks.

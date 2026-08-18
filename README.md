@@ -13,7 +13,7 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | **`refactor`** | keeps the code and sharpens it with reviewable diffs | *how good can **this** design get?* |
 | **`reskin`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
 | **`audit`** | builds nothing; several lenses review it, then fight | *what is actually wrong with it?* |
-| **`review`** | builds nothing; checks the code against nine fixed rules | *does it pass the checklist?* |
+| **`review`** | builds nothing; checks the code against ten fixed rules | *does it pass the checklist?* |
 | **`report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
 | **`specify`** | touches nothing; turns a need text into testable requirements | *what exactly did they ask for?* |
 | **`diagram`** | writes no code; draws the process in the library you name | *how does this actually work?* |
@@ -162,7 +162,7 @@ No rewriting, no diffs, no pixels: a panel of 4-7 **lenses** reads the code, the
 ## `review` — check it against the rules
 
 The fixed-checklist sibling of `audit`. `audit` opens the question and hunts for whatever is wrong;
-`review` closes it — **nine rules, known in advance, each ending in PASS or FAIL.**
+`review` closes it — **ten rules, known in advance, each ending in PASS or FAIL.**
 
 1. **Types everywhere** — no `any`, no implicit `any`, no untyped bag standing in for a shape.
 2. **Names mean something** — spelled out, no `cfg`, `mgr`, `tmp`, `idx`, no single letters.
@@ -173,9 +173,10 @@ The fixed-checklist sibling of `audit`. `audit` opens the question and hunts for
 7. **Function names are verbs** — `calculateTotal`, not `totalCalculation`.
 8. **Variable names are nouns** — `activeUser`, not `getUser`.
 9. **Booleans are prefixed** — `is`, `has`, `can`, `should`, `was`. `active` fails, `isActive` passes.
+10. **No magic numbers or strings** — `0.15` becomes `VAT_RATE`, `"pending"` becomes `OrderStatus.Pending`.
 
 - **A rule you didn't check is `NOT CHECKED`, never PASS.** A short checklist is a checklist that was
-  not run, so all nine rows print every time, including the clean ones.
+  not run, so all ten rows print every time, including the clean ones.
 - **A finding needs its rule number, `file:line`, the violation and the concrete fix** — for a naming
   rule that means writing the new name out.
 - **Every FAIL is attacked before it is printed.** Is that `any` actually inferred from a typed
