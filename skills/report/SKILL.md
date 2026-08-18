@@ -1,13 +1,13 @@
 ---
 name: report
-description: Runs a data, measurement, root-cause or comparison study and delivers it as a dated, self-contained single-file HTML report. Use when the user says "/report", "analyse this data", "write a report", "measure this", "compare A and B", "find the root cause", "characterise this", "which one is better", "summarise these logs", or the Turkish equivalents "analiz et", "rapor çıkar", "raporla", "ölç", "karşılaştır", "kök neden bul". Fits log/CSV/raw-data studies, A-B comparisons, tuning, performance measurement, regression investigation, survey and metric summaries. Do NOT use for reviewing source code — that is audit — or for plain reading and searching a codebase.
+description: Runs a data, measurement, root-cause or comparison study and delivers it as a dated, self-contained single-file HTML report. Use when the user says "/report", "analyse this data", "write a report", "measure this", "compare A and B", "find the root cause", "characterise this", "which one is better", "summarise these logs", or the Turkish equivalents "analiz et", "rapor çıkar", "raporla", "ölç", "karşılaştır", "kök neden bul". Fits log/CSV/raw-data studies, A-B comparisons, tuning, performance measurement, regression investigation, survey and metric summaries. Do NOT use for reviewing source code — that is tribunal — or for plain reading and searching a codebase.
 ---
 
 # report — measure it and write it up
 
 Answer a question **with numbers you can defend**, then hand back a single HTML file anyone can open.
 
-The fifth sibling of **rewrite**, **refactor**, **reskin** and **audit**. Those four act on code;
+The fifth sibling of **rewrite**, **sharpen**, **reskin** and **tribunal**. Those four act on code;
 this one acts on *data*. Same house discipline — evidence over vibes, stated limits, no pretending to
 be more certain than the measurement allows — but the artefact is a report rather than a diff.
 

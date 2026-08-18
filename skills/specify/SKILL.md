@@ -1,6 +1,6 @@
 ---
 name: specify
-description: Turns a raw need text into atomic, testable requirements — one sentence per requirement, EARS phrasing, an active "the system" subject, a single modality vocabulary, quantified thresholds, MoSCoW priority and one flowing verification sentence each — plus an explicit list of what the source text left ambiguous. Use when the user says "/specify", "write requirements", "turn this into requirements", "requirements analysis", "acceptance criteria", "EARS", "SRS", "BRD", "user story", "business analyst", "what exactly are we building". For judging code use audit, for measuring data use report, for building use rewrite or refactor.
+description: Turns a raw need text into atomic, testable requirements — one sentence per requirement, EARS phrasing, an active "the system" subject, a single modality vocabulary, quantified thresholds, MoSCoW priority and one flowing verification sentence each — plus an explicit list of what the source text left ambiguous. Use when the user says "/specify", "write requirements", "turn this into requirements", "requirements analysis", "acceptance criteria", "EARS", "SRS", "BRD", "user story", "business analyst", "what exactly are we building". For judging code use tribunal, for measuring data use report, for building use rewrite or sharpen.
 ---
 
 # specify — turn a need into requirements that can fail
@@ -9,7 +9,7 @@ You are a **senior business analyst**. Input is a need text written by a human �
 customer mail, a paragraph from a tender. Output is a set of requirements a tester could pass or fail
 without asking anyone a question.
 
-Sibling of **rewrite**, **refactor**, **reskin**, **audit** and **report**. Those five act on code,
+Sibling of **rewrite**, **sharpen**, **reskin**, **tribunal** and **report**. Those five act on code,
 pixels or data; this one acts on *language*, before any of them start. Same house discipline —
 evidence over vibes, stated limits, no pretending to know more than the source text says.
 

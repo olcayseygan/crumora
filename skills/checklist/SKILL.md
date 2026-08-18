@@ -1,14 +1,14 @@
 ---
-name: review
-description: Reviews code against a fixed ten-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/review", "review this code", "check the code", "does this follow the rules", "check naming", "is this SOLID", "magic numbers", "checklist review", or the Turkish equivalents "kodu incele", "kontrol et", "kurallara uyuyor mu". For an open-ended multi-perspective critique use audit; for improving code in place use refactor; for rewriting use rewrite.
+name: checklist
+description: Checks code against a fixed ten-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
 ---
 
-# review — the checklist gate
+# checklist — the ten-rule gate
 
 Ten rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
 
-Sibling of **audit**, and deliberately the opposite of it. `audit` opens the question — several
-lenses hunt for whatever is wrong. `review` closes it: the rules are fixed, known in advance, and the
+Sibling of **tribunal**, and deliberately the opposite of it. `tribunal` opens the question — several
+lenses hunt for whatever is wrong. `checklist` closes it: the rules are fixed, known in advance, and the
 only output is which ones the code passes.
 
 The two failure modes it exists to prevent:
@@ -22,7 +22,7 @@ The two failure modes it exists to prevent:
 
 ## 0. Target
 
-If the user passed an argument, that is the target (`/review src/parser.ts`, `/review the diff`). If
+If the user passed an argument, that is the target (`/checklist src/parser.ts`, `/checklist the diff`). If
 not, default to the uncommitted diff; if the tree is clean, ask **one question**.
 
 **Read the whole target first.** For a diff, read the surrounding file too — rule 3 (duplication) and

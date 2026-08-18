@@ -1,6 +1,6 @@
 ---
 name: diagram
-description: Draws a diagram that explains how something works, in the library the user names — Mermaid by default, otherwise Graphviz, D2 or PlantUML. One question per diagram, at most ten nodes, every branch labelled, and anything bigger split into an overview plus linked detail diagrams instead of one unreadable wall. Use when the user says "/diagram", "draw this", "diagram this flow", "show me how this works", "flowchart", "sequence diagram", "state machine", "architecture diagram", "visualise this process", or the Turkish equivalents "diyagram ciz", "akis semasi", "sema ciz", "gorsellestir". For measuring data use report, for judging code use audit, for charts of numbers use dataviz.
+description: Draws a diagram that explains how something works, in the library the user names — Mermaid by default, otherwise Graphviz, D2 or PlantUML. One question per diagram, at most ten nodes, every branch labelled, and anything bigger split into an overview plus linked detail diagrams instead of one unreadable wall. Use when the user says "/diagram", "draw this", "diagram this flow", "show me how this works", "flowchart", "sequence diagram", "state machine", "architecture diagram", "visualise this process", or the Turkish equivalents "diyagram ciz", "akis semasi", "sema ciz", "gorsellestir". For measuring data use report, for judging code use tribunal, for charts of numbers use dataviz.
 ---
 
 # diagram — draw the process, not the box list
@@ -9,7 +9,7 @@ Draw **one picture that answers one question** about how something works, in the
 asked for. A reader who never saw the code should be able to follow the process from the diagram plus
 a few lines of prose.
 
-Seventh sibling of **rewrite**, **refactor**, **reskin**, **audit**, **report** and **specify**. Same
+Seventh sibling of **rewrite**, **sharpen**, **reskin**, **tribunal**, **report** and **specify**. Same
 house discipline — draw what is actually there, state the limits, never invent a step to make the
 picture tidy — but the artefact is a diagram.
 

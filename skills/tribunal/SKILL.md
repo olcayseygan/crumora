@@ -1,14 +1,15 @@
 ---
-name: audit
-description: Analyses code from several independent perspectives, then makes those perspectives argue with each other until they converge on a shared verdict. Each lens reviews blind, every finding is cross-examined by a lens that wants to kill it, conflicts are resolved as explicit trade-offs rather than averaged away, and the result is a ranked findings table with recorded dissent plus a full analysis. Use when the user says "/audit", "audit this code", "red-team this", "review this code from every angle", "review this code", "critique this", "analyse this code", "what's wrong with this", "look at this from every angle", "is this any good". For rewriting use rewrite, for improving in place use refactor, for UI use reskin. This skill judges code — for measuring data and writing the result up as a report, use report instead.
+name: tribunal
+description: Puts code on trial before a panel of independent lenses, then makes those lenses argue with each other until they converge on a shared verdict. Each lens reviews blind, every finding is cross-examined by a lens that wants to kill it, conflicts are resolved as explicit trade-offs rather than averaged away, and the result is a ranked findings table with recorded dissent plus a full analysis. Use when the user says "/tribunal", "put this on trial", "audit this code", "red-team this", "review this from every angle", "critique this", "what is actually wrong with this", "is this any good". For a fixed pass/fail rule check use checklist, for rewriting use rewrite, for improving in place use sharpen, for UI use reskin. This skill judges code — for measuring data and writing the result up as a report, use report instead.
 ---
 
-# audit — put it on trial
+# tribunal — put it on trial
 
 Read the code through **several independent pairs of eyes**, then put those eyes **in a fight**, and
 report only what survives.
 
-Fourth sibling of **rewrite**, **refactor** and **reskin**. Those three build; this one judges.
+Fourth sibling of **rewrite**, **sharpen** and **reskin**. Those three build; this one judges.
+Its opposite is **checklist**: fixed rules, PASS or FAIL. This one opens the question instead.
 Same house style: rounds, evidence over vibes, an explicit table at the end, and no pretending to be
 more certain than the evidence allows.
 
@@ -23,7 +24,7 @@ The two failure modes it exists to prevent:
 
 ## 0. Pick the target and the panel
 
-If the user passed an argument, that is the target (`/audit src/parser.ts`, `/audit the working
+If the user passed an argument, that is the target (`/tribunal src/parser.ts`, `/tribunal the working
 diff`). If not, ask **one question**: what to review — and default to the uncommitted diff if the
 repo has one.
 

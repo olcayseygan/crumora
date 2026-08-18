@@ -10,18 +10,23 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | Skill | Move | Answers |
 | --- | --- | --- |
 | **`rewrite`** | throws the code away and rebuilds it from a blank file | *is a different design better?* |
-| **`refactor`** | keeps the code and sharpens it with reviewable diffs | *how good can **this** design get?* |
+| **`sharpen`** | keeps the code and improves it with reviewable diffs | *how good can **this** design get?* |
 | **`reskin`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
-| **`audit`** | builds nothing; several lenses review it, then fight | *what is actually wrong with it?* |
-| **`review`** | builds nothing; checks the code against ten fixed rules | *does it pass the checklist?* |
+| **`tribunal`** | builds nothing; a panel of lenses reads it, then fights | *what is actually wrong with it?* |
+| **`checklist`** | builds nothing; checks the code against ten fixed rules | *does it pass, rule by rule?* |
 | **`report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
 | **`specify`** | touches nothing; turns a need text into testable requirements | *what exactly did they ask for?* |
 | **`diagram`** | writes no code; draws the process in the library you name | *how does this actually work?* |
 
-The names are the plain engineering moves — rewrite, refactor, reskin, audit, review, report,
-specify, diagram. What these
-skills add is the tournament around them: every attempt is scored, fought against the version it
-wants to replace, and thrown away if it doesn't win.
+Each name is the move it makes: `rewrite` and `sharpen` and `reskin` build, `tribunal` and
+`checklist` judge, `report` and `specify` and `diagram` write it down. What these skills add is the
+tournament around them: every attempt is scored, fought against the version it wants to replace, and
+thrown away if it doesn't win.
+
+The two judges are deliberately not the same skill. `tribunal` **opens** the question — several
+lenses hunt for whatever is wrong, then argue. `checklist` **closes** it — ten rules fixed in
+advance, each ending in PASS or FAIL. If you want the open critique, ask for the tribunal; if you
+want a gate, ask for the checklist.
 
 Redoing something "to see if it comes out better" usually ends in a vibe-based verdict: the new one
 *feels* cleaner, so it ships. These skills replace the vibe with a frozen rubric, head-to-head
@@ -49,9 +54,15 @@ Round 2   another attempt                    →  score + VS champion  →  winn
   verified.
 - **Six rounds, hard cap.**
 
-`audit`, `review`, `report`, `specify` and `diagram` are the odd ones out: none of them produces a
-version to score. In `audit` the fight happens between *lenses* instead of versions; in `review`
-between a rule and a violation that has to survive an attempt to kill it; in `report` it happens
+`rewrite`, `sharpen` and `reskin` share one written rulebook —
+[`skills/_shared/tournament.md`](skills/_shared/tournament.md) — holding the setup invariants, the
+code rubric, the scoring and VS rules, the stop-and-apply steps and the final-analysis format. Each
+skill's own `SKILL.md` carries only what is specific to its move, so the three cannot quietly drift
+apart.
+
+`tribunal`, `checklist`, `report`, `specify` and `diagram` are the odd ones out: none of them
+produces a version to score. In `tribunal` the fight happens between *lenses* instead of versions; in
+`checklist` between a rule and a violation that has to survive an attempt to kill it; in `report` it happens
 between a claim and the data that has to back it; in `specify` between a sentence and a tester who
 has to be able to fail it; in `diagram` between the picture and a node budget that forces a split
 rather than a wall. The discipline is identical — nothing reaches you until something tried to kill
@@ -76,7 +87,7 @@ different axis of simplification.
 /rewrite src/parser.ts
 ```
 
-## `refactor` — sharpen it
+## `sharpen` — improve it in place
 
 Same tournament, opposite move: every round starts from the champion's actual code and produces a
 diff a reviewer could approve.
@@ -93,8 +104,8 @@ diff a reviewer could approve.
 - **Measurable claims need measurements.** "Faster" with no number scores zero.
 
 ```
-/refactor src/parser.ts
-/refactor the reconcile loop
+/sharpen src/parser.ts
+/sharpen the reconcile loop
 ```
 
 ## `reskin` — redesign it
@@ -105,13 +116,16 @@ something, contrast you can read.
 
 | Criterion | Weight |
 | --- | --- |
-| Layout & alignment | 25 |
+| Layout, grouping & alignment | 25 |
 | Spacing & sizing | 20 |
 | Hierarchy & typography | 20 |
 | Colour, contrast & accessibility | 15 |
-| Fit to content & job | 12 |
+| Fit to content, job & ergonomics | 12 |
 | States & responsiveness | 8 |
 
+- **The real context is read first** — parent shell, routed wrapper, grid config, the children that
+  take up space. If the parent shell is the actual problem, it says so instead of looping: a boxed-in
+  child cannot beat its box.
 - **The content set is frozen up front — including a stress case**: the longest label, the empty
   state, the biggest number, the 40-item list. A design that only works on Lorem ipsum is not a
   design.
@@ -122,8 +136,11 @@ something, contrast you can read.
 - **An alignment audit runs every round** — shared edges, gutter consistency, optical vs.
   mathematical centring, icon/text alignment, padding symmetry, overflow, rhythm. Unfixed misses cap
   the alignment score at 7.
+- **Bindings survive every move.** Props, events, `ref`s, slots and conditionals travel with the
+  markup they belong to; a layout win that drops a listener is a regression, not a round.
 - **Red lines** (automatic loss): the primary action got harder to find, contrast fails AA, the
-  stress content breaks the layout, or the project's design tokens were ignored.
+  stress content breaks the layout, the project's design tokens were ignored, or a binding was lost
+  in the restructure.
 - Loads `frontend-design` / `dataviz` / `artifact-design` first when they apply — that is where the
   craft lives; this skill is the harness.
 
@@ -132,7 +149,7 @@ something, contrast you can read.
 /reskin the match HUD
 ```
 
-## `audit` — judge it
+## `tribunal` — put it on trial
 
 No rewriting, no diffs, no pixels: a panel of 4-7 **lenses** reads the code, then argues.
 
@@ -155,14 +172,14 @@ No rewriting, no diffs, no pixels: a panel of 4-7 **lenses** reads the code, the
 - It **reviews only**; fixes happen only if you ask.
 
 ```
-/audit src/parser.ts
-/audit the working diff
+/tribunal src/parser.ts
+/tribunal the working diff
 ```
 
-## `review` — check it against the rules
+## `checklist` — check it against the rules
 
-The fixed-checklist sibling of `audit`. `audit` opens the question and hunts for whatever is wrong;
-`review` closes it — **ten rules, known in advance, each ending in PASS or FAIL.**
+The fixed-rule sibling of `tribunal`. `tribunal` opens the question and hunts for whatever is wrong;
+`checklist` closes it — **ten rules, known in advance, each ending in PASS or FAIL.**
 
 1. **Types everywhere** — no `any`, no implicit `any`, no untyped bag standing in for a shape. In
    Python that means `typing` containers over bare builtins, `NDArray[np.float64]` with the shape and
@@ -190,8 +207,8 @@ The fixed-checklist sibling of `audit`. `audit` opens the question and hunts for
 - It **reviews only**; fixes happen only if you ask.
 
 ```
-/review src/parser.ts
-/review the working diff
+/checklist src/parser.ts
+/checklist the working diff
 ```
 
 ## `report` — measure it
@@ -278,7 +295,7 @@ to register, easy to edit). Pick one — installing both gives you two copies of
 ### Option 1 — as a plugin (recommended)
 
 This repo is a Claude Code marketplace named `olcayseygan`, holding a single plugin called `crumora`
-— so the skills show up as `crumora:rewrite`, `crumora:audit`, `crumora:report` and so on.
+— so the skills show up as `crumora:rewrite`, `crumora:tribunal`, `crumora:report` and so on.
 In Claude Code:
 
 ```
@@ -323,7 +340,7 @@ Claude Code looks — there is nothing to build, register or configure.
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-#### Install all seven
+#### Install all eight
 
 ```bash
 git clone https://github.com/olcayseygan/crumora.git crumora
@@ -344,20 +361,31 @@ it.
 
 #### Install just one
 
-They are fully independent — take one, take all seven:
+`tribunal`, `checklist`, `report`, `specify` and `diagram` are fully independent — take one on its
+own:
 
 ```bash
-cp -r crumora/skills/audit ~/.claude/skills/
+cp -r crumora/skills/tribunal ~/.claude/skills/
+```
+
+`rewrite`, `sharpen` and `reskin` read the shared rulebook, so they need `_shared/` next to them:
+
+```bash
+cp -r crumora/skills/sharpen crumora/skills/_shared ~/.claude/skills/
 ```
 
 #### What it should look like afterwards
 
 ```
 ~/.claude/skills/
+├── _shared/tournament.md      ← shared rulebook, not a skill
 ├── rewrite/SKILL.md
-├── refactor/SKILL.md
-├── reskin/SKILL.md
-├── audit/SKILL.md
+├── sharpen/SKILL.md
+├── reskin/
+│   ├── SKILL.md
+│   └── references/
+├── tribunal/SKILL.md
+├── checklist/SKILL.md
 ├── specify/SKILL.md
 ├── diagram/
 │   ├── SKILL.md
@@ -370,14 +398,16 @@ cp -r crumora/skills/audit ~/.claude/skills/
 
 The folder name and the `name:` field in the file's front matter must match, and the file must stay
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
-rather than a note. `report` and `diagram` carry `references/` (and `report` a `scripts/`) alongside
-their `SKILL.md` — copy the whole folder, not just the one file.
+rather than a note. `report`, `diagram` and `reskin` carry `references/` (and `report` a `scripts/`)
+alongside their `SKILL.md` — copy the whole folder, not just the one file. `_shared/` holds no
+`SKILL.md` and is not a skill; it is the rulebook `rewrite`, `sharpen` and `reskin` read at the start
+of a run.
 
 #### Verify
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
-appear in a running session. Then type `/` and look for `rewrite`, `refactor`, `reskin`, `audit`,
-`report`, `specify`, `diagram`, or just ask *"which skills do you have?"*.
+appear in a running session. Then type `/` and look for `rewrite`, `sharpen`, `reskin`, `tribunal`,
+`checklist`, `report`, `specify`, `diagram`, or just ask *"which skills do you have?"*.
 
 #### Update
 
@@ -390,18 +420,18 @@ Restart afterwards, same reason.
 
 #### Uninstall
 
-Delete the folder — `rm -rf ~/.claude/skills/audit`. Nothing else is touched; skills leave no state
+Delete the folder — `rm -rf ~/.claude/skills/tribunal`. Nothing else is touched; skills leave no state
 behind.
 
 #### Troubleshooting
 
 - **The slash command doesn't show up.** You didn't restart, or the file is at
   `~/.claude/skills/SKILL.md` instead of `~/.claude/skills/<name>/SKILL.md`.
-- **It's listed but never triggers on its own.** Invoke it explicitly with `/audit …`. The
+- **It's listed but never triggers on its own.** Invoke it explicitly with `/tribunal …`. The
   description is what makes Claude reach for it unprompted; if you edited it, keep the trigger
   phrases in there.
 - **You already have a skill with one of these names.** Rename the folder *and* the `name:` field to
-  match, e.g. `audit-panel`.
+  match, e.g. `tribunal-panel`.
 
 ## Why bother
 
