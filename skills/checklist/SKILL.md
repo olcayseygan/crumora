@@ -1,11 +1,11 @@
 ---
 name: checklist
-description: Checks code against a fixed twelve-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings, no blank lines between statements with one blank line after every control block, and idiomatic use of the language and framework in hand. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", "check the spacing", "is this pythonic", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
+description: Checks code against a fixed thirteen-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings, no blank lines between statements with one blank line after every control block, idiomatic use of the language and framework in hand, and no defensive null checks or swallowed exceptions. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", "check the spacing", "is this pythonic", "too many null checks", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
 ---
 
-# checklist — the twelve-rule gate
+# checklist — the thirteen-rule gate
 
-Twelve rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
+Thirteen rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
 
 Sibling of **tribunal**, and deliberately the opposite of it. `tribunal` opens the question — several
 lenses hunt for whatever is wrong. `checklist` closes it: the rules are fixed, known in advance, and the
@@ -33,7 +33,7 @@ reported as `NOT CHECKED`, never as PASS.
 
 ---
 
-## The twelve rules
+## The thirteen rules
 
 ### 1 · Types — everything is typed
 
@@ -292,13 +292,66 @@ the reverse question on the biggest function in the file: *how would a fluent na
 **FAIL evidence:** `loader.py:88 — index loop with range(len(paths)) building a list via append; use a
 comprehension over enumerate`.
 
+### 13 · No defensive guards — let it fail loudly
+
+A bug that throws gets found and fixed. A bug wrapped in a null check becomes a silent wrong result
+three layers away, and nobody knows where it started. So the code does **not** defend itself against
+its own callers.
+
+FAIL, every time:
+
+- **A null / `None` / `nullptr` check on a value that should never be null.** If the contract says the
+  argument is there, trust the contract and let the dereference throw.
+- **`try`/`catch` that swallows.** An empty catch, a catch that logs and continues as if nothing
+  happened, a catch that returns a default, `except Exception: pass`, `catch { }`, `?.` sprinkled over
+  an internal object to keep a crash away.
+- **A fallback default that hides a missing value** — `?? 0`, `|| ""`, `.get(key, None)` followed by a
+  branch that pretends the key was optional, `GetComponent<T>()` result silently ignored when absent.
+- **Re-validating what the caller already guaranteed**, and the `if (list != null && list.Count > 0)`
+  reflex around a list that is always constructed.
+- **A guard with no handling behind it** — `if (thing == null) return;` at the top of a method that is
+  meaningless without `thing`. That is not a guard, it is a crash moved somewhere harder to find.
+
+The most you may add is a **log**, and only when it does not change control flow: log the state, then
+let the exception propagate or rethrow it unchanged. A `catch` that logs and rethrows passes. A
+`catch` that logs and returns does not.
+
+**Where a guard is legitimate:** at a boundary with a genuinely untrusted or unreliable source —
+network, disk and other IO, hardware, a parsed file, user input, a third-party API, a cross-process
+message. There the failure is expected, not a bug, so it is handled explicitly: validate once at the
+boundary, convert to a typed error or a domain result, and everything inside the boundary then trusts
+its inputs and stays guard-free. Also legitimate: a check that *is* the business rule (`if (balance <
+amount) throw new InsufficientFunds()`), and cleanup that runs without swallowing (`finally`, `using`,
+`with`).
+
+Assertions and fail-fast checks that **throw** are not defensive guards — they are the opposite, and
+they pass this rule.
+
+| Bad | Good |
+| --- | --- |
+| `if (user == null) return;` | use `user` — a null here is a bug worth crashing on |
+| `try { Parse(); } catch { }` | let `Parse` throw |
+| `try { … } catch (Exception e) { Log(e); return null; }` | `catch (Exception e) { Log(e); throw; }` |
+| `except Exception: pass` | no `except` at all, or `except FileNotFoundError:` at the IO boundary |
+| `var speed = config?.Speed ?? 0f;` | `var speed = configuration.Speed;` |
+| `if (target != null) target.Hit();` | `target.Hit();` |
+| `rigidbody = GetComponent<Rigidbody>(); if (rigidbody == null) return;` | require it: `[RequireComponent]`, then use it |
+
+**How to check:** grep the target for `!= null`, `is null`, `== None`, `?.`, `??`, `||` defaults,
+`catch`, `except`, `try:`, `.get(` with a default, and `if (… ) return;` early exits. For each hit ask
+one question: **can this value legitimately be absent, from a source outside our control?** Yes at a
+real IO/hardware/user boundary → PASS. Anything else → FAIL, and the fix is deletion.
+
+**FAIL evidence:** `PlayerController.cs:41 — if (weapon == null) return; hides a broken spawn path;
+delete the guard and let the NullReferenceException point at the real bug`.
+
 ---
 
 ## Finding shape (MUST)
 
 A finding is only a finding when it carries all four:
 
-- **Rule** — which of the twelve, by number.
+- **Rule** — which of the thirteen, by number.
 - **Where** — `file:line`. Not "the module".
 - **What** — one sentence naming the violation.
 - **Fix** — the concrete replacement. For a naming rule that means writing the new name out.
@@ -341,6 +394,7 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 10 | No magic numbers or strings | FAIL | 5 |
 | 11 | Blank lines separate blocks, never code | FAIL | 6 |
 | 12 | Idiomatic for the language | FAIL | 3 |
+| 13 | No defensive guards | FAIL | 4 |
 
 ### 2 — the findings
 
@@ -355,6 +409,7 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 7 | 11 | `orders.ts:52` | blank line splitting a body into two jobs | extract the second half as `applyDiscount()` |
 | 8 | 11 | `orders.ts:71` | no blank line after the `for` block | one blank line after the closing brace |
 | 9 | 12 | `loader.py:88` | `range(len(paths))` index loop building a list | comprehension over `enumerate(paths)` |
+| 10 | 13 | `orders.ts:14` | `try/catch` swallowing a parse failure | delete the catch, let it throw |
 
 ### 3 — the verdict
 
@@ -369,10 +424,10 @@ usually needs the test suite run), and anything assumed rather than verified.
 ## MUST summary
 
 - Read the whole target — a diff in its surrounding file — before judging.
-- Check all twelve rules against all files. Unchecked is `NOT CHECKED`, never PASS.
+- Check all thirteen rules against all files. Unchecked is `NOT CHECKED`, never PASS.
 - Every finding carries rule number, `file:line`, the violation, and the concrete fix.
 - Try to kill every FAIL before printing it; drop the ones that do not survive, and say so.
-- Print the full twelve-row checklist even when rows pass.
+- Print the full thirteen-row checklist even when rows pass.
 - Verdict is mechanical: one FAIL means not yet.
 - State what was not checked.
 - Review only — fix only if the user asks.
