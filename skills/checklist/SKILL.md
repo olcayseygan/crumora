@@ -1,11 +1,11 @@
 ---
 name: checklist
-description: Checks code against a fixed ten-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
+description: Checks code against a fixed eleven-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings, no blank lines between statements with one blank line after every control block. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", "check the spacing", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
 ---
 
-# checklist — the ten-rule gate
+# checklist — the eleven-rule gate
 
-Ten rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
+Eleven rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
 
 Sibling of **tribunal**, and deliberately the opposite of it. `tribunal` opens the question — several
 lenses hunt for whatever is wrong. `checklist` closes it: the rules are fixed, known in advance, and the
@@ -33,7 +33,7 @@ reported as `NOT CHECKED`, never as PASS.
 
 ---
 
-## The ten rules
+## The eleven rules
 
 ### 1 · Types — everything is typed
 
@@ -194,13 +194,50 @@ literals compared with `==`/`===`/`switch` or passed as a mode/kind/status argum
 
 **FAIL evidence:** `orders.ts:60 — price * 0.15`.
 
+### 11 · Blank lines separate blocks, never code
+
+Inside a body there are **no blank lines between statements**. Consecutive statements sit flush against
+each other. The moment a run of lines wants a blank line above it to say "this part is a different
+job", that run *is* a different job — extract it into its own named function and call it. The blank
+line is not the fix; the function is.
+
+Around a control block the spacing is fixed, and it is the only spacing there is:
+
+- **One blank line after** every `if` / `else` / `for` / `foreach` / `while` / `do` / `switch` /
+  `try` / `using` / `lock` block — after the closing brace, before whatever follows.
+- **No blank line before** one. The block starts immediately after the statement above it.
+- Nothing after the closing brace of the *enclosing* body needs a blank line — a block that is the
+  last thing in its parent closes straight into `}`.
+- Chained parts stay glued: `}` `else if (…)` `{`, `}` `catch` `{`, `}` `finally` `{` — no blank line
+  cuts a chain apart.
+- Never two blank lines in a row, anywhere.
+
+Between top-level members — methods, classes, fields grouped by purpose — one blank line is normal and
+expected. This rule is about the inside of a body.
+
+| Bad | Good |
+| --- | --- |
+| `var total = 0;`<br>` `<br>`var count = items.Count;` | `var total = 0;`<br>`var count = items.Count;` |
+| `var user = Load(id);`<br>` `<br>`if (user.IsActive)`<br>`{ … }` | `var user = Load(id);`<br>`if (user.IsActive)`<br>`{ … }` |
+| `if (isReady)`<br>`{ … }`<br>`Send(payload);` | `if (isReady)`<br>`{ … }`<br>` `<br>`Send(payload);` |
+| a 40-line body split into three parts by blank lines | three named functions called in order |
+
+**How to check:** grep the target for a blank line whose next non-empty line is `if`, `for`, `while`,
+`switch`, `try`, `foreach`; for a `}` closing a control block whose next line is neither blank, nor
+`}`, nor a chained `else`/`catch`/`finally`; and for any blank line inside a function body that is not
+one of those. Every hit of the last kind is reported twice — once as the blank line, once as the
+missing extraction it is standing in for.
+
+**FAIL evidence:** `SpawnService.cs:52 — blank line between two statements inside Spawn(); the four
+lines below it are a distinct job, so extract ResolveSpawnPoint()`.
+
 ---
 
 ## Finding shape (MUST)
 
 A finding is only a finding when it carries all four:
 
-- **Rule** — which of the ten, by number.
+- **Rule** — which of the eleven, by number.
 - **Where** — `file:line`. Not "the module".
 - **What** — one sentence naming the violation.
 - **Fix** — the concrete replacement. For a naming rule that means writing the new name out.
@@ -241,6 +278,7 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 8 | Variable names are nouns | FAIL | 1 |
 | 9 | Booleans prefixed is/has/can | FAIL | 4 |
 | 10 | No magic numbers or strings | FAIL | 5 |
+| 11 | Blank lines separate blocks, never code | FAIL | 6 |
 
 ### 2 — the findings
 
@@ -252,6 +290,8 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 4 | 4 SRP | `Report.ts:1-210` | class parses, formats and writes files | split writing into `ReportWriter` |
 | 5 | 6 | `orders.ts:60` | discount branch has no test | test asserting discount at the boundary value |
 | 6 | 10 | `orders.ts:60` | bare `0.15` in the price calculation | `const VAT_RATE = 0.15` |
+| 7 | 11 | `orders.ts:52` | blank line splitting a body into two jobs | extract the second half as `applyDiscount()` |
+| 8 | 11 | `orders.ts:71` | no blank line after the `for` block | one blank line after the closing brace |
 
 ### 3 — the verdict
 
@@ -266,10 +306,10 @@ usually needs the test suite run), and anything assumed rather than verified.
 ## MUST summary
 
 - Read the whole target — a diff in its surrounding file — before judging.
-- Check all ten rules against all files. Unchecked is `NOT CHECKED`, never PASS.
+- Check all eleven rules against all files. Unchecked is `NOT CHECKED`, never PASS.
 - Every finding carries rule number, `file:line`, the violation, and the concrete fix.
 - Try to kill every FAIL before printing it; drop the ones that do not survive, and say so.
-- Print the full ten-row checklist even when rows pass.
+- Print the full eleven-row checklist even when rows pass.
 - Verdict is mechanical: one FAIL means not yet.
 - State what was not checked.
 - Review only — fix only if the user asks.
