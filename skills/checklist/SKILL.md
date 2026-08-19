@@ -1,11 +1,11 @@
 ---
 name: checklist
-description: Checks code against a fixed eleven-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings, no blank lines between statements with one blank line after every control block. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", "check the spacing", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
+description: Checks code against a fixed twelve-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings, no blank lines between statements with one blank line after every control block, and idiomatic use of the language and framework in hand. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", "check the spacing", "is this pythonic", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
 ---
 
-# checklist — the eleven-rule gate
+# checklist — the twelve-rule gate
 
-Eleven rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
+Twelve rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
 
 Sibling of **tribunal**, and deliberately the opposite of it. `tribunal` opens the question — several
 lenses hunt for whatever is wrong. `checklist` closes it: the rules are fixed, known in advance, and the
@@ -33,7 +33,7 @@ reported as `NOT CHECKED`, never as PASS.
 
 ---
 
-## The eleven rules
+## The twelve rules
 
 ### 1 · Types — everything is typed
 
@@ -231,13 +231,74 @@ missing extraction it is standing in for.
 **FAIL evidence:** `SpawnService.cs:52 — blank line between two statements inside Spawn(); the four
 lines below it are a distinct job, so extract ResolveSpawnPoint()`.
 
+### 12 · Idiomatic — write the language, not a translation of another one
+
+Code is written in the grain of the language it lives in. A C programmer's loop transliterated into
+Python, a jQuery reflex inside Vue, a Java factory bolted onto TypeScript — all FAIL. The check is
+simple: **does the language already have a built-in way to say this, and did the author use it?**
+
+The standard library and the framework are part of the language. Hand-rolling something they already
+ship is both this rule and rule 3.
+
+**Python is pythonic:** comprehensions and generator expressions over `append` loops, `enumerate` and
+`zip` over index arithmetic, unpacking over indexing, `with` over manual open/close, `pathlib` over
+string paths, `dataclass`/`NamedTuple`/`Enum` over ad-hoc tuples and dicts, `collections`
+(`defaultdict`, `Counter`, `deque`) and `itertools` over reinvented loops, `any`/`all`/`sum`/`min` with
+a key over accumulator variables, f-strings over concatenation, EAFP `try/except` over LBYL where the
+language expects it, truthiness and chained comparisons (`0 <= index < length`) over verbose
+equivalents, `@property` over `get_x()`, context managers and decorators for cross-cutting concerns.
+
+**JavaScript / TypeScript is modern JS:** `map`/`filter`/`reduce`/`find`/`some`/`every` over index
+loops, destructuring and spread over manual copying, `?.` and `??` over `&&` chains and `||` defaults
+that swallow `0` and `""`, `async`/`await` over `.then` pyramids, `Promise.all` over sequential awaits
+that do not depend on each other, template literals over concatenation, `Map`/`Set` over objects used
+as lookup tables, `for…of` with `Object.entries` over `for…in`, discriminated unions and `as const`
+over stringly-typed flags, generics over `any`.
+
+**Vue is the framework's own model:** `computed` over a watcher that assigns a variable, `ref`/
+`reactive` state over manual DOM mutation, `v-if`/`v-for`/`v-model` over imperative rendering,
+`document.querySelector` inside a component is almost always a FAIL, props down and emits up over
+reaching into a child, `<script setup>`, composables for shared logic over mixins and duplicated
+methods, `watchEffect`/lifecycle hooks over ad-hoc timers. Same discipline for React (hooks, keys,
+derived state over synced state), and for whatever framework the file actually belongs to.
+
+**C# is C#:** LINQ over manual loops where it stays readable, `foreach` over index loops,
+pattern matching and `switch` expressions over `if`/`is`/cast ladders, `using` declarations,
+`IEnumerable<T>` and `yield return` over building throwaway lists, properties over getter methods,
+`nameof` over string literals, `record` for value types, `async`/`await` over `.Result`. In Unity:
+`TryGetComponent`, `SerializeField` private fields, `CompareTag` over `tag ==`, cached components over
+per-frame `GetComponent`, `Time.deltaTime` in `Update`, coroutines or UniTask over hand-rolled timers.
+
+The limit: **idiomatic is not clever.** A comprehension nested three deep, a LINQ chain no one can
+read, a one-liner that needs a comment to decode — those FAIL too, under this same rule. Idiom means
+the way a fluent native writes it plainly, not the shortest thing that runs.
+
+| Bad | Good |
+| --- | --- |
+| `result = []`<br>`for item in items:`<br>`    result.append(item.name)` | `names = [item.name for item in items]` |
+| `for i in range(len(rows)):` | `for index, row in enumerate(rows):` |
+| `f = open(path)` … `f.close()` | `with path.open() as handle:` |
+| `if (list.filter(x => x.id === id).length > 0)` | `if (list.some(user => user.id === id))` |
+| `const name = user && user.profile && user.profile.name` | `const name = user?.profile?.name ?? DEFAULT_NAME` |
+| `watch(items, () => { total.value = sum(items.value) })` | `const total = computed(() => sum(items.value))` |
+| `if (obj is Dog) { var dog = (Dog)obj; … }` | `if (obj is Dog dog) { … }` |
+| `GetComponent<Rigidbody>()` in `Update` | cached field assigned in `Awake` |
+
+**How to check:** for each file, name the language and framework first, then grep for that language's
+tell-tale non-idioms — `range(len(`, `.append(` inside a loop that builds a list, `os.path`, manual
+index loops in JS, `.then(` chains, `querySelector` in a component, `if`/cast ladders in C#. Then ask
+the reverse question on the biggest function in the file: *how would a fluent native write this?*
+
+**FAIL evidence:** `loader.py:88 — index loop with range(len(paths)) building a list via append; use a
+comprehension over enumerate`.
+
 ---
 
 ## Finding shape (MUST)
 
 A finding is only a finding when it carries all four:
 
-- **Rule** — which of the eleven, by number.
+- **Rule** — which of the twelve, by number.
 - **Where** — `file:line`. Not "the module".
 - **What** — one sentence naming the violation.
 - **Fix** — the concrete replacement. For a naming rule that means writing the new name out.
@@ -279,6 +340,7 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 9 | Booleans prefixed is/has/can | FAIL | 4 |
 | 10 | No magic numbers or strings | FAIL | 5 |
 | 11 | Blank lines separate blocks, never code | FAIL | 6 |
+| 12 | Idiomatic for the language | FAIL | 3 |
 
 ### 2 — the findings
 
@@ -292,6 +354,7 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 6 | 10 | `orders.ts:60` | bare `0.15` in the price calculation | `const VAT_RATE = 0.15` |
 | 7 | 11 | `orders.ts:52` | blank line splitting a body into two jobs | extract the second half as `applyDiscount()` |
 | 8 | 11 | `orders.ts:71` | no blank line after the `for` block | one blank line after the closing brace |
+| 9 | 12 | `loader.py:88` | `range(len(paths))` index loop building a list | comprehension over `enumerate(paths)` |
 
 ### 3 — the verdict
 
@@ -306,10 +369,10 @@ usually needs the test suite run), and anything assumed rather than verified.
 ## MUST summary
 
 - Read the whole target — a diff in its surrounding file — before judging.
-- Check all eleven rules against all files. Unchecked is `NOT CHECKED`, never PASS.
+- Check all twelve rules against all files. Unchecked is `NOT CHECKED`, never PASS.
 - Every finding carries rule number, `file:line`, the violation, and the concrete fix.
 - Try to kill every FAIL before printing it; drop the ones that do not survive, and say so.
-- Print the full eleven-row checklist even when rows pass.
+- Print the full twelve-row checklist even when rows pass.
 - Verdict is mechanical: one FAIL means not yet.
 - State what was not checked.
 - Review only — fix only if the user asks.
