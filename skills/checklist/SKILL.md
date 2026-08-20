@@ -1,11 +1,11 @@
 ---
 name: checklist
-description: Checks code against a fixed fourteen-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings, no blank lines between statements with one blank line after every control block, idiomatic use of the language and framework in hand, no defensive null checks or swallowed exceptions, and optimistic updates that roll back visibly when the request fails. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", "check the spacing", "is this pythonic", "too many null checks", "optimistic update", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
+description: Checks code against a fixed fifteen-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings, no blank lines between statements with one blank line after every control block, idiomatic use of the language and framework in hand, no defensive null checks or swallowed exceptions, optimistic updates that roll back visibly when the request fails, and destructive actions that are held not clicked, verb-labelled, off the primary path, red only for destruction, and gathered in a danger zone. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", "check the spacing", "is this pythonic", "too many null checks", "optimistic update", "is this delete button safe", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
 ---
 
-# checklist — the fourteen-rule gate
+# checklist — the fifteen-rule gate
 
-Fourteen rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
+Fifteen rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
 
 Sibling of **tribunal**, and deliberately the opposite of it. `tribunal` opens the question — several
 lenses hunt for whatever is wrong. `checklist` closes it: the rules are fixed, known in advance, and the
@@ -33,7 +33,7 @@ reported as `NOT CHECKED`, never as PASS.
 
 ---
 
-## The fourteen rules
+## The fifteen rules
 
 ### 1 · Types — everything is typed
 
@@ -405,13 +405,63 @@ actions, and for `catch` blocks in request handlers that touch neither the state
 **FAIL evidence:** `LikeButton.vue:23 — state is set only after await, so the heart lags the click; and
 the catch logs without restoring isLiked or telling the user`.
 
+### 15 · Destructive actions
+
+The mirror of rule 14. That rule is for cheap, reversible, high-frequency actions — act first, roll
+back on failure. This one is for the actions that end something: delete, revoke, cancel, wipe,
+transfer ownership, remove a member. There, speed is the enemy.
+
+Five sub-checks. Each gets its own line in the output.
+
+- **Hold to confirm** — the ring replaces the dialog. A destructive button is **held**, not clicked:
+  press and keep pressing for a second or two while a ring or bar fills, release early to cancel.
+  A `window.confirm`, or a modal whose only job is "Are you sure?", FAILs — muscle memory clears it
+  without reading. The hold needs visible progress, an obvious cancel by releasing, and a keyboard and
+  screen-reader path that is equally deliberate (typing the resource name, an explicit second control)
+  for anyone who cannot hold a pointer down.
+- **Verb labels** — "delete project", never "yes". The control says what it does: `Delete project`,
+  `Remove 3 members`, `Cancel subscription`. `Yes`, `OK`, `Confirm`, `Continue` FAIL, because the
+  label carries no meaning once the user has stopped reading the sentence above it. The way out is
+  named too — `Keep project` beats `Cancel`, which is ambiguous next to "cancel subscription".
+- **Off the happy path** — destruction sits away from the primary flow. Not beside `Save`, not a trash
+  icon on every row of a list, not the primary-styled button on the screen, and not a hover-only
+  secret either — **far, not hidden**. It lives at the end of a detail page, in settings, in the
+  danger zone; the everyday flow never passes through it.
+- **Red budget** — spend red on destruction only. Red is a budget, and a form-validation message, a
+  notification badge, a chart series or a "required field" asterisk spends it on something the user
+  can undo. Then, when the real deletion arrives, red means nothing. Warnings and validation take
+  amber or neutral with an icon and text; red is reserved for irreversible loss. Colour never carries
+  the meaning alone — the label and icon say it too.
+- **Danger zone** — bordered, labelled, last. Every destructive action for a resource is collected in
+  one block: a red border, a plain heading, one line per action stating exactly what is lost
+  (`this deletes the project and its 240 records permanently`), and the block sits at the **bottom** of
+  the page. Nobody arrives there by accident.
+
+| Bad | Good |
+| --- | --- |
+| `if (confirm("Are you sure?")) deleteProject()` | hold-to-confirm control with a filling ring |
+| `<button>Yes</button>` / `<button>OK</button>` | `<button>Delete project</button>` |
+| trash icon on every row, next to `Edit` | one `Delete project` inside the danger zone |
+| primary red `Delete` next to `Save changes` | `Save changes` primary, deletion at the bottom of the page |
+| red "This field is required" | amber or neutral validation, red kept for deletion |
+| delete button loose in the settings body | bordered danger zone, heading, consequence line, last |
+
+**How to check:** list every destructive action in the target — `delete`, `remove`, `revoke`,
+`destroy`, `drop`, `cancel`, `wipe`, `reset`, `transfer`. For each one: is it held or clicked? What
+does its label literally say? What sits next to it, and is it styled primary? Then grep the styles for
+the red token and check every use is destructive, and grep for `confirm(` and for modals whose
+confirm button text is `yes`/`ok`/`confirm`.
+
+**FAIL evidence:** `ProjectSettings.vue:88 — window.confirm("Are you sure?") then an immediate DELETE;
+no hold, label is "OK", and the button sits next to Save`.
+
 ---
 
 ## Finding shape (MUST)
 
 A finding is only a finding when it carries all four:
 
-- **Rule** — which of the fourteen, by number.
+- **Rule** — which of the fifteen, by number.
 - **Where** — `file:line`. Not "the module".
 - **What** — one sentence naming the violation.
 - **Fix** — the concrete replacement. For a naming rule that means writing the new name out.
@@ -456,6 +506,7 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 12 | Idiomatic for the language | FAIL | 3 |
 | 13 | No defensive guards | FAIL | 4 |
 | 14 | Act first, roll back on failure | FAIL | 2 |
+| 15 | Destructive actions — hold / verb / off-path / red / zone | FAIL | hold 1, verb 1, rest pass |
 
 ### 2 — the findings
 
@@ -472,6 +523,8 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 9 | 12 | `loader.py:88` | `range(len(paths))` index loop building a list | comprehension over `enumerate(paths)` |
 | 10 | 13 | `orders.ts:14` | `try/catch` swallowing a parse failure | delete the catch, let it throw |
 | 11 | 14 | `LikeButton.vue:23` | state set after the await, catch never restores it | set first, restore the snapshot and warn on failure |
+| 12 | 15 hold | `ProjectSettings.vue:88` | `window.confirm` guards the delete | hold-to-confirm control with a filling ring |
+| 13 | 15 verb | `ProjectSettings.vue:94` | confirm button reads `OK` | `Delete project` |
 
 ### 3 — the verdict
 
@@ -486,10 +539,10 @@ usually needs the test suite run), and anything assumed rather than verified.
 ## MUST summary
 
 - Read the whole target — a diff in its surrounding file — before judging.
-- Check all fourteen rules against all files. Unchecked is `NOT CHECKED`, never PASS.
+- Check all fifteen rules against all files. Unchecked is `NOT CHECKED`, never PASS.
 - Every finding carries rule number, `file:line`, the violation, and the concrete fix.
 - Try to kill every FAIL before printing it; drop the ones that do not survive, and say so.
-- Print the full fourteen-row checklist even when rows pass.
+- Print the full fifteen-row checklist even when rows pass.
 - Verdict is mechanical: one FAIL means not yet.
 - State what was not checked.
 - Review only — fix only if the user asks.
