@@ -13,7 +13,7 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | **`sharpen`** | keeps the code and improves it with reviewable diffs | *how good can **this** design get?* |
 | **`reskin`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
 | **`tribunal`** | builds nothing; a panel of lenses reads it, then fights | *what is actually wrong with it?* |
-| **`checklist`** | builds nothing; checks the code against thirteen fixed rules | *does it pass, rule by rule?* |
+| **`checklist`** | builds nothing; checks the code against fourteen fixed rules | *does it pass, rule by rule?* |
 | **`report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
 | **`specify`** | touches nothing; turns a need text into testable requirements | *what exactly did they ask for?* |
 | **`diagram`** | writes no code; draws the process in the library you name | *how does this actually work?* |
@@ -24,7 +24,7 @@ tournament around them: every attempt is scored, fought against the version it w
 thrown away if it doesn't win.
 
 The two judges are deliberately not the same skill. `tribunal` **opens** the question — several
-lenses hunt for whatever is wrong, then argue. `checklist` **closes** it — thirteen rules fixed in
+lenses hunt for whatever is wrong, then argue. `checklist` **closes** it — fourteen rules fixed in
 advance, each ending in PASS or FAIL. If you want the open critique, ask for the tribunal; if you
 want a gate, ask for the checklist.
 
@@ -179,7 +179,7 @@ No rewriting, no diffs, no pixels: a panel of 4-7 **lenses** reads the code, the
 ## `checklist` — check it against the rules
 
 The fixed-rule sibling of `tribunal`. `tribunal` opens the question and hunts for whatever is wrong;
-`checklist` closes it — **thirteen rules, known in advance, each ending in PASS or FAIL.**
+`checklist` closes it — **fourteen rules, known in advance, each ending in PASS or FAIL.**
 
 1. **Types everywhere** — no `any`, no implicit `any`, no untyped bag standing in for a shape. In
    Python that means `typing` containers over bare builtins, `NDArray[np.float64]` with the shape and
@@ -203,9 +203,12 @@ The fixed-rule sibling of `tribunal`. `tribunal` opens the question and hunts fo
 13. **No defensive guards** — no null check on a value that should never be null, no `catch` that
     swallows, no fallback default hiding a missing one. Let it throw so the real bug surfaces; a log
     that rethrows is the most you get. Guards live only at real IO, hardware and user boundaries.
+14. **Act first, roll back on failure** — a like button fills on click, then posts; if the request
+    fails the exact previous state comes back and the user is told. No spinner-locked buttons on
+    cheap actions, no silent rollback, no state left lying about what the server holds.
 
 - **A rule you didn't check is `NOT CHECKED`, never PASS.** A short checklist is a checklist that was
-  not run, so all thirteen rows print every time, including the clean ones.
+  not run, so all fourteen rows print every time, including the clean ones.
 - **A finding needs its rule number, `file:line`, the violation and the concrete fix** — for a naming
   rule that means writing the new name out.
 - **Every FAIL is attacked before it is printed.** Is that `any` actually inferred from a typed

@@ -1,11 +1,11 @@
 ---
 name: checklist
-description: Checks code against a fixed thirteen-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings, no blank lines between statements with one blank line after every control block, idiomatic use of the language and framework in hand, and no defensive null checks or swallowed exceptions. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", "check the spacing", "is this pythonic", "too many null checks", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
+description: Checks code against a fixed fourteen-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings, no blank lines between statements with one blank line after every control block, idiomatic use of the language and framework in hand, no defensive null checks or swallowed exceptions, and optimistic updates that roll back visibly when the request fails. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", "check the spacing", "is this pythonic", "too many null checks", "optimistic update", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
 ---
 
-# checklist — the thirteen-rule gate
+# checklist — the fourteen-rule gate
 
-Thirteen rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
+Fourteen rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
 
 Sibling of **tribunal**, and deliberately the opposite of it. `tribunal` opens the question — several
 lenses hunt for whatever is wrong. `checklist` closes it: the rules are fixed, known in advance, and the
@@ -33,7 +33,7 @@ reported as `NOT CHECKED`, never as PASS.
 
 ---
 
-## The thirteen rules
+## The fourteen rules
 
 ### 1 · Types — everything is typed
 
@@ -345,13 +345,73 @@ real IO/hardware/user boundary → PASS. Anything else → FAIL, and the fix is 
 **FAIL evidence:** `PlayerController.cs:41 — if (weapon == null) return; hides a broken spawn path;
 delete the guard and let the NullReferenceException point at the real bug`.
 
+### 14 · Act first, roll back on failure
+
+When a user action has to travel to something that can fail — a POST, a socket, a save — the interface
+does **not** sit and wait. It applies the change immediately, sends the request, and if the request
+fails it puts the state back exactly as it was and says so out loud.
+
+Like button: the heart fills on click, the count goes up, the POST goes out. `catch` → heart empties,
+count returns to the old value, a visible warning appears. Not a spinner on the heart, not a disabled
+button, not a five-hundred-millisecond dead interface.
+
+The shape, every time:
+
+1. **Snapshot** the previous state before touching it — the actual old value, not a guess you plan to
+   recompute later.
+2. **Apply** the new state locally and immediately.
+3. **Send** the request.
+4. **On failure: restore the snapshot, and tell the user.** Both. A rollback the user never sees is a
+   state that changed under their hands for no reason.
+5. **Log the failure** with enough context to find it.
+
+This is the one place a `catch` is not a rule 13 violation — it is a real boundary (network, IO) and
+it does not swallow anything: the state is restored, the user is told, the error is logged.
+
+FAIL:
+
+- **Silent rollback.** State snaps back, no message. The user retries and blames themselves.
+- **Silent failure.** Request dies, local state keeps the optimistic value, and the screen now lies
+  about what the server holds.
+- **Blocking the interaction** on the round trip — spinner-locked button, disabled input, frozen list
+  — for an action that is cheap and reversible.
+- **Rollback by recomputation** — `count -= 1` instead of restoring the snapshot. Two failures racing,
+  or a value the server changed meanwhile, and the arithmetic drifts.
+- **No concurrency rule for repeated clicks.** Toggle twice fast and the two responses land out of
+  order; the last intent must win, so cancel the in-flight request, sequence them, or drop a rollback
+  whose intent is already superseded.
+
+**Where you wait instead:** an action that is expensive, irreversible or destructive — a payment, a
+delete, an order, anything the user cannot undo — is confirmed and awaited, with the result shown
+honestly. Optimism is for cheap, reversible, high-frequency actions.
+
+**Outside the UI the same rule holds:** a local write mirrored to a remote store, a cache updated
+ahead of its source, a multi-step operation — each keeps the compensating action next to the forward
+one, so a half-applied change never survives.
+
+| Bad | Good |
+| --- | --- |
+| `await like(id); isLiked.value = true` | `isLiked.value = true` → `await like(id)` → `catch` restores |
+| `catch { isLiked.value = false }` | `catch { isLiked.value = wasLiked; count.value = previousCount; showError(…) }` |
+| `catch { count.value -= 1 }` | restore the snapshot `previousCount` |
+| `<button :disabled="isSending">` on a like | button stays live; rapid clicks cancel the in-flight request |
+| `catch (error) { console.log(error) }` and state left optimistic | restore, warn the user, log the error |
+
+**How to check:** find every user action that triggers a request. For each one: does the state change
+before the `await` or after it? Is there a snapshot variable? Does the `catch` restore *and* surface?
+Grep for `await` immediately followed by a state assignment, for `isLoading`/`disabled` flags on cheap
+actions, and for `catch` blocks in request handlers that touch neither the state nor the user.
+
+**FAIL evidence:** `LikeButton.vue:23 — state is set only after await, so the heart lags the click; and
+the catch logs without restoring isLiked or telling the user`.
+
 ---
 
 ## Finding shape (MUST)
 
 A finding is only a finding when it carries all four:
 
-- **Rule** — which of the thirteen, by number.
+- **Rule** — which of the fourteen, by number.
 - **Where** — `file:line`. Not "the module".
 - **What** — one sentence naming the violation.
 - **Fix** — the concrete replacement. For a naming rule that means writing the new name out.
@@ -395,6 +455,7 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 11 | Blank lines separate blocks, never code | FAIL | 6 |
 | 12 | Idiomatic for the language | FAIL | 3 |
 | 13 | No defensive guards | FAIL | 4 |
+| 14 | Act first, roll back on failure | FAIL | 2 |
 
 ### 2 — the findings
 
@@ -410,6 +471,7 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 8 | 11 | `orders.ts:71` | no blank line after the `for` block | one blank line after the closing brace |
 | 9 | 12 | `loader.py:88` | `range(len(paths))` index loop building a list | comprehension over `enumerate(paths)` |
 | 10 | 13 | `orders.ts:14` | `try/catch` swallowing a parse failure | delete the catch, let it throw |
+| 11 | 14 | `LikeButton.vue:23` | state set after the await, catch never restores it | set first, restore the snapshot and warn on failure |
 
 ### 3 — the verdict
 
@@ -424,10 +486,10 @@ usually needs the test suite run), and anything assumed rather than verified.
 ## MUST summary
 
 - Read the whole target — a diff in its surrounding file — before judging.
-- Check all thirteen rules against all files. Unchecked is `NOT CHECKED`, never PASS.
+- Check all fourteen rules against all files. Unchecked is `NOT CHECKED`, never PASS.
 - Every finding carries rule number, `file:line`, the violation, and the concrete fix.
 - Try to kill every FAIL before printing it; drop the ones that do not survive, and say so.
-- Print the full thirteen-row checklist even when rows pass.
+- Print the full fourteen-row checklist even when rows pass.
 - Verdict is mechanical: one FAIL means not yet.
 - State what was not checked.
 - Review only — fix only if the user asks.
