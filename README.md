@@ -1,9 +1,9 @@
 # crumora
 
 > This repo is also a [Claude Code](https://claude.com/claude-code) marketplace named `olcayseygan` —
-> take all eight with one command: `claude plugin install crumora@olcayseygan`.
+> take all nine with one command: `claude plugin install crumora@olcayseygan`.
 
-Eight [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
+Nine [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
 beats the champion** — then hand back an honest post-mortem and a round-by-round table.
 
@@ -17,11 +17,12 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | **`report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
 | **`specify`** | touches nothing; turns a need text into testable requirements | *what exactly did they ask for?* |
 | **`diagram`** | writes no code; draws the process in the library you name | *how does this actually work?* |
+| **`readback`** | starts nothing; hands the request back as consequences | *did I understand what you asked?* |
 
 Each name is the move it makes: `rewrite` and `sharpen` and `reskin` build, `tribunal` and
-`checklist` judge, `report` and `specify` and `diagram` write it down. What these skills add is the
-tournament around them: every attempt is scored, fought against the version it wants to replace, and
-thrown away if it doesn't win.
+`checklist` judge, `report` and `specify` and `diagram` and `readback` write it down. What these
+skills add is the tournament around them: every attempt is scored, fought against the version it
+wants to replace, and thrown away if it doesn't win.
 
 The two judges are deliberately not the same skill. `tribunal` **opens** the question — several
 lenses hunt for whatever is wrong, then argue. `checklist` **closes** it — fifteen rules fixed in
@@ -60,13 +61,14 @@ code rubric, the scoring and VS rules, the stop-and-apply steps and the final-an
 skill's own `SKILL.md` carries only what is specific to its move, so the three cannot quietly drift
 apart.
 
-`tribunal`, `checklist`, `report`, `specify` and `diagram` are the odd ones out: none of them
-produces a version to score. In `tribunal` the fight happens between *lenses* instead of versions; in
-`checklist` between a rule and a violation that has to survive an attempt to kill it; in `report` it happens
-between a claim and the data that has to back it; in `specify` between a sentence and a tester who
-has to be able to fail it; in `diagram` between the picture and a node budget that forces a split
-rather than a wall. The discipline is identical — nothing reaches you until something tried to kill
-it.
+`tribunal`, `checklist`, `report`, `specify`, `diagram` and `readback` are the odd ones out: none of
+them produces a version to score. In `tribunal` the fight happens between *lenses* instead of
+versions; in `checklist` between a rule and a violation that has to survive an attempt to kill it; in
+`report` it happens between a claim and the data that has to back it; in `specify` between a sentence
+and a tester who has to be able to fail it; in `diagram` between the picture and a node budget that
+forces a split rather than a wall; in `readback` between a reading of the request and the rival
+reading that wants to replace it. The discipline is identical — nothing reaches you until something
+tried to kill it.
 
 ## `rewrite` — rebuild it
 
@@ -279,6 +281,35 @@ the library you name — **Mermaid** by default, otherwise Graphviz, D2 or Plant
 /diagram this state machine as graphviz
 ```
 
+## `readback` — check it landed
+
+The one that starts nothing. A clearance is read back before the aircraft moves; this hands your
+request back in a form you can reject, so the misunderstanding surfaces before the work does.
+
+- **It builds, edits and plans nothing.** Source is opened only far enough to make the nouns concrete
+  — the real file, the real function — never far enough to solve. The moment it starts deciding
+  *how*, it has left the skill.
+- **Never a paraphrase.** A wrong reading survives synonym-swapping perfectly, every word still
+  present, so restating proves nothing. It answers in consequences instead: the outcome, what *done*
+  looks like, what changes if the reading is wrong.
+- **Every line must be rejectable.** A line you cannot disagree with — *"you want the code to work"* —
+  carries no information and gets cut. Four lines that can be wrong beat a page that can't.
+- **Every gap is marked** `said`, `inferred` or `guessed`, and a guess is never promoted by being
+  reasonable. Enough stacked guesses and the honest finding is printed: the request is underspecified.
+- **The forks are shown with their other branch** — what the request left open, which way it would go,
+  and what the opposite choice would produce. That column is where a wrong reading becomes visible.
+- **The strongest rival reading gets argued**, never strawmanned, followed by the one question that
+  separates it from the chosen one.
+- **It closes with falsifiers**, not with a plan: one to three concrete places you would catch the
+  misunderstanding first. What happens next is your move, not its.
+- Shorter than the thing it checks, and written in the language you asked in.
+
+```
+/readback
+/readback the whole conversation
+/readback docs/ticket-482.md
+```
+
 ## What you get at the end
 
 Five headings, always:
@@ -356,7 +387,7 @@ Claude Code looks — there is nothing to build, register or configure.
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-#### Install all eight
+#### Install all nine
 
 ```bash
 git clone https://github.com/olcayseygan/crumora.git crumora
@@ -377,8 +408,8 @@ it.
 
 #### Install just one
 
-`tribunal`, `checklist`, `report`, `specify` and `diagram` are fully independent — take one on its
-own:
+`tribunal`, `checklist`, `report`, `specify`, `diagram` and `readback` are fully independent — take
+one on its own:
 
 ```bash
 cp -r crumora/skills/tribunal ~/.claude/skills/
@@ -403,6 +434,7 @@ cp -r crumora/skills/sharpen crumora/skills/_shared ~/.claude/skills/
 ├── tribunal/SKILL.md
 ├── checklist/SKILL.md
 ├── specify/SKILL.md
+├── readback/SKILL.md
 ├── diagram/
 │   ├── SKILL.md
 │   └── references/
@@ -423,7 +455,7 @@ of a run.
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
 appear in a running session. Then type `/` and look for `rewrite`, `sharpen`, `reskin`, `tribunal`,
-`checklist`, `report`, `specify`, `diagram`, or just ask *"which skills do you have?"*.
+`checklist`, `report`, `specify`, `diagram`, `readback`, or just ask *"which skills do you have?"*.
 
 #### Update
 
