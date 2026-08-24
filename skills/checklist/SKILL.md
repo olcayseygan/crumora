@@ -1,11 +1,11 @@
 ---
 name: checklist
-description: Checks code against a fixed fifteen-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings, no blank lines between statements with one blank line after every control block, idiomatic use of the language and framework in hand, no defensive null checks or swallowed exceptions, optimistic updates that roll back visibly when the request fails, and destructive actions that are held not clicked, verb-labelled, off the primary path, red only for destruction, and gathered in a danger zone. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", "check the spacing", "is this pythonic", "too many null checks", "optimistic update", "is this delete button safe", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
+description: Checks code against a fixed sixteen-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings, no blank lines between statements with one blank line after every control block, idiomatic use of the language and framework in hand, no defensive null checks or swallowed exceptions, optimistic updates that roll back visibly when the request fails, destructive actions that are held not clicked, verb-labelled, off the primary path, red only for destruction, and gathered in a danger zone, and expensive submits that fire one request per intent — disabled on the first tap, spinner in place with the width locked, handler guarded with an idempotency key, landing on an ack or an error, re-enabled on the response and never on a timer. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", "check the spacing", "is this pythonic", "too many null checks", "optimistic update", "is this delete button safe", "double submit", "the button fired twice", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
 ---
 
-# checklist — the fifteen-rule gate
+# checklist — the sixteen-rule gate
 
-Fifteen rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
+Sixteen rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
 
 Sibling of **tribunal**, and deliberately the opposite of it. `tribunal` opens the question — several
 lenses hunt for whatever is wrong. `checklist` closes it: the rules are fixed, known in advance, and the
@@ -33,7 +33,7 @@ reported as `NOT CHECKED`, never as PASS.
 
 ---
 
-## The fifteen rules
+## The sixteen rules
 
 ### 1 · Types — everything is typed
 
@@ -383,7 +383,8 @@ FAIL:
 
 **Where you wait instead:** an action that is expensive, irreversible or destructive — a payment, a
 delete, an order, anything the user cannot undo — is confirmed and awaited, with the result shown
-honestly. Optimism is for cheap, reversible, high-frequency actions.
+honestly. Optimism is for cheap, reversible, high-frequency actions. How that wait must look is
+rule 16; how destruction is confirmed is rule 15.
 
 **Outside the UI the same rule holds:** a local write mirrored to a remote store, a cache updated
 ahead of its source, a multi-step operation — each keeps the compensating action next to the forward
@@ -455,13 +456,68 @@ confirm button text is `yes`/`ok`/`confirm`.
 **FAIL evidence:** `ProjectSettings.vue:88 — window.confirm("Are you sure?") then an immediate DELETE;
 no hold, label is "OK", and the button sits next to Save`.
 
+### 16 · One intent, one request
+
+The third leg of the trio. Rule 14 is for cheap, reversible actions — act first, roll back. Rule 15 is
+for destruction — hold. This rule is for the expensive, non-idempotent middle: submit the order, send
+the payment, create the account, post the message. There, **one user intent produces exactly one
+request**, and the interface, the handler and the wire all enforce it — a double tap that charges a
+card twice is not a UI glitch, it is a money bug.
+
+Five sub-checks. Each gets its own line in the output.
+
+- **Disable on the first tap** — the control goes inert synchronously, in the same handler tick that
+  fires the request, before any `await`. A button that stays clickable until the promise settles has
+  already lost: the second tap lands in the gap. Every path into the action is covered — the click,
+  the Enter key in the form, the keyboard shortcut.
+- **Spinner in place, width locked** — the pending state lives inside the control: the label yields to
+  a spinner while the control keeps its exact size (a `min-width`, or the label kept invisible under
+  the spinner). No collapsing button, no layout shift, no full-screen overlay for a single submit.
+  The user's eye stays where their finger was.
+- **Guard the handler** — the UI alone is never trusted. The handler carries its own in-flight guard:
+  a request already flying means the call returns without firing another. And the request itself
+  carries an **idempotency key**, generated once when the intent formed and reused on every retry of
+  that intent, so even when two requests slip through — a network retry, a race the guard missed —
+  the server collapses them into one effect.
+- **Land on an ack or an error** — every request terminates visibly. Success is acknowledged — the
+  state changes, the page navigates, a confirmation appears. Failure is surfaced as an error that
+  says what happened. A timeout converts into an error; nothing is left spinning forever, and nothing
+  resolves silently into "did it go through?".
+- **Re-enable on the response, not a timer** — the control wakes up only when the response arrives,
+  success or error, typically in the `finally`. A `setTimeout` re-enable FAILs from both sides: too
+  short re-arms the button while the request still flies, too long punishes a fast round trip. The
+  wall clock knows nothing about the request.
+
+| Bad | Good |
+| --- | --- |
+| `onClick={submit}` still live during the await | `isSubmitting` set synchronously before the request fires |
+| button shrinks to spinner width | spinner replaces the label, width locked with `min-width` |
+| button disabled, Enter in the form still submits | in-flight guard inside the handler itself |
+| retry fires a fresh `POST /orders` body | same idempotency key on every retry of one intent |
+| `setTimeout(() => isSubmitting = false, 3000)` | re-enable in the `finally` when the response lands |
+| timeout leaves the spinner forever | timeout becomes a visible error and the control wakes |
+
+**The boundary with rule 14:** first decide which family the action belongs to. A cheap, reversible,
+high-frequency action wrapped in disable-and-spinner is a rule 14 FAIL, not a rule 16 PASS; an order
+submit fired optimistically with a rollback is a rule 16 FAIL, not a rule 14 PASS.
+
+**How to check:** list every non-idempotent submit in the target — create, pay, send, post, register.
+For each one: is the disable set before the first `await`? Does the pending control keep its width?
+Does the handler guard re-entry on its own? Is there an idempotency key on the wire, minted per
+intent, not per request? Does every path end in a visible ack or error? Then grep for `setTimeout`
+near `disabled`/`enabled`/`isSubmitting`, and for `catch`/`finally` blocks that never re-enable.
+
+**FAIL evidence:** `CheckoutForm.vue:57 — submit stays enabled until the await returns, so a double
+click sends two POST /orders with no idempotency key; and the catch re-enables but the timeout path
+never resolves`.
+
 ---
 
 ## Finding shape (MUST)
 
 A finding is only a finding when it carries all four:
 
-- **Rule** — which of the fifteen, by number.
+- **Rule** — which of the sixteen, by number.
 - **Where** — `file:line`. Not "the module".
 - **What** — one sentence naming the violation.
 - **Fix** — the concrete replacement. For a naming rule that means writing the new name out.
@@ -507,6 +563,7 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 13 | No defensive guards | FAIL | 4 |
 | 14 | Act first, roll back on failure | FAIL | 2 |
 | 15 | Destructive actions — hold / verb / off-path / red / zone | FAIL | hold 1, verb 1, rest pass |
+| 16 | One intent, one request — disable / spinner / guard / land / re-enable | FAIL | disable 1, guard 1, rest pass |
 
 ### 2 — the findings
 
@@ -525,6 +582,8 @@ Every rule, every time, including the clean ones. A short checklist is a checkli
 | 11 | 14 | `LikeButton.vue:23` | state set after the await, catch never restores it | set first, restore the snapshot and warn on failure |
 | 12 | 15 hold | `ProjectSettings.vue:88` | `window.confirm` guards the delete | hold-to-confirm control with a filling ring |
 | 13 | 15 verb | `ProjectSettings.vue:94` | confirm button reads `OK` | `Delete project` |
+| 14 | 16 disable | `CheckoutForm.vue:57` | submit clickable until the await returns | set `isSubmitting` before the request fires |
+| 15 | 16 guard | `CheckoutForm.vue:61` | no idempotency key on POST /orders | mint a key per intent, send it on every retry |
 
 ### 3 — the verdict
 
@@ -539,10 +598,10 @@ usually needs the test suite run), and anything assumed rather than verified.
 ## MUST summary
 
 - Read the whole target — a diff in its surrounding file — before judging.
-- Check all fifteen rules against all files. Unchecked is `NOT CHECKED`, never PASS.
+- Check all sixteen rules against all files. Unchecked is `NOT CHECKED`, never PASS.
 - Every finding carries rule number, `file:line`, the violation, and the concrete fix.
 - Try to kill every FAIL before printing it; drop the ones that do not survive, and say so.
-- Print the full fifteen-row checklist even when rows pass.
+- Print the full sixteen-row checklist even when rows pass.
 - Verdict is mechanical: one FAIL means not yet.
 - State what was not checked.
 - Review only — fix only if the user asks.
