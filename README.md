@@ -13,21 +13,22 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | **`sharpen`** | keeps the code and improves it with reviewable diffs | *how good can **this** design get?* |
 | **`reskin`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
 | **`tribunal`** | builds nothing; a panel of lenses reads it, then fights | *what is actually wrong with it?* |
-| **`checklist`** | builds nothing; checks the code against sixteen fixed rules | *does it pass, rule by rule?* |
+| **`checklist`** | checks the code against sixteen fixed rules and edits until it passes | *does it pass, rule by rule?* |
 | **`report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
 | **`specify`** | touches nothing; turns a need text into testable requirements | *what exactly did they ask for?* |
 | **`diagram`** | writes no code; draws the process in the library you name | *how does this actually work?* |
 | **`readback`** | starts nothing; hands the request back as consequences | *did I understand what you asked?* |
 
-Each name is the move it makes: `rewrite` and `sharpen` and `reskin` build, `tribunal` and
-`checklist` judge, `report` and `specify` and `diagram` and `readback` write it down. What these
-skills add is the tournament around them: every attempt is scored, fought against the version it
-wants to replace, and thrown away if it doesn't win.
+Each name is the move it makes: `rewrite` and `sharpen` and `reskin` build, `tribunal` judges,
+`checklist` judges and then repairs, printing edits instead of prose, `report` and `specify` and `diagram` and
+`readback` write it down. What these skills add is the tournament around them: every attempt is
+scored, fought against the version it wants to replace, and thrown away if it doesn't win.
 
 The two judges are deliberately not the same skill. `tribunal` **opens** the question — several
-lenses hunt for whatever is wrong, then argue. `checklist` **closes** it — sixteen rules fixed in
-advance, each ending in PASS or FAIL. If you want the open critique, ask for the tribunal; if you
-want a gate, ask for the checklist.
+lenses hunt for whatever is wrong, then argue, and hands you a report. `checklist` **closes** it —
+sixteen rules fixed in advance, and instead of a report it hands you the edits that make the code
+pass them. If you want the open critique, ask for the tribunal; if you want a gate that repairs what
+it catches, ask for the checklist.
 
 Redoing something "to see if it comes out better" usually ends in a vibe-based verdict: the new one
 *feels* cleaner, so it ships. These skills replace the vibe with a frozen rubric, head-to-head
@@ -219,16 +220,18 @@ The fixed-rule sibling of `tribunal`. `tribunal` opens the question and hunts fo
     an error** (nothing spins forever, timeouts become errors), **re-enable on the response** (never
     on a timer).
 
-- **A rule you didn't check is `NOT CHECKED`, never PASS.** A short checklist is a checklist that was
-  not run, so all sixteen rows print every time, including the clean ones.
-- **A finding needs its rule number, `file:line`, the violation and the concrete fix** — for a naming
-  rule that means writing the new name out.
-- **Every FAIL is attacked before it is printed.** Is that `any` actually inferred from a typed
-  source? Is that "duplicate" one rule in two places or two rules that match today? The ones that
-  don't survive are dropped, with the reason.
-- **The verdict is mechanical**: every rule PASS ships, one FAIL doesn't — followed by what could not
-  be checked from source alone.
-- It **reviews only**; fixes happen only if you ask.
+- **All sixteen rules are checked against every file in the target.** A rule that couldn't be checked
+  gets one line saying so; it never passes by default.
+- **A violation needs its rule number, `file:line`, the violation and the concrete fix** — for a
+  naming rule that means the new name, actually written into the code.
+- **Every FAIL is attacked before it is fixed.** Is that `any` actually inferred from a typed source?
+  Is that "duplicate" one rule in two places or two rules that match today? The ones that don't
+  survive are dropped and never mentioned.
+- It **fixes what it fails**, in place, without asking first — running it is the yes. Only two kinds
+  of violation are left alone and both get one line: `NEEDS DECISION` (the fix turns on something
+  only you know) and `OUT OF TARGET` (the violation lives outside what you pointed at).
+- **It gives you no report.** No PASS/FAIL table, no findings table, no verdict — just one line per
+  edit (`orders.ts:60 · 10 · 0.15 -> VAT_RATE`) and the leftovers. The review is the diff.
 
 ```
 /checklist src/parser.ts

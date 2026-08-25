@@ -1,22 +1,24 @@
 ---
 name: checklist
-description: Checks code against a fixed sixteen-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings, no blank lines between statements with one blank line after every control block, idiomatic use of the language and framework in hand, no defensive null checks or swallowed exceptions, optimistic updates that roll back visibly when the request fails, destructive actions that are held not clicked, verb-labelled, off the primary path, red only for destruction, and gathered in a danger zone, and expensive submits that fire one request per intent — disabled on the first tap, spinner in place with the width locked, handler guarded with an idempotency key, landing on an ack or an error, re-enabled on the response and never on a timer. Every rule gets an explicit PASS or FAIL with file:line evidence, and the target ships only when every rule passes. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", "check the spacing", "is this pythonic", "too many null checks", "optimistic update", "is this delete button safe", "double submit", "the button fired twice", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
+description: Checks code against a fixed sixteen-rule checklist — types everywhere, meaningful unabbreviated names, no duplication, SOLID, one entry point, test-driven, verb function names, noun variable names, boolean names prefixed with is/has/can, no magic numbers or strings, no blank lines between statements with one blank line after every control block, idiomatic use of the language and framework in hand, no defensive null checks or swallowed exceptions, optimistic updates that roll back visibly when the request fails, destructive actions that are held not clicked, verb-labelled, off the primary path, red only for destruction, and gathered in a danger zone, and expensive submits that fire one request per intent — disabled on the first tap, spinner in place with the width locked, handler guarded with an idempotency key, landing on an ack or an error, re-enabled on the response and never on a timer. Every rule is checked against every file, every violation that survives a kill pass is fixed in place without asking first, and the only thing printed is the list of edits made plus anything that genuinely needed the user's decision — no review report, no PASS/FAIL tables. Use when the user says "/checklist", "check this against the rules", "does this follow the rules", "checklist review", "check the naming", "is this SOLID", "any magic numbers", "check the spacing", "is this pythonic", "too many null checks", "optimistic update", "is this delete button safe", "double submit", "the button fired twice", or the Turkish equivalents "kurallara uyuyor mu", "kontrol et". For an open-ended multi-perspective critique use tribunal; for improving code in place use sharpen; for rewriting use rewrite.
 ---
 
 # checklist — the sixteen-rule gate
 
-Sixteen rules. Each one gets a verdict. **PASS or FAIL, never "mostly".**
+Sixteen rules. Each one is checked, and each one that fails is **fixed**, not written up.
 
 Sibling of **tribunal**, and deliberately the opposite of it. `tribunal` opens the question — several
-lenses hunt for whatever is wrong. `checklist` closes it: the rules are fixed, known in advance, and the
-only output is which ones the code passes.
+lenses hunt for whatever is wrong. `checklist` closes it: the rules are fixed, known in advance, and
+the code is edited until it passes them. It does not hand back a review — it hands back a diff.
 
 The two failure modes it exists to prevent:
 
 - **The vibe review** — "looks good, maybe rename that". No rule cited, nothing verifiable, nothing
   the author can argue with or act on.
 - **The rule that was never checked** — the reviewer reads for bugs, never actually greps for
-  untyped signatures, and reports PASS on a rule they did not test.
+  untyped signatures, and leaves a rule untested while acting as if it were clean.
+- **The review that ends in a question** — a page of findings and a "shall I apply these?". The
+  violations were known; the edit is the answer.
 
 ---
 
@@ -29,7 +31,7 @@ not, default to the uncommitted diff; if the tree is clean, ask **one question**
 rule 5 (single entry) are invisible when you only see the changed lines.
 
 Every rule is checked against **every file in the target**. A rule you did not actually look for is
-reported as `NOT CHECKED`, never as PASS.
+not silently clean — either check it, or say in one line that you could not and why.
 
 ---
 
@@ -225,8 +227,8 @@ expected. This rule is about the inside of a body.
 **How to check:** grep the target for a blank line whose next non-empty line is `if`, `for`, `while`,
 `switch`, `try`, `foreach`; for a `}` closing a control block whose next line is neither blank, nor
 `}`, nor a chained `else`/`catch`/`finally`; and for any blank line inside a function body that is not
-one of those. Every hit of the last kind is reported twice — once as the blank line, once as the
-missing extraction it is standing in for.
+one of those. Every hit of the last kind is two edits — the blank line goes, and the run it was
+splitting becomes its own function.
 
 **FAIL evidence:** `SpawnService.cs:52 — blank line between two statements inside Spawn(); the four
 lines below it are a distinct job, so extract ResolveSpawnPoint()`.
@@ -513,95 +515,91 @@ never resolves`.
 
 ---
 
-## Finding shape (MUST)
+## Violation shape (MUST)
 
-A finding is only a finding when it carries all four:
+A violation is only a violation when it carries all four — the first three stay in your head, the
+fourth lands in the code:
 
 - **Rule** — which of the sixteen, by number.
 - **Where** — `file:line`. Not "the module".
 - **What** — one sentence naming the violation.
-- **Fix** — the concrete replacement. For a naming rule that means writing the new name out.
+- **Fix** — the concrete replacement, written into the code. For a naming rule that means the new
+  name, actually applied.
 
-No rule number, no finding. No `file:line`, no finding. "Consider maybe tidying this" is not a
-finding.
+No rule number, no violation. No `file:line`, no violation. "Consider maybe tidying this" is not a
+violation, and nothing vague ever becomes an edit.
 
-## Verify before reporting (MUST)
+## Verify before fixing (MUST)
 
-Before printing, re-read the code behind **every** FAIL and try to kill it: is that `any` actually
-inferred from a typed source? Is that "duplicate" one rule in two places, or two rules that happen to
-match today? Is `data` really a boolean? A FAIL that does not survive this pass is dropped, and the
-checklist line says it was considered and cleared.
+Before touching anything, re-read the code behind **every** FAIL and try to kill it: is that `any`
+actually inferred from a typed source? Is that "duplicate" one rule in two places, or two rules that happen to
+match today? Is `data` really a boolean? A FAIL that does not survive this pass is dropped and never
+fixed, and it is never mentioned — a violation that was not real produced no edit, so it produces no
+line.
 
 ---
 
-## Output
+## Fix it — do not ask (MUST)
 
-**Do not fix anything.** This skill reviews. Offer the fixes as a closing question; apply them only
-if the user says yes, and re-run the affected rules afterwards.
+**Every FAIL that survives the kill pass gets fixed, in place, immediately.** No "shall I apply
+these?", no closing question, no waiting for a yes. Running the skill *is* the yes.
 
-If a `ReportFindings` tool is available in the session, call it **once** with the findings, worst rule
-first, then do not repeat them as prose. Otherwise print the tables below.
+Fix in rule order, smallest edit that clears the rule and nothing else — no drive-by refactor, no
+rename the checklist did not demand, no reach outside the target. After the edits, **re-run every
+rule the fix touched** against the new code: a fix that clears rule 13 and breaks rule 11 is not
+done.
 
-### 1 — the checklist
+Exactly two kinds of finding are left unfixed, and both are named out loud:
 
-Every rule, every time, including the clean ones. A short checklist is a checklist that was not run.
+- **`NEEDS DECISION`** — the fix turns on something only the user knows: which of two duplicated
+  implementations is the real one, what a magic string actually means, what the missing test is
+  supposed to assert about intended behaviour. Ask that one question in its line; do not guess.
+- **`OUT OF TARGET`** — the violation's real home is a file the user did not point at. One line,
+  then leave it.
 
-| # | Rule | Verdict | Violations |
-| --- | --- | --- | --- |
-| 1 | Types everywhere | FAIL | 3 |
-| 2 | Meaningful names, no abbreviations | FAIL | 7 |
-| 3 | No repetition | PASS | 0 |
-| 4 | SOLID — SRP / OCP / LSP / ISP / DIP | FAIL | SRP 1, rest pass |
-| 5 | Single entry | PASS | 0 |
-| 6 | Test driven | FAIL | 2 behaviours untested |
-| 7 | Function names are verbs | PASS | 0 |
-| 8 | Variable names are nouns | FAIL | 1 |
-| 9 | Booleans prefixed is/has/can | FAIL | 4 |
-| 10 | No magic numbers or strings | FAIL | 5 |
-| 11 | Blank lines separate blocks, never code | FAIL | 6 |
-| 12 | Idiomatic for the language | FAIL | 3 |
-| 13 | No defensive guards | FAIL | 4 |
-| 14 | Act first, roll back on failure | FAIL | 2 |
-| 15 | Destructive actions — hold / verb / off-path / red / zone | FAIL | hold 1, verb 1, rest pass |
-| 16 | One intent, one request — disable / spinner / guard / land / re-enable | FAIL | disable 1, guard 1, rest pass |
+"I would rather not touch that" is neither of them.
 
-### 2 — the findings
+---
 
-| # | Rule | Where | Violation | Fix |
-| --- | --- | --- | --- | --- |
-| 1 | 1 | `parser.ts:44` | `parse` returns `any` | `parse(input: string): ParseResult` |
-| 2 | 2 | `service.ts:12` | `cfg` is an abbreviation | `configuration` |
-| 3 | 9 | `user.ts:8` | boolean named `active` | `isActive` |
-| 4 | 4 SRP | `Report.ts:1-210` | class parses, formats and writes files | split writing into `ReportWriter` |
-| 5 | 6 | `orders.ts:60` | discount branch has no test | test asserting discount at the boundary value |
-| 6 | 10 | `orders.ts:60` | bare `0.15` in the price calculation | `const VAT_RATE = 0.15` |
-| 7 | 11 | `orders.ts:52` | blank line splitting a body into two jobs | extract the second half as `applyDiscount()` |
-| 8 | 11 | `orders.ts:71` | no blank line after the `for` block | one blank line after the closing brace |
-| 9 | 12 | `loader.py:88` | `range(len(paths))` index loop building a list | comprehension over `enumerate(paths)` |
-| 10 | 13 | `orders.ts:14` | `try/catch` swallowing a parse failure | delete the catch, let it throw |
-| 11 | 14 | `LikeButton.vue:23` | state set after the await, catch never restores it | set first, restore the snapshot and warn on failure |
-| 12 | 15 hold | `ProjectSettings.vue:88` | `window.confirm` guards the delete | hold-to-confirm control with a filling ring |
-| 13 | 15 verb | `ProjectSettings.vue:94` | confirm button reads `OK` | `Delete project` |
-| 14 | 16 disable | `CheckoutForm.vue:57` | submit clickable until the await returns | set `isSubmitting` before the request fires |
-| 15 | 16 guard | `CheckoutForm.vue:61` | no idempotency key on POST /orders | mint a key per intent, send it on every retry |
+## Output — the edits, nothing else
 
-### 3 — the verdict
+**No report.** No sixteen-row checklist table, no findings table, no verdict section, no
+`ReportFindings` call, no "here is what I found". The check happens; only its result on disk is
+shown.
 
-One line, and it is mechanical: **every rule PASS → ship it. Any rule FAIL → not yet.** Then name the
-rules blocking, ordered by how many violations each carries.
+What gets printed is one short list of what changed, one line per edit:
 
-Then the honest limits: files not read, rules that could not be checked from source alone (rule 6
-usually needs the test suite run), and anything assumed rather than verified.
+```
+parser.ts:44         1   parse now returns ParseResult
+service.ts:12        2   cfg -> configuration
+user.ts:8            9   active -> isActive
+orders.ts:60        10   0.15 -> VAT_RATE
+orders.ts:14        13   swallowing catch deleted
+LikeButton.vue:23   14   state set before the request, snapshot restored on failure
+```
+
+Then, only if there are any, the ones that were not fixed — one line each, with the question or the
+reason:
+
+```
+NEEDS DECISION   orders.ts:60           6   discount test: is 0.15 applied at the threshold or above it?
+OUT OF TARGET    CheckoutForm.vue:61   16   idempotency key belongs in api/client.ts
+```
+
+Nothing else. No praise, no summary paragraph, no "want me to also…", no rules that passed — a rule
+that passed produced no edit, and an edit list is what the user asked for. If every rule passed and
+nothing needed changing, say exactly that in one line.
 
 ---
 
 ## MUST summary
 
 - Read the whole target — a diff in its surrounding file — before judging.
-- Check all sixteen rules against all files. Unchecked is `NOT CHECKED`, never PASS.
-- Every finding carries rule number, `file:line`, the violation, and the concrete fix.
-- Try to kill every FAIL before printing it; drop the ones that do not survive, and say so.
-- Print the full sixteen-row checklist even when rows pass.
-- Verdict is mechanical: one FAIL means not yet.
-- State what was not checked.
-- Review only — fix only if the user asks.
+- Check all sixteen rules against all files; a rule you could not check gets one line saying so.
+- Every violation carries rule number, `file:line`, the violation, and the concrete fix.
+- Try to kill every FAIL before fixing it; drop the ones that do not survive, silently.
+- Fix every surviving FAIL in place, without asking — smallest edit that clears the rule, nothing else.
+- Re-run every rule a fix touched; a fix that breaks another rule is not done.
+- Leave only `NEEDS DECISION` and `OUT OF TARGET`, and name both in one line each.
+- Print the edit list and nothing else — no checklist table, no findings table, no verdict, no
+  `ReportFindings` call.
