@@ -1,14 +1,14 @@
 ---
-name: reskin
-description: Redesigns and re-lays-out an interface from scratch in scored rounds, obsessing over grouping, layout, alignment, sizing, spacing, hierarchy, contrast and states. Each round designs a fresh version, renders it, scores it against a frozen design rubric, and fights it head-to-head (VS) against the reigning design; the loop runs until a challenger fails to win on both score and VS, then reports a full analysis plus a round-by-round table. Use when the user says "/reskin", "redesign this screen", "restyle it", "relayout this page", "rearrange this screen", "make this UI better", "the layout looks off", "fix the spacing/alignment". For rewriting logic use rewrite; for improving existing code in place use sharpen.
+name: ui-redesign
+description: Redesigns and re-lays-out an interface from scratch in scored rounds, obsessing over grouping, layout, alignment, sizing, spacing, hierarchy, contrast and states. Each round designs a fresh version, renders it, scores it against a frozen design rubric, and fights it head-to-head (VS) against the reigning design - judged blind in a separate agent that is not told which version is the incumbent, and only after the round renders clean with no console errors. The loop runs until two challengers lose in a row, then reports a full analysis plus a round-by-round table. Use when the user says "/ui-redesign", "redesign this screen", "restyle it", "relayout this page", "rearrange this screen", "make this UI better", "the layout looks off", "fix the spacing/alignment". For changing logic rather than layout use code-improve.
 ---
 
-# reskin — redesign the interface
+# ui-redesign — redesign the interface
 
 Design the thing **again, from a blank canvas**; **render it**; **score it**; **fight it** against
 the current design; repeat until a fresh attempt stops winning.
 
-Third sibling of **rewrite** (rewrite the code) and **sharpen** (improve it in place). This one
+Sibling of **code-improve**, which runs the same tournament on logic. This one
 judges *what it looks like and how it reads*, and it is ruthless about the boring things — things
 grouped where the task expects them, edges that line up, one spacing scale, sizes that mean
 something, contrast you can actually read.
@@ -25,7 +25,7 @@ code rubric.
 
 ## 0. Pick the target and pin the content
 
-If the user passed an argument, that is the target (`/reskin the settings panel`). If not, ask
+If the user passed an argument, that is the target (`/ui-redesign the settings panel`). If not, ask
 **one question**: which screen, panel or component.
 
 **Read the real context, not just the file.** The parent layout/shell, the routed page wrapper,
@@ -46,7 +46,7 @@ Then pin down three things — all frozen for the whole run:
 
 ## 1. Setup (round 0)
 
-`tournament.md` §1, work folder `<scratchpad>/reskin/<target-slug>/`, each `r<N>/` holding the
+`tournament.md` §1, work folder `<scratchpad>/ui-redesign/<target-slug>/`, each `r<N>/` holding the
 source *and* the rendered screenshot. One addition: **render the current design and look at it**,
 then score it with the alignment audit (§4) already run against it.
 
@@ -75,19 +75,28 @@ subtree still has them. A layout win that drops a listener is a regression, not 
 child must change for the parent's layout to work, make the child **fluid** (fill its slot) rather
 than hardcoding sizes in the parent.
 
-**(c) Render it and look at it.** MUST. Produce an actual rendered view — screenshot the page, the
-window, the component, the scene view. **Never score a design you have not seen as pixels**; judging
-from source is how misaligned, overflowing, unreadable layouts get called "clean". Render the stress
-content too, and every declared viewport.
+**(c) Render it and look at it — this is the gate.** MUST. Produce an actual rendered view —
+screenshot the page, the window, the component, the scene view. **Never score a design you have not
+seen as pixels**; judging from source is how misaligned, overflowing, unreadable layouts get called
+"clean". Render the stress content too, and every declared viewport.
+
+This is where `tournament.md` §3's gate lands for a design: **it must build, render and come back
+with a clean console**, and whatever type check or linter the project runs must pass. A round that
+does not render, or that renders with errors in the console, **is lost** — one repair attempt, then
+the round ends. Nothing is scored off a screenshot that a warning produced.
 
 **(d) Run the alignment audit** (§4) and walk `references/checklist.md` in full — accessibility,
 responsive, mathematical alignment, contrast, dark/light, components, variants. Write the findings
 down. Fix what they catch before scoring.
 
-**(e) Score** with the frozen rubric (§3), then **VS** the champion (§5).
+**(e) Score** with the frozen rubric (§3), then **VS** the champion (§5) — **blind, in a separate
+agent**: the two screenshots go over as A and B, same content and viewport, without saying which one
+is the incumbent (`tournament.md` §4).
 
-**(f) Verdict.** The challenger takes the throne only if it wins **both** the total score **and** the
-VS. Otherwise the loop ends.
+**(f) Verdict.** The challenger takes the throne if it **rendered clean and won the VS**; the total
+score is the work queue and the tie-break, not the verdict. A single loss does not end the loop —
+**two consecutive losses** do (`tournament.md` §5), and the round after a loss must bring a
+different design idea, not the same one with different padding.
 
 ## 3. Scoring (the design rubric)
 
@@ -141,7 +150,8 @@ above **7** on Layout, grouping & alignment, period.
 
 `tournament.md` §4, run **side by side, same content, same viewport**, screenshots next to each
 other — the stress case included, because that is where designs actually separate. Every criterion
-verdict names something visible in the render.
+verdict names something visible in the render. The judging agent sees two screenshots labelled A and
+B and nothing else: a judge told which design is the new one is no longer judging the pixels.
 
 **Red lines** — automatic VS loss regardless of score:
 
@@ -161,11 +171,12 @@ data).
 
 Format: `tournament.md` §6. This skill's table:
 
-| Round | Design idea | Alignment audit | Score | VS | Champion |
-| --- | --- | --- | --- | --- | --- |
-| 0 | current layout | 4 misses | 58 | — | R0 |
-| 1 | two-column, action anchored | clean | 76 | R1 wins (5-1) | R1 |
-| 2 | single column, card grid | 2 misses | 70 | R1 wins (4-2) | R1 |
+| Round | Design idea | Render | Alignment audit | Score | VS | Champion |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0 | current layout | clean | 4 misses | 58 | — | R0 |
+| 1 | two-column, action anchored | clean | clean | 76 | R1 wins (5-1) | R1 |
+| 2 | single column, card grid | console errors | — | — | — | R1 |
+| 3 | sidebar + dense table | clean | 2 misses | 70 | R1 wins (4-2) | R1 |
 
 Under **How we did it**, give the winning design's skeleton and scales — layout structure, grouping,
 spacing/type scale, hierarchy decisions — and which idea from a losing round survived into it. Under
@@ -183,9 +194,13 @@ what would need a bigger change than this loop allows (splitting a component, a 
 - Freeze the job, the content set (with a stress case) and the constraints before round 1.
 - Declare the spacing/type/size/colour scales per round and never step outside them; obey existing
   project tokens.
-- **Render it and look at it** — never score a design from source alone.
+- **Render it and look at it** — never score a design from source alone. A round that fails to
+  render or renders with console errors is lost after one repair attempt.
 - Carry every binding through a restructure; a lost listener is an automatic loss.
 - Run the alignment audit and `references/checklist.md` every round; unfixed misses cap Layout,
   grouping & alignment at 7.
-- Ties go to the champion; red lines are an automatic loss. 6 rounds maximum.
+- Judge the VS blind in a separate agent — two screenshots, A and B, incumbent unnamed; the VS
+  decides the throne, the score is the queue and the tie-break.
+- Ties go to the champion; red lines are an automatic loss. The loop ends on two consecutive losses,
+  and 6 rounds maximum.
 - Final analysis: five headings plus the table, nothing skipped.

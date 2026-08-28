@@ -1,13 +1,13 @@
 ---
-name: report
-description: Runs a data, measurement, root-cause or comparison study and delivers it as a dated, self-contained single-file HTML report. Use when the user says "/report", "analyse this data", "write a report", "measure this", "compare A and B", "find the root cause", "characterise this", "which one is better", "summarise these logs", or the Turkish equivalents "analiz et", "rapor çıkar", "raporla", "ölç", "karşılaştır", "kök neden bul". Fits log/CSV/raw-data studies, A-B comparisons, tuning, performance measurement, regression investigation, survey and metric summaries. Do NOT use for reviewing source code — that is tribunal — or for plain reading and searching a codebase.
+name: data-report
+description: Runs a data, measurement, root-cause or comparison study and delivers it as a dated, self-contained single-file HTML report. Use when the user says "/data-report", "analyse this data", "write a report", "measure this", "compare A and B", "find the root cause", "characterise this", "which one is better", "summarise these logs", or the Turkish equivalents "analiz et", "rapor çıkar", "raporla", "ölç", "karşılaştır", "kök neden bul". Fits log/CSV/raw-data studies, A-B comparisons, tuning, performance measurement, regression investigation, survey and metric summaries. Do NOT use for reviewing source code — that is code-audit — or for plain reading and searching a codebase.
 ---
 
 # report — measure it and write it up
 
 Answer a question **with numbers you can defend**, then hand back a single HTML file anyone can open.
 
-The fifth sibling of **rewrite**, **sharpen**, **reskin** and **tribunal**. Those four act on code;
+Sibling of **code-improve**, **ui-redesign**, **code-rules** and **code-audit**. Those act on code;
 this one acts on *data*. Same house discipline — evidence over vibes, stated limits, no pretending to
 be more certain than the measurement allows — but the artefact is a report rather than a diff.
 
@@ -95,8 +95,8 @@ fig, ax = plt.subplots(figsize=(10, 5))
 img_tag = save_and_embed(fig, "short-name", ANALYSIS_DIR)   # returns <img src="data:...">
 ```
 
-`SKILL_DIR` is this skill's own folder: `${CLAUDE_PLUGIN_ROOT}/skills/report` when installed as a
-plugin, `~/.claude/skills/report` when copied in by hand. Resolve it once, do not hardcode it.
+`SKILL_DIR` is this skill's own folder: `${CLAUDE_PLUGIN_ROOT}/skills/data-report` when installed
+as a plugin, `~/.claude/skills/data-report` when copied in by hand. Resolve it once, do not hardcode it.
 
 If matplotlib is missing, use the project's existing Python environment before reaching for
 `pip install`; if there is none, tell the user and fall back to inline SVG or an HTML table.

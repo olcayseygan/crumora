@@ -1,15 +1,16 @@
 ---
-name: tribunal
-description: Puts code on trial before a panel of independent lenses, then makes those lenses argue with each other until they converge on a shared verdict. Each lens reviews blind, every finding is cross-examined by a lens that wants to kill it, conflicts are resolved as explicit trade-offs rather than averaged away, and the result is a ranked findings table with recorded dissent plus a full analysis. Use when the user says "/tribunal", "put this on trial", "audit this code", "red-team this", "review this from every angle", "critique this", "what is actually wrong with this", "is this any good". For a fixed pass/fail rule check use checklist, for rewriting use rewrite, for improving in place use sharpen, for UI use reskin. This skill judges code — for measuring data and writing the result up as a report, use report instead.
+name: code-audit
+description: Puts code on trial before a panel of independent lenses, then makes those lenses argue with each other until they converge on a shared verdict. Each lens reviews blind, every finding is cross-examined by a lens that wants to kill it, conflicts are resolved as explicit trade-offs rather than averaged away, and the result is a ranked findings table with recorded dissent plus a full analysis. Use when the user says "/code-audit", "put this on trial", "audit this code", "red-team this", "review this from every angle", "critique this", "what is actually wrong with this", "is this any good". For a fixed pass/fail rule check that also fixes what it finds use code-rules, for changing the code use code-improve, for an interface use ui-redesign. This skill judges code — for measuring data and writing the result up as a report, use data-report instead.
 ---
 
-# tribunal — put it on trial
+# code-audit — put it on trial
 
 Read the code through **several independent pairs of eyes**, then put those eyes **in a fight**, and
 report only what survives.
 
-Fourth sibling of **rewrite**, **sharpen** and **reskin**. Those three build; this one judges.
-Its opposite is **checklist**: fixed rules, PASS or FAIL. This one opens the question instead.
+Sibling of **code-improve** and **ui-redesign**. Those two build; this one judges.
+Its opposite is **code-rules**: fixed rules, and every violation fixed rather than argued. This one
+opens the question instead.
 Same house style: rounds, evidence over vibes, an explicit table at the end, and no pretending to be
 more certain than the evidence allows.
 
@@ -24,7 +25,7 @@ The two failure modes it exists to prevent:
 
 ## 0. Pick the target and the panel
 
-If the user passed an argument, that is the target (`/tribunal src/parser.ts`, `/tribunal the working
+If the user passed an argument, that is the target (`/code-audit src/parser.ts`, `/code-audit the working
 diff`). If not, ask **one question**: what to review — and default to the uncommitted diff if the
 repo has one.
 
@@ -101,7 +102,7 @@ because a defect three lenses found independently is usually the important one.
 - Rank the survivors: **severity first, confidence second, blast radius third**.
 - Reach a **shared verdict** on the target as a whole, one of: *ship it* · *ship it with the
   blockers fixed* · *needs rework* · *wrong approach, rebuild* (in the last case, hand off to
-  `rewrite`).
+  `code-improve`).
 - **Record dissent (MUST).** If a lens still disagrees after the fight, print its objection as a
   named dissent line. Do not manufacture unanimity — a suppressed objection is exactly the one the
   author needed to hear.

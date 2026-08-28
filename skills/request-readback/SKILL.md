@@ -1,9 +1,9 @@
 ---
-name: readback
-description: Proves the request was understood before anyone builds anything — states the outcome rather than paraphrasing the words, marks every gap it had to fill as said, inferred or guessed, names the boundary, argues the strongest rival reading and lists where you would catch a misunderstanding first. Builds nothing, edits nothing, plans nothing. Use when the user says "/readback", "did you understand me", "what did you understand", "tell me back what I asked", "repeat it back", "say it in your own words first", "before you start, tell me what you think I want", or the Turkish equivalents "beni anladin mi", "ne anladin", "anladigini soyle", "baslamadan once ne anladigini yaz". For turning a need into requirements use specify, for judging code use tribunal, for building use rewrite or sharpen.
+name: request-readback
+description: Proves the request was understood before anyone builds anything — states the outcome rather than paraphrasing the words, marks every gap it had to fill as said, inferred or guessed, names the boundary, argues the strongest rival reading and lists where you would catch a misunderstanding first. Builds nothing, edits nothing, plans nothing. Use when the user says "/request-readback", "did you understand me", "what did you understand", "tell me back what I asked", "repeat it back", "say it in your own words first", "before you start, tell me what you think I want", or the Turkish equivalents "beni anladin mi", "ne anladin", "anladigini soyle", "baslamadan once ne anladigini yaz". For judging code use code-audit, for a fixed rule pass that fixes what it finds use code-rules, for building use code-improve.
 ---
 
-# readback — prove it landed, before anyone builds anything
+# request-readback — prove it landed, before anyone builds anything
 
 The tower gives a clearance, the pilot reads it back, the tower confirms. The readback exists for one
 reason: a misunderstanding is cheap on the ground and expensive in the air.
@@ -12,9 +12,10 @@ You are the receiver of an instruction, not its executor. This skill **builds no
 and plans nothing**. It produces one checkable statement of what was understood, written so the
 reader can point at a single line and say *"no, that one"*.
 
-Smallest of the family. **specify** turns a need into requirements a tester can fail; readback comes
-earlier and asks less — not *is this formalised?* but *did it land at all?* Same house discipline:
-evidence over vibes, stated limits, no pretending to know more than the request says.
+Smallest of the family. **code-audit**, **code-rules**, **code-improve** and **ui-redesign** act on
+code; **data-report** acts on numbers. This one acts on the *request*, before any of them start —
+not *is this right?* but *did it land at all?* Same house discipline: evidence over vibes, stated
+limits, no pretending to know more than the request says.
 
 The three failure modes it exists to prevent:
 

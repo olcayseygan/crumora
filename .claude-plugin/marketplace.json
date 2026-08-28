@@ -10,8 +10,8 @@
     {
       "name": "crumora",
       "displayName": "crumora",
-      "description": "Nine skills that redo your work as a tournament: rewrite rebuilds it from scratch, sharpen improves it in place with reviewable diffs, reskin redesigns and re-lays-out the interface, tribunal puts the code on trial before a panel of lenses that argue with each other, checklist gates it against sixteen fixed rules with PASS or FAIL, report measures the data and writes the result up as a self-contained HTML report, specify turns a raw need text into atomic testable requirements, diagram draws how it works without letting the picture turn into a wall, and readback hands your request back as consequences you can reject before any work starts. Every attempt is scored against a frozen rubric, fought head-to-head against the reigning champion, and reported with a round-by-round table.",
-      "version": "5.7.0",
+      "description": "Six skills that redo your work as a tournament: code-improve improves the code in scored rounds - in place with reviewable diffs, or rebuilt from scratch on a different approach - ui-redesign redesigns and re-lays-out the interface, code-audit puts the code on trial before a panel of lenses that argue with each other, code-rules gates it against a fixed 28-rule set and edits the code until it passes them, handing back the edits instead of a report, data-report measures the data and writes the result up as a self-contained HTML report, and request-readback hands your request back as consequences you can reject before any work starts. Every attempt runs the project's build, type check, linter and tests before it is scored at all, is scored against a frozen rubric, is fought head-to-head against the reigning champion by a blind judge that is not told which version is the incumbent, and is reported with a round-by-round table.",
+      "version": "6.0.0",
       "author": {
         "name": "Olcay Seygan",
         "url": "https://github.com/olcayseygan"
@@ -25,8 +25,7 @@
         "rewrite",
         "analysis",
         "reporting",
-        "requirements",
-        "diagram"
+            "code-quality-gate"
       ],
       "source": "./",
       "homepage": "https://github.com/olcayseygan/crumora",
