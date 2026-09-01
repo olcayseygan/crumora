@@ -7,7 +7,7 @@ description: Runs a data, measurement, root-cause or comparison study and delive
 
 Answer a question **with numbers you can defend**, then hand back a single HTML file anyone can open.
 
-Sibling of **ui-redesign** and **codify**. Those act on code;
+Sibling of **redesign** and **codify**. Those act on code;
 this one acts on *data*. Same house discipline — evidence over vibes, stated limits, no pretending to
 be more certain than the measurement allows — but the artefact is a report rather than a diff.
 

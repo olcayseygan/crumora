@@ -9,15 +9,15 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 
 | Skill | Move | Answers |
 | --- | --- | --- |
-| **`ui-redesign`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
+| **`redesign`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
 | **`codify`** | checks the code against a fixed rule set and edits until it passes | *does it pass, rule by rule?* |
 | **`data-report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
 | **`muster`** | reads a source and rewrites every entry in it as a box you can tick | *did we actually do all of it?* |
-| **`request-readback`** | starts nothing; hands the request back as consequences | *did I understand what you asked?* |
+| **`readback`** | starts nothing; hands the request back as consequences | *did I understand what you asked?* |
 
-Each name says what it acts on and what it does to it: `ui-redesign` builds, `codify` judges and
-then repairs — printing edits instead of prose — and `data-report`, `muster` and `request-readback`
-write it down. What `ui-redesign` adds is the tournament around the work: every attempt is scored,
+Each name says what it acts on and what it does to it: `redesign` builds, `codify` judges and
+then repairs — printing edits instead of prose — and `data-report`, `muster` and `readback`
+write it down. What `redesign` adds is the tournament around the work: every attempt is scored,
 fought against the version it wants to replace, and thrown away if it doesn't win.
 
 Redoing something "to see if it comes out better" usually ends in a vibe-based verdict: the new one
@@ -58,21 +58,21 @@ Round 2   another attempt →  gate  →  score  →  blind VS champion  →  wi
   verified.
 - **Six rounds, hard cap.**
 
-`ui-redesign` reads its rulebook from a separate file —
+`redesign` reads its rulebook from a separate file —
 [`skills/_shared/tournament.md`](skills/_shared/tournament.md) — holding the setup invariants, the
 rubric, the scoring and VS rules, the stop-and-apply steps and the final-analysis format. Its own
 `SKILL.md` carries only what is specific to its move.
 
-`codify`, `data-report`, `muster` and `request-readback` are the odd ones out: none of them produces
+`codify`, `data-report`, `muster` and `readback` are the odd ones out: none of them produces
 a version to score. In `codify` the fight happens between a rule and a violation that has to survive
 an attempt to kill it; in `data-report` between a claim and the data that has to back it; in `muster`
-between an entry in the source and a box nobody could tick honestly; in `request-readback` between a
+between an entry in the source and a box nobody could tick honestly; in `readback` between a
 reading of the request and the rival reading that wants to replace it. The discipline is identical —
 nothing reaches you until something tried to kill it.
 
-## `ui-redesign` — redesign the interface
+## `redesign` — rebuild the interface
 
-The pixel-level sibling: redesigns a surface from a blank canvas and obsesses over the boring things
+The pixel-level one: redesigns a surface from a blank canvas and obsesses over the boring things
 that actually decide whether a UI reads — edges that line up, one spacing scale, sizes that mean
 something, contrast you can read.
 
@@ -109,8 +109,8 @@ something, contrast you can read.
   craft lives; this skill is the harness.
 
 ```
-/ui-redesign the settings panel
-/ui-redesign the match HUD
+/redesign the settings panel
+/redesign the match HUD
 ```
 
 ## `codify` — check it against the rules and fix what fails
@@ -195,7 +195,7 @@ tick, as one self-contained HTML file that remembers what was ticked.
 /muster turn our PR review comments into a checklist
 ```
 
-## `request-readback` — check it landed
+## `readback` — check it landed
 
 The one that starts nothing. A clearance is read back before the aircraft moves; this hands your
 request back in a form you can reject, so the misunderstanding surfaces before the work does.
@@ -219,14 +219,14 @@ request back in a form you can reject, so the misunderstanding surfaces before t
 - Shorter than the thing it checks, and written in the language you asked in.
 
 ```
-/request-readback
-/request-readback the whole conversation
-/request-readback docs/ticket-482.md
+/readback
+/readback the whole conversation
+/readback docs/ticket-482.md
 ```
 
 ## What you get at the end
 
-When a run is a tournament — `ui-redesign` — it closes with five headings, always:
+When a run is a tournament — `redesign` — it closes with five headings, always:
 
 - **What we set out to do** — the spec / contract / design job
 - **What we did** — which version won, how many rounds, how often the throne changed hands, what
@@ -258,7 +258,7 @@ to register, easy to edit). Pick one — installing both gives you two copies of
 ### Option 1 — as a plugin (recommended)
 
 This repo is a Claude Code marketplace named `olcayseygan`, holding a single plugin called `crumora`
-— so the skills show up as `crumora:codify`, `crumora:ui-redesign`, `crumora:data-report` and
+— so the skills show up as `crumora:codify`, `crumora:redesign`, `crumora:data-report` and
 so on.
 In Claude Code:
 
@@ -325,17 +325,17 @@ it.
 
 #### Install just one
 
-`codify`, `data-report`, `muster` and `request-readback` are fully independent — take one on its own,
+`codify`, `data-report`, `muster` and `readback` are fully independent — take one on its own,
 copying the whole folder (`codify` carries its `rules/`):
 
 ```bash
 cp -r crumora/skills/codify ~/.claude/skills/
 ```
 
-`ui-redesign` reads the shared rulebook, so it needs `_shared/` next to it:
+`redesign` reads the shared rulebook, so it needs `_shared/` next to it:
 
 ```bash
-cp -r crumora/skills/ui-redesign crumora/skills/_shared ~/.claude/skills/
+cp -r crumora/skills/redesign crumora/skills/_shared ~/.claude/skills/
 ```
 
 #### What it should look like afterwards
@@ -343,7 +343,7 @@ cp -r crumora/skills/ui-redesign crumora/skills/_shared ~/.claude/skills/
 ```
 ~/.claude/skills/
 ├── _shared/tournament.md      ← shared rulebook, not a skill
-├── ui-redesign/
+├── redesign/
 │   ├── SKILL.md
 │   └── references/
 ├── codify/
@@ -351,7 +351,7 @@ cp -r crumora/skills/ui-redesign crumora/skills/_shared ~/.claude/skills/
 │   └── rules/
 │       ├── core.md
 │       └── idiom/
-├── request-readback/SKILL.md
+├── readback/SKILL.md
 ├── muster/
 │   ├── SKILL.md
 │   └── references/
@@ -363,16 +363,16 @@ cp -r crumora/skills/ui-redesign crumora/skills/_shared ~/.claude/skills/
 
 The folder name and the `name:` field in the file's front matter must match, and the file must stay
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
-rather than a note. `data-report`, `ui-redesign` and `muster` carry `references/` (and
+rather than a note. `data-report`, `redesign` and `muster` carry `references/` (and
 `data-report` a `scripts/`), and `codify` carries `rules/` — copy the whole folder, not just the one
-file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `ui-redesign` reads at the
+file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `redesign` reads at the
 start of a run.
 
 #### Verify
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
-appear in a running session. Then type `/` and look for `ui-redesign`,
-`codify`, `data-report`, `muster`, `request-readback`, or just ask *"which skills do you have?"*.
+appear in a running session. Then type `/` and look for `redesign`,
+`codify`, `data-report`, `muster`, `readback`, or just ask *"which skills do you have?"*.
 
 #### Update
 

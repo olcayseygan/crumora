@@ -1,7 +1,7 @@
 {
   "name": "crumora",
-  "description": "Five skills that redo your work and prove the result: ui-redesign redesigns and re-lays-out the interface in scored rounds, codify gates the code against a fixed rule set and edits it until it passes, handing back the edits instead of a report, data-report measures the data and writes the result up as a self-contained HTML report, muster musters every entry out of a source and rewrites each one as a box you can tick, shipping a single-file checklist instead of a summary, and request-readback hands your request back as consequences you can reject before any work starts. The scored ones run the project's build, type check, linter and tests before an attempt is scored at all, score it against a frozen rubric, fight it head-to-head against the reigning champion by a blind judge that is not told which version is the incumbent, and report it with a round-by-round table.",
-  "version": "9.0.0",
+  "description": "Five skills that redo your work and prove the result: redesign rebuilds and re-lays-out the interface in scored rounds, codify gates the code against a fixed rule set and edits it until it passes, handing back the edits instead of a report, data-report measures the data and writes the result up as a self-contained HTML report, muster musters every entry out of a source and rewrites each one as a box you can tick, shipping a single-file checklist instead of a summary, and readback hands your request back as consequences you can reject before any work starts. The scored ones run the project's build, type check, linter and tests before an attempt is scored at all, score it against a frozen rubric, fight it head-to-head against the reigning champion by a blind judge that is not told which version is the incumbent, and report it with a round-by-round table.",
+  "version": "10.0.0",
   "author": {
     "name": "Olcay Seygan",
     "url": "https://github.com/olcayseygan"
