@@ -12,13 +12,14 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | **`redesign`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
 | **`codify`** | checks the code against a fixed rule set and edits until it passes | *does it pass, rule by rule?* |
 | **`data-report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
-| **`muster`** | reads a source and rewrites every entry in it as a box you can tick | *did we actually do all of it?* |
+| **`muster`** | checks the interface against 73 UX patterns and edits until it passes | *does this screen pass muster?* |
 | **`readback`** | starts nothing; hands the request back as consequences | *did I understand what you asked?* |
 
-Each name says what it acts on and what it does to it: `redesign` builds, `codify` judges and
-then repairs — printing edits instead of prose — and `data-report`, `muster` and `readback`
-write it down. What `redesign` adds is the tournament around the work: every attempt is scored,
-fought against the version it wants to replace, and thrown away if it doesn't win.
+Each name says what it acts on and what it does to it: `redesign` builds, `codify` and `muster`
+judge and then repair — printing edits instead of prose, one against the code and one against the
+interface — and `data-report` and `readback` write it down. What `redesign` adds is the tournament
+around the work: every attempt is scored, fought against the version it wants to replace, and thrown
+away if it doesn't win.
 
 Redoing something "to see if it comes out better" usually ends in a vibe-based verdict: the new one
 *feels* cleaner, so it ships. These skills replace the vibe with a frozen rubric, head-to-head
@@ -64,11 +65,10 @@ rubric, the scoring and VS rules, the stop-and-apply steps and the final-analysi
 `SKILL.md` carries only what is specific to its move.
 
 `codify`, `data-report`, `muster` and `readback` are the odd ones out: none of them produces
-a version to score. In `codify` the fight happens between a rule and a violation that has to survive
-an attempt to kill it; in `data-report` between a claim and the data that has to back it; in `muster`
-between an entry in the source and a box nobody could tick honestly; in `readback` between a
-reading of the request and the rival reading that wants to replace it. The discipline is identical —
-nothing reaches you until something tried to kill it.
+a version to score. In `codify` and `muster` the fight happens between a rule and a violation that
+has to survive an attempt to kill it; in `data-report` between a claim and the data that has to back
+it; in `readback` between a reading of the request and the rival reading that wants to replace it.
+The discipline is identical — nothing reaches you until something tried to kill it.
 
 ## `redesign` — rebuild the interface
 
@@ -162,37 +162,43 @@ self-contained single-file HTML report an executive and an engineer can read the
 /data-report what happened to p99 latency last week
 ```
 
-## `muster` — turn a source into boxes
+## `muster` — make the interface pass
 
-The one that writes nothing of its own: it takes a body of practice — a pattern library, a style
-guide, a spec, a talk, a team's review habits — and hands back a checklist somebody can actually
-tick, as one self-contained HTML file that remembers what was ticked.
+The UX gate. Seventy-three patterns from
+[designmotionhq.com/patterns](https://designmotionhq.com/patterns) ship inside the skill, every
+threshold kept verbatim, and each one that applies to the screen in front of you is checked and
+fixed in place. `codify` gates the code; this gates the interface.
 
-- **Every entry, counted.** The complete list is collected and counted *before* a single check is
-  written, and the source count and the page count have to agree. Pagination, lazy-loading and a
-  filter defaulting to one category are chased down; a page showing 12 of 73 is not the source.
-  Anything deliberately left out is named out loud rather than quietly dropped.
-- **A box is a state, not an instruction.** Written as the passing condition in the present tense —
-  *"errors appear after the field loses focus"*, never *"show errors on blur"* — so ticking it is a
-  claim about the artefact rather than a line of backlog wearing a costume.
-- **One place, one yes or no.** Every box names where to look, and two people looking at the same
-  screen give the same answer. *"Use good spacing"* does not survive the kill pass; *"every gap
-  comes from the declared spacing scale"* does. Numbers the source gave — 400 ms, 4.5:1, 44 px —
-  are kept verbatim, because they are most of what makes a box checkable.
-- **Interpretation is labelled as interpretation.** Where the source gave a title and a tagline and
-  the checks underneath are the skill's reading of it, that is marked on the card and stated in the
-  closing message. You always know which lines you can take up with the source.
-- **The source's own grouping and order survive** — no invented taxonomy, no alphabetising a list
-  that was ordered by argument.
-- **The page is the deliverable**: search across titles and checks, group filters, an *only
-  unfinished* view, overall and per-group progress, ticks that persist in the browser and one
-  deliberate way to clear them, light and dark, keyboard focus, reduced motion.
-- Checks are written in the language you are speaking; entry names keep their original spelling.
+- **The pattern decides what fires, not the vibe.** A trigger index is walked end to end before any
+  rule is read — a pattern fires when its subject exists in the target. Sixty of the seventy-three
+  not firing on one component is normal; deciding that without walking the index is not.
+- **Numbers are the rule.** 300ms tooltip delay, 4.5:1 body contrast, 44px hit area, 800ms autosave
+  debounce, 2px focus ring at 2px offset, 3 visible toasts, `#121212` not `#000000`, y-axis at zero.
+  The value goes into the code as stated, never rounded to something that felt close.
+- **Every violation cites `slug#n` and `file:line`.** No pattern number, no violation. No line
+  number, no violation. *"Feels cramped"* never becomes an edit; `proximity-rule#3` with both gaps
+  named does.
+- **Nothing is fixed until it survives a kill attempt.** Is that `outline: none` already replaced
+  three lines down? Is the empty state rendered by the parent? A violation that doesn't survive is
+  dropped and never mentioned — it produced no edit, so it produces no line.
+- **It fixes, it doesn't ask.** Running the skill is the yes. Wrong mechanics first, then reach and
+  access, then the missing states, then structure, then surface and motion, then the words — because
+  a shadow tuned on a card about to be restructured is work done twice.
+- **Then it looks at it.** Type check, lint, tests, and where the project can be run, the target is
+  rendered and the fixed states are confirmed: the ring appears on Tab, the sheet locks body scroll,
+  the skeleton matches the loaded size.
+- **Two things are left unfixed, both named**: a `NEEDS DECISION` where only you know the answer
+  (how long the undo window should be, what the empty state should invite) and an `OUT OF TARGET`
+  where the real home is a file you didn't point at.
+- **Disagreements have a fixed order**: accessibility beats aesthetics, reachability beats
+  decoration, safety beats speed, recoverability beats friction, the project's own scale beats a
+  derived one. A `.muster.md` at the repo root can disable or relax a pattern — with a reason, which
+  is required, and never silently for contrast or focus.
 
 ```
-/muster https://designmotionhq.com/patterns
-/muster docs/style-guide.md
-/muster turn our PR review comments into a checklist
+/muster src/components/BoardCard.tsx
+/muster the checkout screen
+/muster --only toast-notifications,focus-states
 ```
 
 ## `readback` — check it landed
@@ -326,7 +332,7 @@ it.
 #### Install just one
 
 `codify`, `data-report`, `muster` and `readback` are fully independent — take one on its own,
-copying the whole folder (`codify` carries its `rules/`):
+copying the whole folder (`codify` carries its `rules/`, `muster` its `patterns/`):
 
 ```bash
 cp -r crumora/skills/codify ~/.claude/skills/
@@ -354,7 +360,7 @@ cp -r crumora/skills/redesign crumora/skills/_shared ~/.claude/skills/
 ├── readback/SKILL.md
 ├── muster/
 │   ├── SKILL.md
-│   └── references/
+│   └── patterns/
 └── data-report/
     ├── SKILL.md
     ├── references/
@@ -363,9 +369,9 @@ cp -r crumora/skills/redesign crumora/skills/_shared ~/.claude/skills/
 
 The folder name and the `name:` field in the file's front matter must match, and the file must stay
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
-rather than a note. `data-report`, `redesign` and `muster` carry `references/` (and
-`data-report` a `scripts/`), and `codify` carries `rules/` — copy the whole folder, not just the one
-file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `redesign` reads at the
+rather than a note. `data-report` and `redesign` carry `references/` (and `data-report` a
+`scripts/`), `codify` carries `rules/` and `muster` carries `patterns/` — copy the whole folder, not
+just the one file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `redesign` reads at the
 start of a run.
 
 #### Verify

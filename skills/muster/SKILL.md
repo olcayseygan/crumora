@@ -1,153 +1,242 @@
 ---
 name: muster
-description: Turns a body of practice into a checklist somebody can actually tick. It pulls every entry out of a source — a pattern library, a style guide, a spec, a talk, a team's review habits, a codebase's own conventions — rewrites each one as a binary pass/fail line, and ships the result as a single self-contained HTML checklist that remembers what was ticked. Enumeration is counted, not eyeballed: the source's entry count and the checklist's entry count must match, and anything deliberately left out is named. Use when the user says "/muster", "turn this into a checklist", "make a checklist out of this page", "extract all the patterns from this", "list everything here as checks", "codify our review rules", "give me a QA list for this", or the Turkish equivalents "checklist yap", "kontrol listesi cikar", "buradaki tum X'leri cikart", "maddelere dok", "kurallara dok". For a fixed rule pass that fixes what it finds use codify, for measuring data and writing it up use data-report.
+description: Makes an interface pass muster against the 73 UX patterns of designmotionhq.com/patterns — bundled offline, every threshold kept verbatim — and fixes each violation in place instead of writing a review. Covers focus rings, hover on touch, z-index and stacking, tokens and scales, grid, radius, dark mode, contrast, shadows and depth, motion timing and easing, the 400ms threshold, loading and skeletons, optimistic UI, errors, autosave, undo, destructive actions, disabled buttons, modals, sheets, dropdowns, context menus, tooltips, toasts, tabs, accordions, forms, validation timing, masking, passwords, OTP, sliders, toggles, ratings, colour and date pickers, uploads, inline editing, microcopy, tables, bulk actions, pagination, filters, search, command palettes, charts, empty states, navigation, settings, drag and drop, swipes, live cursors, and the psychology patterns behind them. Output is the edit list only — no report, no PASS/FAIL table. Use when the user says "/muster", "apply the design patterns", "check this UI against the patterns", "make this screen pass", "does this follow the UX rules", "fix the UX here", "designmotion patterns", or the Turkish "patternleri uygula", "arayuzu kurallara uydur", "ux kurallarina gore duzelt". For a code-quality rule pass use codify; for redesigning a screen from scratch in scored rounds use redesign.
 ---
 
-# muster — gather every one, then make each one pass
+# muster — the UX pattern gate
 
-Two jobs in the word, and the skill does both. **Muster** the entries: fetch the source and count
-them out, all of them. Then make each one something the work can **pass muster** against: a line that
-is either true of the artefact in front of you or it isn't.
+Seventy-three patterns, taken from <https://designmotionhq.com/patterns> and held in
+`patterns/`. Each one that applies to the interface in front of you is checked, and each rule that
+fails is **fixed**, not written up. It hands back a diff, not a review.
 
-Sibling of **codify**, which owns a rule set someone else already wrote down and fixed in advance.
-This one *produces* the rule set — from a source that has the knowledge but not the form — and hands
-it back as a page you tick, not a diff. `codify` closes a gate; `muster` builds one.
+Sibling of **codify**, which gates the code. This one gates the interface: the same shape of run, a
+different rule set — thresholds, states, timings and affordances rather than types and naming.
 
-The two failure modes it exists to prevent:
+Three failure modes it exists to prevent:
 
-- **The silent drop.** The source lists 73 entries; the checklist ships 41. Summarising is the
-  default failure of extraction and it is invisible to whoever reads the result — nothing on the page
-  says what is missing, so the gap is discovered later, by the bug it let through.
-- **The unfalsifiable box.** *"Use good spacing."* *"Make it accessible."* A box nobody can tick
-  honestly is worse than no box: it converts a real check into a feeling and then gives it a
-  checkmark. A checklist is judged by its weakest line, not its longest section.
-
----
-
-## Invariants
-
-- **Enumerate before you write (MUST).** The complete list of entries exists — counted, written
-  down — before a single check is drafted. No check is written while the list is still growing.
-- **The counts must agree.** Entries in the source, entries on the page. A mismatch is a bug, not
-  rounding. If an entry is deliberately excluded, it is named in the delivery message.
-- **Every box is a state, not an instruction.** Written as the passing condition, present tense, so
-  ticking it is a claim about the artefact — *"errors appear after the field loses focus"* — never a
-  task — *"show errors on blur"*. A checklist of instructions is a backlog wearing a costume.
-- **Every box is answerable by looking at one thing.** One place to check, one yes or no, and two
-  people looking at the same screen give the same answer.
-- **Nothing invented is passed off as sourced (MUST).** Where the source gives a title and a tagline
-  and *you* supplied the checks underneath, that is interpretation — say so in the delivery message
-  and on the page itself. The reader is entitled to know which lines they can take up with the
-  source and which are yours.
-- **The source's own grouping and order survive.** Do not invent a taxonomy the source does not
-  have, do not alphabetise a list that was ordered by argument.
-- **Language follows the user.** Checks are written in the language they are speaking. Proper names
-  of entries keep their original spelling — a pattern called *Doherty Threshold* stays that in every
-  language; only the lines under it are translated.
-- **State lives in the page.** Ticks survive a reload, and clearing them is one deliberate,
-  confirmed action.
-- **Read-only.** The source, the site and the project come out unchanged.
-
-## Flow
-
-### 1. Pin the source and the unit
-
-Three answers before anything else: what is the source, what counts as **one entry**, and how deep
-does the source go.
-
-The unit is the thing that gets one card on the page — a pattern, a rule, a lint code, a heading, a
-guideline, a component. Get it wrong and everything downstream is the wrong size.
-
-Depth is the one question worth asking the user, and only once:
-
-- **Index-only** — the source's list page carries a name and a line of description per entry. Fast;
-  the checks under each entry are *your* interpretation of what that entry implies.
-- **Per-entry** — each entry has its own page, section or file worth fetching. Slower, and the checks
-  come from the source's own words.
-
-Ask which they want when the source has detail pages and the answer changes the work. Otherwise pick
-index-only, say that you did, and offer the deeper pass in the closing message.
-
-### 2. Muster the entries — and count them
-
-Pull the **complete** list before writing anything. No summarising, no *"and 20 more like these"*.
-Write the count down; it is the number the rest of the run is checked against.
-
-A rendered page that shows 12 of 73 is not the source. Pagination, lazy-loading, a "show all" control,
-a filter defaulting to one category, a `sitemap.xml`, an underlying JSON feed — go and get the rest.
-For a codebase or a folder, the enumeration is a `grep`/`glob` whose pattern is written down, not a
-walk through the files you happened to open.
-
-Then the **reverse check**: pick five entries at random *from the source* and confirm each one
-appears in your list. Sampling forwards only tells you what you already collected.
-
-### 3. Codify each entry
-
-Two to five boxes per entry — the rules for writing one are in `references/item-rules.md`. In short:
-the passing state, present tense, one thing per line, specific enough to be disagreed with.
-
-Where the source gives a number — 400ms, 4.5:1, 44px, three levels — **keep the number**. Numbers are
-most of what makes a box checkable, and they are the first thing a paraphrase loses.
-
-Where the source gives a tagline that names a failure (*"the error fires while you're still typing"*),
-the box is that failure inverted into its passing state. The tagline itself stays on the card as
-context; it is not a check.
-
-### 4. Kill pass
-
-Go back over every box and delete:
-
-- boxes nobody could answer from the artefact,
-- boxes that are two boxes joined by *and*,
-- boxes that repeat the neighbour above in different words,
-- boxes that restate the entry's own title,
-- boxes that are true of every project that has ever existed.
-
-Cutting a weak box costs nothing. Shipping one costs the credibility of every box around it.
-
-### 5. Build the page
-
-Copy `references/checklist-template.html` and fill in the data. The template already carries the
-mechanics, so none of them have to be reinvented: grouping, a stable per-entry ID (`INT-04`), search
-across titles and box text, group filters, an **only unfinished** filter, overall and per-group
-progress, `localStorage` persistence in a `try`/`catch`, light and dark themes driven by tokens,
-visible keyboard focus and `prefers-reduced-motion`.
-
-What the template does *not* carry is an identity. It is a working skeleton, not a finished design:
-palette, typefaces, the header and the way an entry card reads belong to **this** subject. Load the
-`artifact-design` skill before touching it and design it for the source at hand.
-
-Keep it one file. The Google Fonts `<link>` the template declares is the only external reference
-allowed; everything else is inline.
-
-### 6. Deliver
-
-- **Artifact tool available** → publish it and hand back the URL.
-- **Not available** → write the HTML where the user said, or next to the source material, and hand
-  back the path.
-- Closing message: the link or path, the three counts (entries / boxes / groups), one line naming
-  what you interpreted rather than quoted, and — if you ran index-only on a source that has detail
-  pages — the offer to redo it from those pages.
-- Do not paste the checklist body back into the chat. The page is the deliverable.
-
-## Checklist
-
-Walk `references/checklist.md` before delivering.
+- **The vibe critique.** "The spacing feels off, maybe soften the shadows" — no pattern cited, no
+  number, nothing anyone can verify or refuse.
+- **The pattern nobody checked.** Reading a component for bugs, never looking for the focus ring,
+  then acting as if `focus-states` were clean. A pattern you did not look for is not passing.
+- **The review that ends in a question.** A page of findings and a "shall I apply these?". The
+  violations were known; the edit is the answer.
 
 ---
 
-## MUST summary
+## 0. Target
 
-- The complete entry list is collected and counted **before** any check is written.
-- Source count and page count agree; any deliberate omission is named out loud.
-- Five entries picked at random from the source are confirmed present on the page.
-- Every box is a passing state in the present tense, not an instruction.
-- Every box is answerable from one place with one yes or no; numbers from the source are kept.
-- Two to five boxes per entry, after a kill pass that removes the unanswerable, the doubled, the
-  duplicated and the universally true.
-- Interpretation is labelled as interpretation, on the page and in the closing message.
-- The source's grouping and order survive; no invented taxonomy.
-- Checks are in the user's language; entry names keep their original spelling.
-- One self-contained HTML file, designed for its subject rather than shipped as the raw template,
-  with ticks that persist and a deliberate way to clear them.
-- Closing message is a link plus counts, not the checklist.
+The user argument is the target (`/muster src/components/Table.tsx`, `/muster the checkout screen`).
+With no argument, the uncommitted diff; if the tree is clean, ask **one question**.
+
+**Read the whole target first**, and for a diff the surrounding component too — a missing focus ring,
+a hover-only action or a stacking-context bug is invisible in changed lines alone.
+
+The target is the interface: markup, styles, component code, and the state and timing behind them. A
+design file or screenshot is a legitimate target too; the fixes then land in the code that renders it,
+and anything with no code to edit is a `NEEDS DECISION`.
+
+## 1. Which patterns fire
+
+**Walk `patterns/index.md` end to end before reading any rules.** Its Trigger column is the whole
+filter: a pattern fires when its subject exists in the target. Write down the fired list — it is the
+run.
+
+- Eyeballing is the failure this step exists to prevent. Sixty of the seventy-three not firing is a
+  normal result for one component; deciding that without walking the index is not.
+- Load **only** the files whose patterns fired. Eight files exist so that a run reads two or three.
+- `focus-states` fires on anything focusable, so it fires on nearly every target. Treat a run that
+  skipped it as unfinished.
+- A pattern fires on the **subject**, not the framework. A `<div role="switch">` fires
+  `toggle-anatomy`; a headless library styled in the target fires the patterns of whatever it renders.
+- Report the two counts in the closing line: patterns fired, patterns violated. Nothing else about the
+  ones that passed.
+
+## 2. Project overrides
+
+If the repository root holds a **`.muster.md`**, read it before checking anything. Some of these
+patterns are house style, and a team that disagrees with one will stop running the skill entirely
+rather than argue with it every run.
+
+One directive per line: keyword, pattern slug (optionally `slug#n` for a single rule), and a reason
+that is required.
+
+```
+disable landing-page-skeleton   this is an internal tool, there is no marketing page
+relax   dark-mode#1             brand ships a true-black OLED theme on purpose
+disable animation-timing#4      no attention-grabbing motion anywhere, by policy
+```
+
+- **`disable`** — not checked, produces no edits.
+- **`relax`** — checked, but the exception named in the reason is accepted.
+- **A directive with no reason is not honoured.** The reason is the whole point, and its absence
+  usually means someone silenced a pattern they lost an argument with.
+- An unknown slug gets one line saying so.
+
+**`color-accessibility` and `focus-states` can be disabled, but never silently** — if either is off,
+say so on its own line, every run. Every disabled or relaxed pattern is listed once after the edits:
+`overrides   landing-page-skeleton disabled, dark-mode#1 relaxed (.muster.md)`.
+
+Arguments beat the file: `--only toast-notifications,focus-states` and `--skip golden-ratio` apply to
+that run alone.
+
+## 3. When two patterns disagree
+
+- **Accessibility beats aesthetics.** `color-accessibility` and `focus-states` beat
+  `visual-hierarchy`, `dark-mode`, `perfect-card` and every other surface pattern. A ring that spoils
+  the composition stays; the composition changes around it.
+- **Reachability beats decoration.** `hover-trap` beats `card-hover-anatomy` — a hover reveal is
+  redesigned to keep the primary action reachable on touch, never kept because it looks good.
+- **Safety beats speed.** `behind-the-button` beats `optimistic-ui` and `doherty-threshold`. A payment
+  or an irreversible write waits for the server, however slow that feels.
+- **Recoverability beats friction.** `undo-ux` beats `destructive-actions` for anything reversible:
+  execute and offer undo rather than adding a confirm dialog. `destructive-actions` wins only where
+  the action truly cannot be undone.
+- **The existing scale beats the derived one.** `design-tokens` and `design-system-kit` beat
+  `golden-ratio` and `border-radius` — never introduce a second scale next to the project one.
+- **Fit beats the checklist.** `loading-states-system` decides which loading pattern applies before
+  `skeleton-loading` says how to build it; `modal-hierarchy` picks the surface before
+  `bottom-sheets`, `dropdown-design` or `tooltip-design` say how it behaves.
+
+## 4. Violation shape (MUST)
+
+All four, the first three in your head and the fourth in the code: the **pattern rule** as `slug#n`;
+**where** as `file:line`, not "the card"; **what**, one sentence; **fix**, the concrete replacement
+actually written in — the ring, the duration, the state, the token.
+
+No `slug#n`, no violation. No `file:line`, no violation. "Feels cramped" never becomes an edit;
+`proximity-rule#3` with the two gaps named does.
+
+**Numbers are the rule.** Where a pattern states 300ms, 4.5:1, 44px, 800ms, 8px, 3 toasts — that value
+goes into the code. Never round it to something that felt close, never substitute a value the project
+happened to already use unless a token defines it.
+
+## 5. Verify before fixing (MUST)
+
+Before touching anything, re-read the code behind **every** violation and try to kill it: is that
+`outline: none` already replaced by a ring three lines down? Is that hover reveal already duplicated
+in a bottom sheet? Is the 200ms entrance coming from a token that also feeds the exit? Is the
+"missing" empty state rendered by the parent? A violation that does not survive is dropped, never
+fixed, and never mentioned — it produced no edit, so it produces no line.
+
+**`color-accessibility` is the exception.** A contrast pair you cannot compute stays a
+`NEEDS DECISION` rather than being assumed to pass.
+
+## 6. Scope budget
+
+Count the surviving violations before editing:
+
+- **Up to 20 edits, or up to 8 files** — fix them all, no question.
+- **Beyond either** — print the count and the breakdown by pattern in one or two lines, then ask
+  **one question**: fix everything, or narrow to a pattern, a file, a screen. If the tree was clean at
+  the start, say in the same question that edits will be committed one pattern at a time.
+
+A budget question is about *how much*, never about *whether*.
+
+## 7. Fix it — do not ask (MUST)
+
+**Every violation that survives the kill pass gets fixed, in place, immediately.** No "shall I apply
+these?", no closing question. Running the skill *is* the yes. Smallest edit that clears the rule and
+nothing else — no drive-by restyle, no palette change the patterns did not demand, no reach outside
+the target.
+
+**Fix in this order**, because a shadow tuned on a card about to be restructured is work done twice:
+
+1. **Wrong mechanics** — `z-index-mastery`, `accordion-disclosure#1`, `hover-trap`, `otp-input#1`,
+   `pagination#1`, `scroll-driven-animations`, `behind-the-button`. Code that cannot work as written
+   is replaced before anything is tuned on top of it.
+2. **Reach and access** — `focus-states`, `color-accessibility`, `disabled-buttons`,
+   `form-field-states`, `swipe-actions#5`, `dropdown-design#1`, `hover-trap#6`. Keyboard, contrast,
+   touch targets and second signals.
+3. **State and safety** — `error-states`, `empty-states`, `loading-states-system`, `optimistic-ui`,
+   `autosave-ux`, `undo-ux`, `destructive-actions`, `form-validation-timing`. The states the interface
+   was missing entirely.
+4. **Structure** — `modal-hierarchy`, `navigation-patterns`, `stepper-wizard`, `landing-page-skeleton`,
+   `proximity-rule`, `gestalt-laws`, `serial-position`, `data-table`, `settings-system`. What sits
+   where.
+5. **Surface and motion** — `design-tokens`, `design-system-kit`, `grid-system`, `golden-ratio`,
+   `border-radius`, `dark-mode`, `shadow-elevation`, `depth-layers`, `gradient-design`,
+   `icon-design-rules`, `visual-hierarchy`, `von-restorff`, `perfect-card`, `card-hover-anatomy`,
+   `animation-timing`, `easing-curves`, `doherty-threshold`, `skeleton-loading`, and the remaining
+   component patterns. Tokens land before the values that reference them.
+6. **Words** — `microcopy`, and the copy clauses of `empty-states`, `error-states`,
+   `bulk-actions#3`, `search-experience-system#1`, `landing-page-skeleton#5`. Written last, against
+   the final structure.
+
+After the edits, **re-check every pattern a fix touched**: a fix that clears `visual-hierarchy` and
+breaks `color-accessibility` is not done, and phase 5 routinely does exactly that.
+
+Exactly two kinds of finding are left unfixed, both named out loud:
+
+- **`NEEDS DECISION`** — the fix turns on something only the user knows: how long the undo window
+  should be for this product, what the danger zone deletes, which plan the pricing page is supposed to
+  push, what the empty state should invite, which of two brand accents is the real one, what a
+  contrast pair resolves to when the background is an image. Ask that one question in its line; do not
+  guess.
+- **`OUT OF TARGET`** — the violation real home is a file the user did not point at: a token file, a
+  shared `Button`, a global stylesheet. One line.
+
+"I would rather not touch that" is neither.
+
+## 8. Prove it still renders (MUST)
+
+This skill moves markup, rewrites styles and changes component state across several files at once, so
+after the last edit run whatever the project already has: **type check / compile**, then **lint** if a
+config exists, then **tests** — the whole suite if fast, otherwise the files touching the target.
+
+Then look at it. If the project can be run — a dev server, a story, a test page — **render the target
+and confirm the fixed states are real**: the focus ring appears on Tab, the toast dismisses, the
+skeleton matches the loaded size, the sheet locks body scroll. The `run` skill covers launching it.
+Console errors count as red.
+
+- **Green** — print the edit list and stop.
+- **Red, cause obvious** — fix and re-run. A stale import after a component split, a token renamed in
+  one file and not the other: part of the edit, not a new finding.
+- **Red, fix not obvious** — **revert that specific edit**, leave the rest, report `NEEDS DECISION`
+  with the error.
+- **Nothing to run** — say so in one line. Silence is not green, and do not install tooling the
+  project does not have.
+
+## 9. Commits
+
+Default: **no commits.** The edits sit in the working tree.
+
+The one exception is the case section 6 flagged — tree clean at the start, user chose to fix
+everything, edit count past the threshold. Then **one commit per pattern**, in section 7 order, so any
+one can be reverted alone:
+
+```
+muster(focus-states): gorunur odak halkasi geri eklendi
+```
+
+Never amend, never rebase, never touch a commit the user made. If the tree was dirty at the start
+there are no commits at all.
+
+## 10. Output — the edits, nothing else
+
+**No report.** No pattern table, no findings table, no verdict, no `ReportFindings` call, no "here is
+what I found". One line per edit — `file:line`, `slug#n`, what changed — then the counts line, then
+the verification line, then the overrides line if there were any, then the unfixed ones:
+
+```
+Button.tsx:31            focus-states#2           outline: none replaced with a 2px ring at 2px offset
+Button.tsx:44            disabled-buttons#3       submit stays enabled, validates on click
+CardGrid.css:12          hover-trap#4             hover styles gated behind @media (hover: hover)
+CardGrid.css:20          card-hover-anatomy#1     lift now 8px over 200ms ease-out
+Toast.tsx:18             toast-notifications#4    visible toasts capped at 3, rest queue
+Toast.tsx:27             toast-notifications#3    dismiss timer pauses on hover
+theme.css:8              dark-mode#1              background #000 -> #121212
+Filters.tsx:52           filter-chips#3           result count updates on the same frame as the tap
+EmptyList.tsx:9          empty-states#3           "Try refreshing" replaced with "Create your first board"
+
+patterns   19 fired, 7 violated
+tsc --noEmit + vitest: green; rendered at /boards, no console errors
+overrides  landing-page-skeleton disabled (.muster.md)
+
+NEEDS DECISION   BoardRow.tsx:70   undo-ux#1              delete is immediate — how long should the undo window be?
+NEEDS DECISION   Hero.tsx:14       color-accessibility#1  caption sits on a photo — what is the intended backdrop?
+OUT OF TARGET    ui/tokens.css:3   design-tokens#1        spacing-16 is literal here, outside the target
+```
+
+Nothing else. No praise, no summary paragraph, no "want me to also…", no patterns that passed — a
+pattern that passed produced no edit. If every fired pattern passed, say exactly that in one line
+with the two counts.
