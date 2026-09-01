@@ -1,7 +1,7 @@
 {
   "name": "crumora",
-  "description": "Six skills that redo your work as a tournament: code-improve improves the code in scored rounds - in place with reviewable diffs, or rebuilt from scratch on a different approach - ui-redesign redesigns and re-lays-out the interface, code-audit puts the code on trial before a panel of lenses that argue with each other, code-rules gates it against a fixed 28-rule set and edits the code until it passes them, handing back the edits instead of a report, data-report measures the data and writes the result up as a self-contained HTML report, and request-readback hands your request back as consequences you can reject before any work starts. Every attempt runs the project's build, type check, linter and tests before it is scored at all, is scored against a frozen rubric, is fought head-to-head against the reigning champion by a blind judge that is not told which version is the incumbent, and is reported with a round-by-round table.",
-  "version": "6.0.0",
+  "description": "Five skills that redo your work and prove the result: ui-redesign redesigns and re-lays-out the interface in scored rounds, codify gates the code against a fixed rule set and edits it until it passes, handing back the edits instead of a report, data-report measures the data and writes the result up as a self-contained HTML report, muster musters every entry out of a source and rewrites each one as a box you can tick, shipping a single-file checklist instead of a summary, and request-readback hands your request back as consequences you can reject before any work starts. The scored ones run the project's build, type check, linter and tests before an attempt is scored at all, score it against a frozen rubric, fight it head-to-head against the reigning champion by a blind judge that is not told which version is the incumbent, and report it with a round-by-round table.",
+  "version": "9.0.0",
   "author": {
     "name": "Olcay Seygan",
     "url": "https://github.com/olcayseygan"
@@ -10,13 +10,13 @@
   "repository": "https://github.com/olcayseygan/crumora",
   "license": "MIT",
   "keywords": [
-    "code-review",
-    "refactoring",
     "code-quality",
+    "code-quality-gate",
     "design",
-    "rewrite",
+    "ui",
     "analysis",
     "reporting",
-    "code-quality-gate"
+    "checklist",
+    "requirements"
   ]
 }

@@ -1,32 +1,24 @@
 # crumora
 
 > This repo is also a [Claude Code](https://claude.com/claude-code) marketplace named `olcayseygan` —
-> take all six with one command: `claude plugin install crumora@olcayseygan`.
+> take all five with one command: `claude plugin install crumora@olcayseygan`.
 
-Six [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
+Five [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
 beats the champion** — then hand back an honest post-mortem and a round-by-round table.
 
 | Skill | Move | Answers |
 | --- | --- | --- |
-| **`code-improve`** | improves the code in scored rounds — in place, or rebuilt from scratch | *is the new version actually better?* |
 | **`ui-redesign`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
-| **`code-audit`** | builds nothing; a panel of lenses reads the code, then fights | *what is actually wrong with it?* |
-| **`code-rules`** | checks the code against a fixed rule set and edits until it passes | *does it pass, rule by rule?* |
+| **`codify`** | checks the code against a fixed rule set and edits until it passes | *does it pass, rule by rule?* |
 | **`data-report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
+| **`muster`** | reads a source and rewrites every entry in it as a box you can tick | *did we actually do all of it?* |
 | **`request-readback`** | starts nothing; hands the request back as consequences | *did I understand what you asked?* |
 
-Each name says what it acts on and what it does to it: `code-improve` and `ui-redesign` build,
-`code-audit` judges, `code-rules` judges and then repairs — printing edits instead of prose — and
-`data-report` and `request-readback` write it down. What these skills add is the tournament around
-them: every attempt is scored, fought against the version it
-wants to replace, and thrown away if it doesn't win.
-
-The two judges are deliberately not the same skill. `code-audit` **opens** the question — several
-lenses hunt for whatever is wrong, then argue, and hand you a report. `code-rules` **closes** it —
-the rules are fixed in advance, and instead of a report it hands you the edits that make the code
-pass them. If you want the open critique, ask for the audit; if you want a gate that repairs what it
-catches, ask for the rules.
+Each name says what it acts on and what it does to it: `ui-redesign` builds, `codify` judges and
+then repairs — printing edits instead of prose — and `data-report`, `muster` and `request-readback`
+write it down. What `ui-redesign` adds is the tournament around the work: every attempt is scored,
+fought against the version it wants to replace, and thrown away if it doesn't win.
 
 Redoing something "to see if it comes out better" usually ends in a vibe-based verdict: the new one
 *feels* cleaner, so it ships. These skills replace the vibe with a frozen rubric, head-to-head
@@ -66,67 +58,17 @@ Round 2   another attempt →  gate  →  score  →  blind VS champion  →  wi
   verified.
 - **Six rounds, hard cap.**
 
-`code-improve` and `ui-redesign` share one written rulebook —
+`ui-redesign` reads its rulebook from a separate file —
 [`skills/_shared/tournament.md`](skills/_shared/tournament.md) — holding the setup invariants, the
-code rubric, the scoring and VS rules, the stop-and-apply steps and the final-analysis format. Each
-skill's own `SKILL.md` carries only what is specific to its move, so the two cannot quietly drift
-apart.
+rubric, the scoring and VS rules, the stop-and-apply steps and the final-analysis format. Its own
+`SKILL.md` carries only what is specific to its move.
 
-`code-audit`, `code-rules`, `data-report` and `request-readback` are the odd ones out: none of them
-produces a version to score. In `code-audit` the fight happens between *lenses* instead of versions;
-in `code-rules` between a rule and a violation that has to survive an attempt to kill it; in
-`data-report` between a claim and the data that has to back it; in `request-readback` between a
+`codify`, `data-report`, `muster` and `request-readback` are the odd ones out: none of them produces
+a version to score. In `codify` the fight happens between a rule and a violation that has to survive
+an attempt to kill it; in `data-report` between a claim and the data that has to back it; in `muster`
+between an entry in the source and a box nobody could tick honestly; in `request-readback` between a
 reading of the request and the rival reading that wants to replace it. The discipline is identical —
 nothing reaches you until something tried to kill it.
-
-## `code-improve` — improve it, and prove it improved
-
-One tournament, two moves. **In place** (the default) starts every round from the champion's actual
-code and produces a diff a reviewer could approve. **From scratch** starts every round from a blank
-file and the spec, and has to try a *genuinely different* approach — different data structure,
-different split of responsibility, different axis of simplification.
-
-| | in place | from scratch |
-| --- | --- | --- |
-| Starting point | the champion's actual code | blank file, spec only |
-| Round output | a **reviewable diff** | a whole new version |
-| Question it answers | "how good can *this* design get?" | "is a different design better?" |
-| Ends when | two diffs in a row stop being worth their cost | two fresh attempts in a row stop winning |
-
-| Criterion | Weight |
-| --- | --- |
-| Correctness | 30 |
-| House-rule fit | 25 |
-| Simplicity — concept count, not line count | 20 |
-| Robustness | 15 |
-| Maintainability | 10 |
-
-- **The mode comes from your words, not from a question.** "improve", "refactor", "polish" run in
-  place; "rewrite", "from scratch", "start over" rebuild. Nothing either way means in place, said out
-  loud in one line.
-- **The mode switches mid-run when the honest answer changes** — a diff past ~60% of the target is a
-  rewrite wearing a diff's clothes, and a rebuild that keeps losing on structure means the design was
-  already right and only the execution needed work. The switch is announced with its reason and keeps
-  the champion, the rubric and the round count.
-- **Each round names its move first** — the lowest-scoring criterion it attacks, or the different
-  approach it tries. No round begins with "let me clean this up a bit".
-- **No scope creep.** Adding capability is not improving.
-- **The gate runs first, every round.** The project's build, type check, linter and the tests
-  covering the target are executed against the challenger before it is scored at all. Red loses the
-  round after one repair attempt; a target with no runnable check is reported as `unverified` rather
-  than waved through.
-- **Taking the throne needs a clean gate and a VS win** — in both modes. In place adds two red
-  lines: the champion winning Correctness in the head-to-head, or winning Robustness in a round that
-  never set out to trade it.
-- **Change cost is judged in the VS:** a big win that rewrites 200 lines loses to a smaller one that
-  moves 20.
-- **Measurable claims need measurements.** "Faster" with no number scores zero.
-
-```
-/code-improve src/parser.ts
-/code-improve the reconcile loop
-/code-improve GameUI cast ring --from-scratch
-```
 
 ## `ui-redesign` — redesign the interface
 
@@ -171,126 +113,27 @@ something, contrast you can read.
 /ui-redesign the match HUD
 ```
 
-## `code-audit` — put it on trial
+## `codify` — check it against the rules and fix what fails
 
-No rewriting, no diffs, no pixels: a panel of 4-7 **lenses** reads the code, then argues.
+The gate. **A rule set known in advance, and every violation fixed in place instead of written up** —
+the output is the edit list, not a report.
 
-- **Blind first.** Each lens reviews on its own and writes its findings down *before* reading the
-  others. A lens that starts by reading the previous one just agrees with it — that is one review
-  wearing five hats.
-- **A finding needs `file:line`, a concrete failure scenario, a severity and a confidence.** *"On the
-  second cast in the same frame `_pending` is still set, so the second hit is dropped."* No scenario,
-  no finding.
-- **Then the fight.** Every finding is handed to a *different* lens whose job is to **refute** it.
-  Survivors are `CONFIRMED`, unsettled ones `PLAUSIBLE` (with what would settle them), the rest
-  `REFUTED` — and refuted findings stay in the report with their reason, because "we checked and it's
-  fine" is worth knowing.
-- **Conflicts are decided, not averaged.** *Cache it* vs. *keep it simple* gets written out as a
-  trade-off with a winner; a split difference usually delivers neither side's benefit.
-- **Dissent is recorded.** If a lens still disagrees at the end, its objection is printed by name.
-  Manufactured unanimity hides the one comment the author needed.
-- Default panel: Correctness · Lifecycle & robustness · Performance & memory · Design & simplicity ·
-  House rules · Maintainability · Security & trust · Testability — swapped to fit the target.
-- It **reviews only**; fixes happen only if you ask.
+- **Rules 1–13 and 17–26** from `rules/core.md`, plus rule 12 loaded per language from
+  `rules/idiom/` — Python, JavaScript/TypeScript, C#/Unity.
+- **Every rule against every file.** A rule that was not looked for is not silently clean — it is
+  checked, or one line says why it could not be.
+- **`.codify.md` at the repo root overrides it.** One directive per line — `disable N`, `relax N` —
+  and **a directive with no reason is not honoured**, because the reason is the whole point.
+- **Rule 25 (untrusted input) can be disabled, never silently** — if it is off, the run says so on
+  its own line, every time.
+- **It ends in a diff, not a question.** One line per edit, then the verification line, the overrides
+  line and whatever genuinely needed your decision.
+- **It answers to plain speech**, not only to the slash command — *"check this against the rules"*,
+  *"is this SOLID"*, *"too many null checks"*, *"kurallara uyuyor mu"*.
 
 ```
-/code-audit src/parser.ts
-/code-audit the working diff
-```
-
-## `code-rules` — check it against the rules and fix what fails
-
-The fixed-rule sibling of `code-audit`. `code-audit` opens the question and hunts for whatever is
-wrong; `code-rules` closes it — **a rule set known in advance, and every violation fixed in place instead of
-written up.**
-
-The rules split into two sets, loaded from files next to the skill so a run only reads what the
-target needs:
-
-**Core — `rules/core.md`, rules 1–13 and 18–26.** Every file, whether it renders anything or not.
-
-- **1 · Types everywhere** — no `any`, no implicit `any`, no untyped bag standing in for a shape.
-- **2 · Names mean something** — spelled out, no `cfg`, `mgr`, `tmp`, `idx`, no single letters.
-- **3 · No repetition** — the same logic never lives in two places.
-- **4 · SOLID** — SRP, OCP, LSP, ISP and DIP each judged on their own.
-- **5 · Single entry** — one public way into a unit; no parallel path that drifts.
-- **6 · Test driven** — a test that asserts behaviour and actually fails without the change.
-- **7 · Function names are verbs** — `calculateTotal`, not `totalCalculation`.
-- **8 · Variable names are nouns** — `activeUser`, not `getUser`.
-- **9 · Booleans are prefixed** — `is`, `has`, `can`, `should`, `was`.
-- **10 · No magic numbers or strings** — `0.15` becomes `VAT_RATE`. A hardcoded key, token or
-  connection string is *not* fixed by naming it; that one is a `NEEDS DECISION`.
-- **11 · Blank lines separate blocks, never code** — none between statements, one after every control
-  block, never two in a row.
-- **12 · Idiomatic for the language** — loaded per language from `rules/idiom/python.md`,
-  `typescript.md` or `csharp.md`, so a Python run never reads the C# file.
-- **13 · No defensive guards** — no null check on a value that should never be null, no `catch` that
-  swallows. Guards live only at real IO, hardware and user boundaries.
-- **18 · No dead code** — unused exports, unused imports, commented-out blocks, unreachable branches,
-  a feature flag one side of which never runs. The fix is deletion.
-- **19 · No hidden mutation** — no rewriting an argument in place, no module-level state written from
-  something that reads as a calculation, no mutable default argument.
-- **20 · Errors carry what broke** — `"invalid input"` crashes as hard as a useful exception and says
-  nothing. The offending value goes in the message; the specific exception type over the base one.
-- **21 · Comments say why, not what** — a comment restating the line above it drifts and starts lying.
-- **22 · No flag parameters** — `render(item, true, false)` is two functions glued together.
-- **23 · No floating promises** — an async call nobody awaits or catches loses the error entirely.
-- **24 · Time, randomness and identity come from outside** — `new Date()`, `Math.random()`, `uuid4()`
-  inside logic make that logic untestable and unreproducible.
-- **25 · Untrusted input is never interpolated** — into SQL, a shell, a path, HTML, a template or a
-  redirect. Passed as data, never assembled into the sentence.
-- **26 · Dependencies point one way** — no cycles, no domain code importing the UI or the ORM, no
-  layer skipped.
-
-**Interaction — `rules/ui.md`, rules 14–17, 27 and 28.** Loaded *in addition* when the target holds a
-component, an interaction handler, a request fired from user code, or anything with a listener, timer
-or subscription:
-
-- **14 · Act first, roll back on failure** — a like fills on click, then posts; a failure brings the
-  exact previous state back and says so.
-- **15 · Destructive actions** — hold to confirm, verb labels, off the happy path, red spent on
-  destruction only, gathered in a bordered danger zone.
-- **16 · One intent, one request** — synchronous disable, in-place spinner with the width locked, an
-  idempotency key minted per intent, land on an ack or an error, re-enable on the response.
-- **17 · Everything opened is closed** — listeners, timers, subscriptions, observers and in-flight
-  requests torn down when the component or service goes away.
-- **27 · Four states, not one** — loading, empty and error implemented alongside content, not after
-  the bug report.
-- **28 · Reachable without a mouse** — keyboard path, accessible name, visible focus, announced state.
-
-Rules 14, 15 and 16 are one decision split three ways, so each action is first sorted into its
-family — cheap and reversible, destructive, or expensive and non-idempotent. Sorting it wrong is
-itself the violation: a like button wrapped in disable-and-spinner is a rule 14 FAIL, not a rule 16
-PASS.
-
-And around the rules:
-
-- **The project gets a say.** A `.code-rules.md` at the repo root can `disable` or `relax` a rule —
-  but only with a written reason, and every override is listed in the output. `--only 13,25` and
-  `--skip 11` do the same for one run.
-- **Conflicts are decided in advance.** Lower rule number wins, except for the named pairs: 13 beats
-  12 on `?.`, 14 beats 13 on the rollback `catch`, 25 beats 13 on input validation, 18 beats 21 on
-  commented-out code.
-- **Every FAIL is attacked before it is fixed.** The ones that don't survive are dropped and never
-  mentioned — except rule 25, where an input you cannot prove is trusted stays as a `NEEDS DECISION`.
-- **Fixes run structure first, spacing last** — delete and move, then correctness, then interaction,
-  then shape, then names and layout. A rename applied to a function about to be split is work done
-  twice.
-- **Past 20 edits or 8 files it asks one question** — fix everything or narrow it. That is about *how
-  much*, never about *whether*.
-- **It runs the type checker and the tests afterwards.** Red with an obvious cause gets fixed; red
-  with an unclear cause reverts that one edit and becomes a `NEEDS DECISION`. Nothing to run is said
-  in one line, never treated as green.
-- **`--ui` runs the interaction rules alone**, `--core` the core set alone — and either way the set
-  that was not run gets one line saying so, never silence.
-- It **gives you no report.** No PASS/FAIL table, no findings table, no verdict — one line per edit
-  (`orders.ts:60 · 10 · 0.15 -> VAT_RATE`), the verification line, the overrides line, and the
-  leftovers. The review is the diff.
-
-```
-/code-rules src/parser.ts
-/code-rules the working diff
-/code-rules --ui ProjectSettings.vue
+/codify src/parser.ts
+/codify the diff
 ```
 
 ## `data-report` — measure it
@@ -317,6 +160,39 @@ self-contained single-file HTML report an executive and an engineer can read the
 ```
 /data-report compare the two tuning runs in data/
 /data-report what happened to p99 latency last week
+```
+
+## `muster` — turn a source into boxes
+
+The one that writes nothing of its own: it takes a body of practice — a pattern library, a style
+guide, a spec, a talk, a team's review habits — and hands back a checklist somebody can actually
+tick, as one self-contained HTML file that remembers what was ticked.
+
+- **Every entry, counted.** The complete list is collected and counted *before* a single check is
+  written, and the source count and the page count have to agree. Pagination, lazy-loading and a
+  filter defaulting to one category are chased down; a page showing 12 of 73 is not the source.
+  Anything deliberately left out is named out loud rather than quietly dropped.
+- **A box is a state, not an instruction.** Written as the passing condition in the present tense —
+  *"errors appear after the field loses focus"*, never *"show errors on blur"* — so ticking it is a
+  claim about the artefact rather than a line of backlog wearing a costume.
+- **One place, one yes or no.** Every box names where to look, and two people looking at the same
+  screen give the same answer. *"Use good spacing"* does not survive the kill pass; *"every gap
+  comes from the declared spacing scale"* does. Numbers the source gave — 400 ms, 4.5:1, 44 px —
+  are kept verbatim, because they are most of what makes a box checkable.
+- **Interpretation is labelled as interpretation.** Where the source gave a title and a tagline and
+  the checks underneath are the skill's reading of it, that is marked on the card and stated in the
+  closing message. You always know which lines you can take up with the source.
+- **The source's own grouping and order survive** — no invented taxonomy, no alphabetising a list
+  that was ordered by argument.
+- **The page is the deliverable**: search across titles and checks, group filters, an *only
+  unfinished* view, overall and per-group progress, ticks that persist in the browser and one
+  deliberate way to clear them, light and dark, keyboard focus, reduced motion.
+- Checks are written in the language you are speaking; entry names keep their original spelling.
+
+```
+/muster https://designmotionhq.com/patterns
+/muster docs/style-guide.md
+/muster turn our PR review comments into a checklist
 ```
 
 ## `request-readback` — check it landed
@@ -350,7 +226,7 @@ request back in a form you can reject, so the misunderstanding surfaces before t
 
 ## What you get at the end
 
-Five headings, always:
+When a run is a tournament — `ui-redesign` — it closes with five headings, always:
 
 - **What we set out to do** — the spec / contract / design job
 - **What we did** — which version won, how many rounds, how often the throne changed hands, what
@@ -382,7 +258,7 @@ to register, easy to edit). Pick one — installing both gives you two copies of
 ### Option 1 — as a plugin (recommended)
 
 This repo is a Claude Code marketplace named `olcayseygan`, holding a single plugin called `crumora`
-— so the skills show up as `crumora:code-improve`, `crumora:code-audit`, `crumora:data-report` and
+— so the skills show up as `crumora:codify`, `crumora:ui-redesign`, `crumora:data-report` and
 so on.
 In Claude Code:
 
@@ -428,7 +304,7 @@ Claude Code looks — there is nothing to build, register or configure.
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-#### Install all six
+#### Install all five
 
 ```bash
 git clone https://github.com/olcayseygan/crumora.git crumora
@@ -449,17 +325,17 @@ it.
 
 #### Install just one
 
-`code-audit`, `code-rules`, `data-report` and `request-readback` are fully independent — take one on
-its own, copying the whole folder (`code-rules` carries its `rules/`):
+`codify`, `data-report`, `muster` and `request-readback` are fully independent — take one on its own,
+copying the whole folder (`codify` carries its `rules/`):
 
 ```bash
-cp -r crumora/skills/code-audit ~/.claude/skills/
+cp -r crumora/skills/codify ~/.claude/skills/
 ```
 
-`code-improve` and `ui-redesign` read the shared rulebook, so they need `_shared/` next to them:
+`ui-redesign` reads the shared rulebook, so it needs `_shared/` next to it:
 
 ```bash
-cp -r crumora/skills/code-improve crumora/skills/_shared ~/.claude/skills/
+cp -r crumora/skills/ui-redesign crumora/skills/_shared ~/.claude/skills/
 ```
 
 #### What it should look like afterwards
@@ -467,18 +343,18 @@ cp -r crumora/skills/code-improve crumora/skills/_shared ~/.claude/skills/
 ```
 ~/.claude/skills/
 ├── _shared/tournament.md      ← shared rulebook, not a skill
-├── code-improve/SKILL.md
 ├── ui-redesign/
 │   ├── SKILL.md
 │   └── references/
-├── code-audit/SKILL.md
-├── code-rules/
+├── codify/
 │   ├── SKILL.md
 │   └── rules/
 │       ├── core.md
-│       ├── ui.md
 │       └── idiom/
 ├── request-readback/SKILL.md
+├── muster/
+│   ├── SKILL.md
+│   └── references/
 └── data-report/
     ├── SKILL.md
     ├── references/
@@ -487,15 +363,16 @@ cp -r crumora/skills/code-improve crumora/skills/_shared ~/.claude/skills/
 
 The folder name and the `name:` field in the file's front matter must match, and the file must stay
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
-rather than a note. `data-report` and `ui-redesign` carry `references/` (and `data-report` a
-`scripts/`), and `code-rules` carries `rules/` — copy the whole folder, not just the one file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `code-improve` and
-`ui-redesign` read at the start of a run.
+rather than a note. `data-report`, `ui-redesign` and `muster` carry `references/` (and
+`data-report` a `scripts/`), and `codify` carries `rules/` — copy the whole folder, not just the one
+file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `ui-redesign` reads at the
+start of a run.
 
 #### Verify
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
-appear in a running session. Then type `/` and look for `code-improve`, `ui-redesign`, `code-audit`,
-`code-rules`, `data-report`, `request-readback`, or just ask *"which skills do you have?"*.
+appear in a running session. Then type `/` and look for `ui-redesign`,
+`codify`, `data-report`, `muster`, `request-readback`, or just ask *"which skills do you have?"*.
 
 #### Update
 
@@ -508,18 +385,18 @@ Restart afterwards, same reason.
 
 #### Uninstall
 
-Delete the folder — `rm -rf ~/.claude/skills/code-audit`. Nothing else is touched; skills leave no state
+Delete the folder — `rm -rf ~/.claude/skills/codify`. Nothing else is touched; skills leave no state
 behind.
 
 #### Troubleshooting
 
 - **The slash command doesn't show up.** You didn't restart, or the file is at
   `~/.claude/skills/SKILL.md` instead of `~/.claude/skills/<name>/SKILL.md`.
-- **It's listed but never triggers on its own.** Invoke it explicitly with `/code-audit …`. The
+- **It's listed but never triggers on its own.** Invoke it explicitly with `/codify …`. The
   description is what makes Claude reach for it unprompted; if you edited it, keep the trigger
   phrases in there.
 - **You already have a skill with one of these names.** Rename the folder *and* the `name:` field to
-  match, e.g. `code-audit-panel`.
+  match, e.g. `codify-gate`.
 
 ## Why bother
 

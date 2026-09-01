@@ -1,6 +1,6 @@
 ---
 name: ui-redesign
-description: Redesigns and re-lays-out an interface from scratch in scored rounds, obsessing over grouping, layout, alignment, sizing, spacing, hierarchy, contrast and states. Each round designs a fresh version, renders it, scores it against a frozen design rubric, and fights it head-to-head (VS) against the reigning design - judged blind in a separate agent that is not told which version is the incumbent, and only after the round renders clean with no console errors. The loop runs until two challengers lose in a row, then reports a full analysis plus a round-by-round table. Use when the user says "/ui-redesign", "redesign this screen", "restyle it", "relayout this page", "rearrange this screen", "make this UI better", "the layout looks off", "fix the spacing/alignment". For changing logic rather than layout use code-improve.
+description: Redesigns and re-lays-out an interface from scratch in scored rounds, obsessing over grouping, layout, alignment, sizing, spacing, hierarchy, contrast and states. Each round designs a fresh version, renders it, scores it against a frozen design rubric, and fights it head-to-head (VS) against the reigning design - judged blind in a separate agent that is not told which version is the incumbent, and only after the round renders clean with no console errors. The loop runs until two challengers lose in a row, then reports a full analysis plus a round-by-round table. Use when the user says "/ui-redesign", "redesign this screen", "restyle it", "relayout this page", "rearrange this screen", "make this UI better", "the layout looks off", "fix the spacing/alignment". For checking code against a fixed rule set use codify.
 ---
 
 # ui-redesign — redesign the interface
@@ -8,8 +8,7 @@ description: Redesigns and re-lays-out an interface from scratch in scored round
 Design the thing **again, from a blank canvas**; **render it**; **score it**; **fight it** against
 the current design; repeat until a fresh attempt stops winning.
 
-Sibling of **code-improve**, which runs the same tournament on logic. This one
-judges *what it looks like and how it reads*, and it is ruthless about the boring things — things
+The tournament skill of the set. It judges *what it looks like and how it reads*, and it is ruthless about the boring things — things
 grouped where the task expects them, edges that line up, one spacing scale, sizes that mean
 something, contrast you can actually read.
 
