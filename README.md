@@ -144,6 +144,23 @@ the output is the edit list, not a report.
 /lint ultra the diff
 ```
 
+### Always on
+
+Installed as a plugin, `lint` also runs a `SessionStart` hook — `src/hooks/lint-activate.js` — that
+prints the active level and the gate that comes with it into every session, including after a
+compaction. Nothing is checked and nothing is edited: it is the writing standard, so the code arrives
+already past the gate instead of being fixed afterwards. The rule text itself stays in
+`rules/core.md` and is read only when you actually run the skill, so the per-session cost is a dozen
+lines rather than five hundred.
+
+The level resolves the same way the skill resolves it — `CRUMORA_LINT_LEVEL` first, then a
+`level lite` line in `.lint.md` at the repository root, then `full`. Setting either to **`off`**
+silences the block entirely and leaves `/lint` working as normal.
+
+```
+level   off
+```
+
 ## `data-report` — measure it
 
 The one that never touches code: it answers a question **with numbers**, then delivers a dated,
@@ -308,6 +325,11 @@ claude plugin marketplace remove olcayseygan
 
 A skill is just a folder with a `SKILL.md` in it. Installing one means putting that folder where
 Claude Code looks — there is nothing to build, register or configure.
+
+The one thing this route does not carry is the `SessionStart` hook, so `lint` still runs on demand but
+its always-on writing standard does not load. That hook lives in the plugin manifest; if you want it
+without the plugin, copy `src/hooks/lint-activate.js` somewhere and register it yourself under
+`SessionStart` in `settings.json`.
 
 #### Pick a scope first
 
