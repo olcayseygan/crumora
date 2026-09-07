@@ -10,12 +10,12 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | Skill | Move | Answers |
 | --- | --- | --- |
 | **`redesign`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
-| **`codify`** | checks the code against a fixed rule set and edits until it passes | *does it pass, rule by rule?* |
+| **`lint`** | checks the code against a fixed rule set and edits until it passes | *does it pass, rule by rule?* |
 | **`data-report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
 | **`muster`** | checks the interface against 73 UX patterns and edits until it passes | *does this screen pass muster?* |
 | **`readback`** | starts nothing; hands the request back as consequences | *did I understand what you asked?* |
 
-Each name says what it acts on and what it does to it: `redesign` builds, `codify` and `muster`
+Each name says what it acts on and what it does to it: `redesign` builds, `lint` and `muster`
 judge and then repair — printing edits instead of prose, one against the code and one against the
 interface — and `data-report` and `readback` write it down. What `redesign` adds is the tournament
 around the work: every attempt is scored, fought against the version it wants to replace, and thrown
@@ -64,8 +64,8 @@ Round 2   another attempt →  gate  →  score  →  blind VS champion  →  wi
 rubric, the scoring and VS rules, the stop-and-apply steps and the final-analysis format. Its own
 `SKILL.md` carries only what is specific to its move.
 
-`codify`, `data-report`, `muster` and `readback` are the odd ones out: none of them produces
-a version to score. In `codify` and `muster` the fight happens between a rule and a violation that
+`lint`, `data-report`, `muster` and `readback` are the odd ones out: none of them produces
+a version to score. In `lint` and `muster` the fight happens between a rule and a violation that
 has to survive an attempt to kill it; in `data-report` between a claim and the data that has to back
 it; in `readback` between a reading of the request and the rival reading that wants to replace it.
 The discipline is identical — nothing reaches you until something tried to kill it.
@@ -113,27 +113,35 @@ something, contrast you can read.
 /redesign the match HUD
 ```
 
-## `codify` — check it against the rules and fix what fails
+## `lint` — check it against the rules and fix what fails
 
 The gate. **A rule set known in advance, and every violation fixed in place instead of written up** —
 the output is the edit list, not a report.
 
-- **Rules 1–13 and 17–26** from `rules/core.md`, plus rule 12 loaded per language from
-  `rules/idiom/` — Python, JavaScript/TypeScript, C#/Unity.
-- **Every rule against every file.** A rule that was not looked for is not silently clean — it is
-  checked, or one line says why it could not be.
-- **`.codify.md` at the repo root overrides it.** One directive per line — `disable N`, `relax N` —
-  and **a directive with no reason is not honoured**, because the reason is the whole point.
-- **Rule 25 (untrusted input) can be disabled, never silently** — if it is off, the run says so on
-  its own line, every time.
-- **It ends in a diff, not a question.** One line per edit, then the verification line, the overrides
-  line and whatever genuinely needed your decision.
+- **Three levels, the way the caveman modes work — `lite`, `full`, `ultra`, default `full`.** `lite`
+  is the surface pass (`names`, `verbs`, `nouns`, `booleans`, `literals`, `comments`, `spacing`);
+  `full` adds everything behavioural (`types`, `repetition`, `idiom`, `guards`, `teardown`,
+  `dead-code`, `mutation`, `errors`, `flags`, `floating`, `clock`); `ultra` adds the architecture
+  (`solid`, `single-entry`, `tests`, `direction`).
+- **The level is the only dial.** No running one rule alone, no dropping one out of a level — a preset
+  you can edit rule by rule is not a preset. To check less, go down a level; to check more, go up.
+- **Rules are named, never numbered.** The name is what prints next to the edit it produced. `idiom`
+  loads per language from `rules/idiom/` — Python, JavaScript/TypeScript, C#/Unity, C, C++.
+- **Every rule the level enables, against every file.** A rule that was not looked for is not silently
+  clean — it is checked, or one line says why it could not be.
+- **`.lint.md` at the repo root sets the default depth** with a single `level lite` line, and nothing
+  else. The invocation still wins over it.
+- **`injection` is the floor: it runs at every level, lite included**, together with the secrets clause
+  of `literals`. Nothing switches either one off.
+- **It ends in a diff, not a question.** One line per edit, then the verification line, then whatever
+  genuinely needed your decision.
 - **It answers to plain speech**, not only to the slash command — *"check this against the rules"*,
   *"is this SOLID"*, *"too many null checks"*, *"kurallara uyuyor mu"*.
 
 ```
-/codify src/parser.ts
-/codify the diff
+/lint src/parser.ts
+/lint lite
+/lint ultra the diff
 ```
 
 ## `data-report` — measure it
@@ -167,7 +175,7 @@ self-contained single-file HTML report an executive and an engineer can read the
 The UX gate. Seventy-three patterns from
 [designmotionhq.com/patterns](https://designmotionhq.com/patterns) ship inside the skill, every
 threshold kept verbatim, and each one that applies to the screen in front of you is checked and
-fixed in place. `codify` gates the code; this gates the interface.
+fixed in place. `lint` gates the code; this gates the interface.
 
 - **The pattern decides what fires, not the vibe.** A trigger index is walked end to end before any
   rule is read — a pattern fires when its subject exists in the target. Sixty of the seventy-three
@@ -264,7 +272,7 @@ to register, easy to edit). Pick one — installing both gives you two copies of
 ### Option 1 — as a plugin (recommended)
 
 This repo is a Claude Code marketplace named `olcayseygan`, holding a single plugin called `crumora`
-— so the skills show up as `crumora:codify`, `crumora:redesign`, `crumora:data-report` and
+— so the skills show up as `crumora:lint`, `crumora:redesign`, `crumora:data-report` and
 so on.
 In Claude Code:
 
@@ -331,11 +339,11 @@ it.
 
 #### Install just one
 
-`codify`, `data-report`, `muster` and `readback` are fully independent — take one on its own,
-copying the whole folder (`codify` carries its `rules/`, `muster` its `patterns/`):
+`lint`, `data-report`, `muster` and `readback` are fully independent — take one on its own,
+copying the whole folder (`lint` carries its `rules/`, `muster` its `patterns/`):
 
 ```bash
-cp -r crumora/skills/codify ~/.claude/skills/
+cp -r crumora/skills/lint ~/.claude/skills/
 ```
 
 `redesign` reads the shared rulebook, so it needs `_shared/` next to it:
@@ -352,7 +360,7 @@ cp -r crumora/skills/redesign crumora/skills/_shared ~/.claude/skills/
 ├── redesign/
 │   ├── SKILL.md
 │   └── references/
-├── codify/
+├── lint/
 │   ├── SKILL.md
 │   └── rules/
 │       ├── core.md
@@ -370,7 +378,7 @@ cp -r crumora/skills/redesign crumora/skills/_shared ~/.claude/skills/
 The folder name and the `name:` field in the file's front matter must match, and the file must stay
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
 rather than a note. `data-report` and `redesign` carry `references/` (and `data-report` a
-`scripts/`), `codify` carries `rules/` and `muster` carries `patterns/` — copy the whole folder, not
+`scripts/`), `lint` carries `rules/` and `muster` carries `patterns/` — copy the whole folder, not
 just the one file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `redesign` reads at the
 start of a run.
 
@@ -378,7 +386,7 @@ start of a run.
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
 appear in a running session. Then type `/` and look for `redesign`,
-`codify`, `data-report`, `muster`, `readback`, or just ask *"which skills do you have?"*.
+`lint`, `data-report`, `muster`, `readback`, or just ask *"which skills do you have?"*.
 
 #### Update
 
@@ -391,18 +399,18 @@ Restart afterwards, same reason.
 
 #### Uninstall
 
-Delete the folder — `rm -rf ~/.claude/skills/codify`. Nothing else is touched; skills leave no state
+Delete the folder — `rm -rf ~/.claude/skills/lint`. Nothing else is touched; skills leave no state
 behind.
 
 #### Troubleshooting
 
 - **The slash command doesn't show up.** You didn't restart, or the file is at
   `~/.claude/skills/SKILL.md` instead of `~/.claude/skills/<name>/SKILL.md`.
-- **It's listed but never triggers on its own.** Invoke it explicitly with `/codify …`. The
+- **It's listed but never triggers on its own.** Invoke it explicitly with `/lint …`. The
   description is what makes Claude reach for it unprompted; if you edited it, keep the trigger
   phrases in there.
 - **You already have a skill with one of these names.** Rename the folder *and* the `name:` field to
-  match, e.g. `codify-gate`.
+  match, e.g. `lint-gate`.
 
 ## Why bother
 
