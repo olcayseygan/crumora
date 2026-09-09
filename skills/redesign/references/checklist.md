@@ -4,6 +4,9 @@ Walk this on **every round, champion included**, right after the render (§2c) a
 alignment audit (§4). Each box is answered from the **render**, not the source. Any unticked box is
 a miss and must be named in the round log; the caps below are hard.
 
+The `gauge` skill is this checklist run on its own, against an interface that already exists: same
+boxes, same thresholds, fixed in place instead of scored. Use it when there is no tournament.
+
 ## Accessibility
 - [ ] Every interactive element is reachable by keyboard, in reading order, with a **visible** focus
       ring that is not the browser default washed out to invisible.
@@ -48,6 +51,41 @@ Not "looks right". Measure it, write the numbers down.
 - [ ] Numbers right- or decimal-aligned; one alignment per column.
 
 **Cap:** unfixed misses here hold Layout & alignment at **≤ 7**.
+
+## Typography
+Answered from the computed styles on screen, not from the `@font-face` block.
+- [ ] Every rendered `font-family` is listed — **at most two** (text + display), plus one monospace
+      where code or figures demand it. A third unexplained family is a miss.
+- [ ] The pairing is justified in one sentence: clearly different in structure (serif vs sans,
+      grotesque vs humanist), comparable x-height and width. Two neutral grotesques is not a pairing.
+- [ ] Each family has one job — headings, body, or code. The display face never sets a paragraph.
+- [ ] Distinct rendered `font-size` values listed and confirmed a subset of the type scale. A stray
+      15px or 23px is a miss, exactly as a stray gap is.
+- [ ] **At most three** weights, all from the declared set, and every one shipped by the loaded face —
+      a synthesised bold or oblique is a miss.
+- [ ] Line heights come from the scale and track the size: body ~**1.4-1.6**, headings **1.1-1.3**.
+- [ ] Body measure is **45-75 characters** at every rendered viewport, measured on the rendered line.
+- [ ] Tracking follows size — negative-to-zero on display, zero on body, positive only on uppercase.
+- [ ] Rendered **once with the web font blocked**: the fallback is the same classification and nothing
+      reflows past a breakpoint or clips.
+
+## Palette
+Contrast asks whether a pair can be read; this asks whether the set makes sense together.
+- [ ] Every distinct rendered colour is listed with where it came from. Eleven near-identical greys is
+      not a palette.
+- [ ] All greys come from **one** neutral ramp: one hue, monotonic lightness. A blue-grey border on a
+      warm-grey surface is a miss unless the second ramp is declared.
+- [ ] **One** accent leads the primary action and the selected state. A second exists only with a
+      stated job; a third is a miss.
+- [ ] Danger, warning, success and info each map to one colour, used for nothing else.
+- [ ] Ramp steps are perceptually even, measured in OKLCH/LCH — lightness in comparable steps, hue not
+      wandering. A ramp nudged by eye typically fails here.
+- [ ] Saturation climbs toward the small, load-bearing elements; large surfaces are the least
+      saturated thing on screen.
+- [ ] Gradients interpolate between two palette colours in a perceptual space — midpoint checked, no
+      grey dead zone, no third hue.
+- [ ] Chart series come from one declared categorical set, ordered and checked for colour-vision
+      deficiencies.
 
 ## Contrast
 - [ ] Contrast ratios are **computed**, not eyeballed — the pairs and their ratios are written out.

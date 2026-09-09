@@ -1,9 +1,9 @@
 # crumora
 
 > This repo is also a [Claude Code](https://claude.com/claude-code) marketplace named `olcayseygan` —
-> take all five with one command: `claude plugin install crumora@olcayseygan`.
+> take all six with one command: `claude plugin install crumora@olcayseygan`.
 
-Five [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
+Six [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
 beats the champion** — then hand back an honest post-mortem and a round-by-round table.
 
@@ -11,13 +11,14 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | --- | --- | --- |
 | **`redesign`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
 | **`lint`** | checks the code against a fixed rule set and edits until it passes | *does it pass, rule by rule?* |
+| **`gauge`** | measures the rendered pixels — type, colour, geometry — and edits until they pass | *do the fonts, colours and edges measure up?* |
 | **`data-report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
 | **`muster`** | checks the interface against 73 UX patterns and edits until it passes | *does this screen pass muster?* |
 | **`readback`** | starts nothing; hands the request back as consequences | *did I understand what you asked?* |
 
-Each name says what it acts on and what it does to it: `redesign` builds, `lint` and `muster`
-judge and then repair — printing edits instead of prose, one against the code and one against the
-interface — and `data-report` and `readback` write it down. What `redesign` adds is the tournament
+Each name says what it acts on and what it does to it: `redesign` builds, `lint`, `gauge` and
+`muster` judge and then repair — printing edits instead of prose, one against the code, one against
+the rendered pixels and one against the interface's behaviour — and `data-report` and `readback` write it down. What `redesign` adds is the tournament
 around the work: every attempt is scored, fought against the version it wants to replace, and thrown
 away if it doesn't win.
 
@@ -64,8 +65,8 @@ Round 2   another attempt →  gate  →  score  →  blind VS champion  →  wi
 rubric, the scoring and VS rules, the stop-and-apply steps and the final-analysis format. Its own
 `SKILL.md` carries only what is specific to its move.
 
-`lint`, `data-report`, `muster` and `readback` are the odd ones out: none of them produces
-a version to score. In `lint` and `muster` the fight happens between a rule and a violation that
+`lint`, `gauge`, `data-report`, `muster` and `readback` are the odd ones out: none of them produces
+a version to score. In `lint`, `gauge` and `muster` the fight happens between a rule and a violation that
 has to survive an attempt to kill it; in `data-report` between a claim and the data that has to back
 it; in `readback` between a reading of the request and the rival reading that wants to replace it.
 The discipline is identical — nothing reaches you until something tried to kill it.
@@ -159,6 +160,47 @@ silences the block entirely and leaves `/lint` working as normal.
 
 ```
 level   off
+```
+
+## `gauge` — measure the rendered interface and fix what misses
+
+The measurement gate. **The per-round checklist `redesign` walks, pulled out and run on its own** —
+every answer taken from the render and written down as a number, every miss fixed in place.
+
+- **Nothing is checked before the target is on screen.** The project is launched, the target is
+  screenshotted at each viewport and each mode, tabbed through, and measured with
+  `getBoundingClientRect()` and computed colours. A coordinate read out of the stylesheet is not a
+  measurement, and a target that cannot be rendered stops the run in one line rather than being
+  guessed at.
+- **No number, no violation.** "Feels cramped" never becomes an edit; a 22px gap in a 4/8/16/24 scale
+  does. Shared edges differ by 0px, not 1-2px. Contrast pairs are computed and printed, not eyeballed.
+- **Fonts are counted, not felt.** `type` lists every family that actually rendered — at most two plus
+  a monospace — and states why the pair works: different structure, comparable x-height. Then the
+  scale (a stray 15px is a stray 15px), at most three weights and none of them synthesised, line
+  heights that track the size, a 45-75 character measure, tracking that follows size, and one render
+  with the web font blocked to prove the fallback is real.
+- **Colours are judged as a set.** `contrast` asks whether a pair can be read; `palette` asks whether
+  the set makes sense — one neutral ramp at one hue, one leading accent, semantic colours that mean
+  one thing each, ramps that are perceptually even in OKLCH rather than nudged by eye, saturation
+  climbing toward the small elements, gradients with no grey dead zone, and a declared categorical set
+  for charts.
+- **Three levels, like `lint` — `lite`, `full`, `ultra`, default `full`.** `lite` is what one
+  screenshot answers (`access`, `type`, `palette`, `contrast`, `alignment`); `full` adds what needs
+  re-rendering (`responsive`, `theme`, `states`) — 360/768/1440, both colour modes, every state a
+  component has; `ultra` adds the component system (`reuse`, `variants`).
+- **The floor runs at every level:** keyboard reach with a visible focus ring, and body text at AA.
+  Those two can never be disabled; everything else in `access` and `contrast` relaxes only clause by
+  clause, with a reason.
+- **`.gauge.md` at the repo root disables or relaxes a rule** — with a reason, which is the whole
+  point. Light-only product, kiosk build at a fixed size, brand-signed optical nudges.
+- **It ends in a diff, not a question.** One line per edit carrying the measurement, then the render
+  line, then the verification line, then whatever genuinely needed your decision.
+
+```
+/gauge the settings panel
+/gauge lite src/components/Board.tsx
+/gauge do these fonts and colours go together
+/gauge ultra the diff
 ```
 
 ## `data-report` — measure it
@@ -340,7 +382,7 @@ without the plugin, copy `src/hooks/lint-activate.js` somewhere and register it 
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-#### Install all five
+#### Install all six
 
 ```bash
 git clone https://github.com/olcayseygan/crumora.git crumora
@@ -361,8 +403,8 @@ it.
 
 #### Install just one
 
-`lint`, `data-report`, `muster` and `readback` are fully independent — take one on its own,
-copying the whole folder (`lint` carries its `rules/`, `muster` its `patterns/`):
+`lint`, `gauge`, `data-report`, `muster` and `readback` are fully independent — take one on its own,
+copying the whole folder (`lint` and `gauge` carry their `rules/`, `muster` its `patterns/`):
 
 ```bash
 cp -r crumora/skills/lint ~/.claude/skills/
@@ -387,6 +429,9 @@ cp -r crumora/skills/redesign crumora/skills/_shared ~/.claude/skills/
 │   └── rules/
 │       ├── core.md
 │       └── idiom/
+├── gauge/
+│   ├── SKILL.md
+│   └── rules/core.md
 ├── readback/SKILL.md
 ├── muster/
 │   ├── SKILL.md
@@ -400,15 +445,15 @@ cp -r crumora/skills/redesign crumora/skills/_shared ~/.claude/skills/
 The folder name and the `name:` field in the file's front matter must match, and the file must stay
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
 rather than a note. `data-report` and `redesign` carry `references/` (and `data-report` a
-`scripts/`), `lint` carries `rules/` and `muster` carries `patterns/` — copy the whole folder, not
-just the one file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `redesign` reads at the
+`scripts/`), `lint` and `gauge` carry `rules/` and `muster` carries `patterns/` — copy the whole
+folder, not just the one file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `redesign` reads at the
 start of a run.
 
 #### Verify
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
 appear in a running session. Then type `/` and look for `redesign`,
-`lint`, `data-report`, `muster`, `readback`, or just ask *"which skills do you have?"*.
+`lint`, `gauge`, `data-report`, `muster`, `readback`, or just ask *"which skills do you have?"*.
 
 #### Update
 
