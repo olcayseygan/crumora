@@ -1,6 +1,6 @@
 # The tournament — shared rules
 
-Loaded by `redesign`. Everything here holds in either mode. The skill's own `SKILL.md` carries
+Loaded by `compose` and `humanize`. Everything here holds in either mode. The skill's own `SKILL.md` carries
 only what is specific to its move: how a round produces a challenger, its rubric, its extra red
 lines, its table.
 
@@ -23,7 +23,8 @@ lines, its table.
 
 ## 2. The code rubric
 
-The default rubric when the target is code. `redesign` replaces it with its own design rubric.
+The default rubric when the target is code. `compose` and `humanize` each replace it with their own
+rubric.
 
 Five criteria, each **0-10**, weighted total **0-100**:
 

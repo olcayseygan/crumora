@@ -1,7 +1,7 @@
 {
   "name": "crumora",
-  "description": "Six skills that redo your work and prove the result: redesign rebuilds and re-lays-out the interface in scored rounds, lint gates the code against a fixed rule set at three depths - lite, full and ultra - and edits it until it passes, handing back the edits instead of a report, gauge measures the rendered interface against a fixed checklist - font pairing and the type scale, colour harmony and the palette, coordinates, gaps, contrast ratios, target sizes, viewports and both colour modes - and fixes every violation in place, data-report measures the data and writes the result up as a self-contained HTML report, muster gates the interface against the 73 UX patterns it ships with and edits every violation in place, handing back the edits instead of a critique, and readback hands your request back as consequences you can reject before any work starts. The scored ones run the project's build, type check, linter and tests before an attempt is scored at all, score it against a frozen rubric, fight it head-to-head against the reigning champion by a blind judge that is not told which version is the incumbent, and report it with a round-by-round table.",
-  "version": "12.2.0",
+  "description": "Seven skills that redo your work and prove the result: compose rebuilds and re-lays-out the interface in scored rounds, humanize rebuilds the interaction around the person in scored rounds - walking the real tasks through the render and counting steps, decisions, latency, dead ends, lost input and recovery cost, lint gates the code against a fixed rule set at three depths - lite, full and ultra - and edits it until it passes, handing back the edits instead of a report, gauge measures the rendered interface against a fixed checklist - font pairing and the type scale, colour harmony and the palette, coordinates, gaps, contrast ratios, target sizes, viewports and both colour modes - and fixes every violation in place, data-report measures the data and writes the result up as a self-contained HTML report, muster gates the interface against the 73 UX patterns it ships with and edits every violation in place, handing back the edits instead of a critique, and readback hands your request back as consequences you can reject before any work starts. The scored ones run the project's build, type check, linter and tests before an attempt is scored at all, score it against a frozen rubric, fight it head-to-head against the reigning champion by a blind judge that is not told which version is the incumbent, and report it with a round-by-round table.",
+  "version": "13.0.0",
   "author": {
     "name": "Olcay Seygan",
     "url": "https://github.com/olcayseygan"
@@ -22,7 +22,9 @@
     "contrast",
     "alignment",
     "typography",
-    "color-palette"
+    "color-palette",
+    "usability",
+    "interaction-design"
   ],
   "hooks": {
     "SessionStart": [

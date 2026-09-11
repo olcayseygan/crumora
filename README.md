@@ -1,25 +1,26 @@
 # crumora
 
 > This repo is also a [Claude Code](https://claude.com/claude-code) marketplace named `olcayseygan` —
-> take all six with one command: `claude plugin install crumora@olcayseygan`.
+> take all seven with one command: `claude plugin install crumora@olcayseygan`.
 
-Six [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
+Seven [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
 beats the champion** — then hand back an honest post-mortem and a round-by-round table.
 
 | Skill | Move | Answers |
 | --- | --- | --- |
-| **`redesign`** | redesigns the interface and judges the rendered pixels | *does it actually look and read right?* |
+| **`compose`** | recomposes the interface and judges the rendered pixels | *does it actually look and read right?* |
+| **`humanize`** | rebuilds the interaction and judges the walked tasks | *can a person actually get the job done?* |
 | **`lint`** | checks the code against a fixed rule set and edits until it passes | *does it pass, rule by rule?* |
 | **`gauge`** | measures the rendered pixels — type, colour, geometry — and edits until they pass | *do the fonts, colours and edges measure up?* |
 | **`data-report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
 | **`muster`** | checks the interface against 73 UX patterns and edits until it passes | *does this screen pass muster?* |
 | **`readback`** | starts nothing; hands the request back as consequences | *did I understand what you asked?* |
 
-Each name says what it acts on and what it does to it: `redesign` builds, `lint`, `gauge` and
+Each name says what it acts on and what it does to it: `compose` and `humanize` build, `lint`, `gauge` and
 `muster` judge and then repair — printing edits instead of prose, one against the code, one against
-the rendered pixels and one against the interface's behaviour — and `data-report` and `readback` write it down. What `redesign` adds is the tournament
-around the work: every attempt is scored, fought against the version it wants to replace, and thrown
+the rendered pixels and one against the interface's behaviour — and `data-report` and `readback` write it down. What `compose` and `humanize` add is the
+tournament around the work: every attempt is scored, fought against the version it wants to replace, and thrown
 away if it doesn't win.
 
 Redoing something "to see if it comes out better" usually ends in a vibe-based verdict: the new one
@@ -60,10 +61,10 @@ Round 2   another attempt →  gate  →  score  →  blind VS champion  →  wi
   verified.
 - **Six rounds, hard cap.**
 
-`redesign` reads its rulebook from a separate file —
+`compose` and `humanize` read their rulebook from a separate file —
 [`skills/_shared/tournament.md`](skills/_shared/tournament.md) — holding the setup invariants, the
-rubric, the scoring and VS rules, the stop-and-apply steps and the final-analysis format. Its own
-`SKILL.md` carries only what is specific to its move.
+rubric, the scoring and VS rules, the stop-and-apply steps and the final-analysis format. Each one's
+own `SKILL.md` carries only what is specific to its move.
 
 `lint`, `gauge`, `data-report`, `muster` and `readback` are the odd ones out: none of them produces
 a version to score. In `lint`, `gauge` and `muster` the fight happens between a rule and a violation that
@@ -71,9 +72,9 @@ has to survive an attempt to kill it; in `data-report` between a claim and the d
 it; in `readback` between a reading of the request and the rival reading that wants to replace it.
 The discipline is identical — nothing reaches you until something tried to kill it.
 
-## `redesign` — rebuild the interface
+## `compose` — rebuild the interface
 
-The pixel-level one: redesigns a surface from a blank canvas and obsesses over the boring things
+The pixel-level one: recomposes a surface from a blank canvas and obsesses over the boring things
 that actually decide whether a UI reads — edges that line up, one spacing scale, sizes that mean
 something, contrast you can read.
 
@@ -110,8 +111,45 @@ something, contrast you can read.
   craft lives; this skill is the harness.
 
 ```
-/redesign the settings panel
-/redesign the match HUD
+/compose the settings panel
+/compose the match HUD
+```
+
+## `humanize` — rebuild the interaction around the person
+
+The behaviour one: `compose` judges what a surface looks like, this judges **what a person goes
+through to get the job done** — the steps, the hesitations, the waits, the mistakes, and what it costs
+to get out of one. A better-looking obstacle is still an obstacle.
+
+| Criterion | Weight |
+| --- | --- |
+| Task efficiency | 20 |
+| Clarity of the next move | 20 |
+| Error prevention & recovery | 20 |
+| Feedback & system status | 15 |
+| Reach & inclusiveness | 15 |
+| Memory & cognitive load | 10 |
+
+- **The people and the tasks are frozen up front** — who uses it, how often, on what input; three to
+  seven tasks written as the person's goal; plus stress paths walked every round: wrong input, empty
+  first run, slow and failing network, reload mid-task, undo, keyboard only, narrow touch viewport.
+- **Every task is walked through the render as the person** — knowing the goal, not the interface.
+  Each step answers the four cognitive-walkthrough questions; each task totals steps, decisions,
+  context switches, recall load, pointer travel, measured latency, dead ends and recovery cost.
+- **Round 0 is walked before anything is designed**, so every later number has a baseline.
+- **Each round rebuilds the interaction, not the paint** — one stated idea, then a flow map, a primary
+  move per screen, a feedback contract, an error contract and the defaults.
+- **The gate is a clean render with every task completable** end to end; a task that cannot be
+  finished loses the round.
+- **The blind judge sees two traces**, not the source — and every verdict names a task and a step.
+- **Red lines** (automatic loss): a task cannot be completed or typed input is lost, the most frequent
+  task got more expensive, an irreversible action lost its undo or confirmation, the keyboard path
+  broke, text fails AA, or a validation, permission check or binding was dropped.
+- The final analysis always says it: **the walk is a proxy for a real person, not a usability test.**
+
+```
+/humanize the checkout
+/humanize bu tasarim sacma, kullanici burada kayboluyor
 ```
 
 ## `lint` — check it against the rules and fix what fails
@@ -164,7 +202,7 @@ level   off
 
 ## `gauge` — measure the rendered interface and fix what misses
 
-The measurement gate. **The per-round checklist `redesign` walks, pulled out and run on its own** —
+The measurement gate. **The per-round checklist `compose` walks, pulled out and run on its own** —
 every answer taken from the render and written down as a number, every miss fixed in place.
 
 - **Nothing is checked before the target is on screen.** The project is launched, the target is
@@ -299,7 +337,7 @@ request back in a form you can reject, so the misunderstanding surfaces before t
 
 ## What you get at the end
 
-When a run is a tournament — `redesign` — it closes with five headings, always:
+When a run is a tournament — `compose` or `humanize` — it closes with five headings, always:
 
 - **What we set out to do** — the spec / contract / design job
 - **What we did** — which version won, how many rounds, how often the throne changed hands, what
@@ -331,7 +369,7 @@ to register, easy to edit). Pick one — installing both gives you two copies of
 ### Option 1 — as a plugin (recommended)
 
 This repo is a Claude Code marketplace named `olcayseygan`, holding a single plugin called `crumora`
-— so the skills show up as `crumora:lint`, `crumora:redesign`, `crumora:data-report` and
+— so the skills show up as `crumora:lint`, `crumora:compose`, `crumora:data-report` and
 so on.
 In Claude Code:
 
@@ -382,7 +420,7 @@ without the plugin, copy `src/hooks/lint-activate.js` somewhere and register it 
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-#### Install all six
+#### Install all seven
 
 ```bash
 git clone https://github.com/olcayseygan/crumora.git crumora
@@ -410,10 +448,11 @@ copying the whole folder (`lint` and `gauge` carry their `rules/`, `muster` its 
 cp -r crumora/skills/lint ~/.claude/skills/
 ```
 
-`redesign` reads the shared rulebook, so it needs `_shared/` next to it:
+`compose` and `humanize` read the shared rulebook, so they need `_shared/` next to them:
 
 ```bash
-cp -r crumora/skills/redesign crumora/skills/_shared ~/.claude/skills/
+cp -r crumora/skills/compose crumora/skills/_shared ~/.claude/skills/
+cp -r crumora/skills/humanize crumora/skills/_shared ~/.claude/skills/
 ```
 
 #### What it should look like afterwards
@@ -421,9 +460,12 @@ cp -r crumora/skills/redesign crumora/skills/_shared ~/.claude/skills/
 ```
 ~/.claude/skills/
 ├── _shared/tournament.md      ← shared rulebook, not a skill
-├── redesign/
+├── compose/
 │   ├── SKILL.md
 │   └── references/
+├── humanize/
+│   ├── SKILL.md
+│   └── references/interaction.md
 ├── lint/
 │   ├── SKILL.md
 │   └── rules/
@@ -444,16 +486,16 @@ cp -r crumora/skills/redesign crumora/skills/_shared ~/.claude/skills/
 
 The folder name and the `name:` field in the file's front matter must match, and the file must stay
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
-rather than a note. `data-report` and `redesign` carry `references/` (and `data-report` a
+rather than a note. `data-report`, `compose` and `humanize` carry `references/` (and `data-report` a
 `scripts/`), `lint` and `gauge` carry `rules/` and `muster` carries `patterns/` — copy the whole
-folder, not just the one file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `redesign` reads at the
-start of a run.
+folder, not just the one file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `compose` and `humanize` read
+at the start of a run.
 
 #### Verify
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
-appear in a running session. Then type `/` and look for `redesign`,
-`lint`, `gauge`, `data-report`, `muster`, `readback`, or just ask *"which skills do you have?"*.
+appear in a running session. Then type `/` and look for `compose`,
+`humanize`, `lint`, `gauge`, `data-report`, `muster`, `readback`, or just ask *"which skills do you have?"*.
 
 #### Update
 

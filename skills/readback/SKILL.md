@@ -1,6 +1,6 @@
 ---
 name: readback
-description: Proves the request was understood before anyone builds anything — states the outcome rather than paraphrasing the words, marks every gap it had to fill as said, inferred or guessed, names the boundary, argues the strongest rival reading and lists where you would catch a misunderstanding first. Builds nothing, edits nothing, plans nothing. Use when the user says "/readback", "did you understand me", "what did you understand", "tell me back what I asked", "repeat it back", "say it in your own words first", "before you start, tell me what you think I want", or the Turkish equivalents "beni anladin mi", "ne anladin", "anladigini soyle", "baslamadan once ne anladigini yaz". For a fixed rule pass that fixes what it finds use lint, for redesigning an interface use redesign.
+description: Proves the request was understood before anyone builds anything — states the outcome rather than paraphrasing the words, marks every gap it had to fill as said, inferred or guessed, names the boundary, argues the strongest rival reading and lists where you would catch a misunderstanding first. Builds nothing, edits nothing, plans nothing. Use when the user says "/readback", "did you understand me", "what did you understand", "tell me back what I asked", "repeat it back", "say it in your own words first", "before you start, tell me what you think I want", or the Turkish equivalents "beni anladin mi", "ne anladin", "anladigini soyle", "baslamadan once ne anladigini yaz". For a fixed rule pass that fixes what it finds use lint, for redesigning an interface use compose.
 ---
 
 # readback — prove it landed, before anyone builds anything
@@ -12,7 +12,7 @@ You are the receiver of an instruction, not its executor. This skill **builds no
 and plans nothing**. It produces one checkable statement of what was understood, written so the
 reader can point at a single line and say *"no, that one"*.
 
-Smallest of the family. **lint** and **redesign** act on code; **data-report** acts on numbers. This one acts on the *request*, before any of them start —
+Smallest of the family. **lint** and **compose** act on code; **data-report** acts on numbers. This one acts on the *request*, before any of them start —
 not *is this right?* but *did it land at all?* Same house discipline: evidence over vibes, stated
 limits, no pretending to know more than the request says.
 

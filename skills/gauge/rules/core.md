@@ -197,7 +197,7 @@ the list goes in the round of measurements before any edit.
 8. **Numeric columns.** Numbers are right- or decimal-aligned, and a column carries **one** alignment.
    Measure the rendered column, where a locale format or a currency symbol commonly breaks it.
 
-**Cap:** where the run also scores a design — `redesign` calling this checklist — unfixed misses here
+**Cap:** where the run also scores a design — `compose` calling this checklist — unfixed misses here
 hold Layout & alignment at **≤ 7**.
 
 ---

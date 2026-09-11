@@ -1,9 +1,9 @@
 ---
-name: redesign
-description: Redesigns and re-lays-out an interface from scratch in scored rounds, obsessing over grouping, layout, alignment, sizing, spacing, hierarchy, contrast and states. Each round designs a fresh version, renders it, scores it against a frozen design rubric, and fights it head-to-head (VS) against the reigning design - judged blind in a separate agent that is not told which version is the incumbent, and only after the round renders clean with no console errors. The loop runs until two challengers lose in a row, then reports a full analysis plus a round-by-round table. Use when the user says "/redesign", "redesign this screen", "restyle it", "relayout this page", "rearrange this screen", "make this UI better", "the layout looks off", "fix the spacing/alignment". For checking code against a fixed rule set use lint.
+name: compose
+description: Recomposes and re-lays-out an interface from scratch in scored rounds, obsessing over grouping, layout, alignment, sizing, spacing, hierarchy, contrast and states. Each round designs a fresh version, renders it, scores it against a frozen design rubric, and fights it head-to-head (VS) against the reigning design - judged blind in a separate agent that is not told which version is the incumbent, and only after the round renders clean with no console errors. The loop runs until two challengers lose in a row, then reports a full analysis plus a round-by-round table. Use when the user says "/compose", "compose this screen", "redesign this screen", "restyle it", "relayout this page", "rearrange this screen", "make this UI better", "the layout looks off", "fix the spacing/alignment". For checking code against a fixed rule set use lint; for how the flow behaves in a person's hands — steps, feedback, errors, recovery — use humanize.
 ---
 
-# redesign — redesign the interface
+# compose — compose the interface
 
 Design the thing **again, from a blank canvas**; **render it**; **score it**; **fight it** against
 the current design; repeat until a fresh attempt stops winning.
@@ -24,7 +24,7 @@ code rubric.
 
 ## 0. Pick the target and pin the content
 
-If the user passed an argument, that is the target (`/redesign the settings panel`). If not, ask
+If the user passed an argument, that is the target (`/compose the settings panel`). If not, ask
 **one question**: which screen, panel or component.
 
 **Read the real context, not just the file.** The parent layout/shell, the routed page wrapper,
@@ -45,7 +45,7 @@ Then pin down three things — all frozen for the whole run:
 
 ## 1. Setup (round 0)
 
-`tournament.md` §1, work folder `<scratchpad>/redesign/<target-slug>/`, each `r<N>/` holding the
+`tournament.md` §1, work folder `<scratchpad>/compose/<target-slug>/`, each `r<N>/` holding the
 source *and* the rendered screenshot. One addition: **render the current design and look at it**,
 then score it with the alignment audit (§4) already run against it.
 
