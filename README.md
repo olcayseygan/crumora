@@ -1,9 +1,9 @@
 # crumora
 
 > This repo is also a [Claude Code](https://claude.com/claude-code) marketplace named `olcayseygan` —
-> take all eight with one command: `claude plugin install crumora@olcayseygan`.
+> take all nine with one command: `claude plugin install crumora@olcayseygan`.
 
-Eight [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
+Nine [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
 beats the champion** — then hand back an honest post-mortem and a round-by-round table.
 
@@ -11,6 +11,7 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | --- | --- | --- |
 | **`compose`** | recomposes the interface and judges the rendered pixels | *does it actually look and read right?* |
 | **`humanize`** | rebuilds the interaction and judges the walked tasks | *can a person actually get the job done?* |
+| **`evolve`** | breeds the best of each round into the next until the score stops rising | *how far can this climb?* |
 | **`lint`** | checks the code against a fixed rule set and edits until it passes | *does it pass, rule by rule?* |
 | **`gauge`** | measures the rendered pixels — type, colour, geometry — and edits until they pass | *do the fonts, colours and edges measure up?* |
 | **`data-report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
@@ -18,9 +19,9 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | **`readback`** | starts nothing; hands the request back as consequences | *did I understand what you asked?* |
 | **`know-me`** | reads how the project and you work; builds the setup that removes what repeats | *what should Claude already know here?* |
 
-Each name says what it acts on and what it does to it: `compose` and `humanize` build, `lint`, `gauge` and
+Each name says what it acts on and what it does to it: `compose`, `humanize` and `evolve` build, `lint`, `gauge` and
 `muster` judge and then repair — printing edits instead of prose, one against the code, one against
-the rendered pixels and one against the interface's behaviour — `data-report` and `readback` write it down, and `know-me` writes the project's own Claude Code setup. What `compose` and `humanize` add is the
+the rendered pixels and one against the interface's behaviour — `data-report` and `readback` write it down, and `know-me` writes the project's own Claude Code setup. What `compose`, `humanize` and `evolve` add is the
 tournament around the work: every attempt is scored, fought against the version it wants to replace, and thrown
 away if it doesn't win.
 
@@ -62,10 +63,12 @@ Round 2   another attempt →  gate  →  score  →  blind VS champion  →  wi
   verified.
 - **Six rounds, hard cap.**
 
-`compose` and `humanize` read their rulebook from a separate file —
+`compose`, `humanize` and `evolve` read their rulebook from a separate file —
 [`skills/_shared/tournament.md`](skills/_shared/tournament.md) — holding the setup invariants, the
 rubric, the scoring and VS rules, the stop-and-apply steps and the final-analysis format. Each one's
-own `SKILL.md` carries only what is specific to its move.
+own `SKILL.md` carries only what is specific to its move. `evolve` keeps the setup, rubric, gate
+and report format but swaps the one-on-one VS and the two-losses stop for a pooled blind pass and
+a stop on the first round the score does not rise.
 
 `lint`, `gauge`, `data-report`, `muster`, `readback` and `know-me` are the odd ones out: none of them produces
 a version to score. In `lint`, `gauge` and `muster` the fight happens between a rule and a violation that
@@ -152,6 +155,37 @@ to get out of one. A better-looking obstacle is still an obstacle.
 ```
 /humanize the checkout
 /humanize bu tasarim sacma, kullanici burada kayboluyor
+```
+
+## `evolve` — breed the best forward
+
+The hill-climbing one: `compose` and `humanize` start every round from a blank canvas and fight one
+challenger against one champion; this one **keeps what scored well and builds on it**. Works on code,
+an interface or a document — the rubric is borrowed from whichever skill owns that kind of target.
+
+```
+Round 0   what exists now                              →  baseline score
+Round N   3 candidates bred from the top two of N-1    →  gate  →  one blind pass scores the pool,
+          parents included, unlabelled                 →  top two carry forward
+          best candidate not above best parent          →  loop ends   (10 rounds, hard cap)
+```
+
+- **Three candidates a round, all bred from the leader**: two fixes aimed at its two weakest
+  criteria, one graft of the runner-up's winning idea. Each names one move nobody tried before.
+- **The rubric follows the target**: the shared code rubric for code and documents, `compose`'s for
+  how a screen looks, `humanize`'s for how it behaves — red lines and per-round audits included.
+- **The parents are re-scored every pass, on purpose.** An LLM judge drifts between calls, so a score
+  from round 3 and one from round 5 do not compare; two versions in the same pass do. The parents go
+  into the pool blind, as anchors, and the drift is written down.
+- **Stops on the first round the score does not rise** — lower, tied, red-lined or all gated out.
+  Ties go to the parent. Ten rounds maximum.
+- The final table is a score curve, and **How we did it** traces the winner's lineage back to R0.
+  The risk it always names: building on one line can settle on a local optimum that a blank-canvas
+  run would have escaped.
+
+```
+/evolve the pathfinding cache
+/evolve the settings panel, puan artmayana kadar devam et
 ```
 
 ## `lint` — check it against the rules and fix what fails
@@ -369,7 +403,7 @@ and turns what repeats into the project's own skills, slash commands, subagents,
 
 ## What you get at the end
 
-When a run is a tournament — `compose` or `humanize` — it closes with five headings, always:
+When a run is a tournament — `compose`, `humanize` or `evolve` — it closes with five headings, always:
 
 - **What we set out to do** — the spec / contract / design job
 - **What we did** — which version won, how many rounds, how often the throne changed hands, what
@@ -452,7 +486,7 @@ without the plugin, copy `src/hooks/lint-activate.js` somewhere and register it 
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-#### Install all eight
+#### Install all nine
 
 ```bash
 git clone https://github.com/olcayseygan/crumora.git crumora
@@ -480,11 +514,13 @@ copying the whole folder (`lint` and `gauge` carry their `rules/`, `muster` its 
 cp -r crumora/skills/lint ~/.claude/skills/
 ```
 
-`compose` and `humanize` read the shared rulebook, so they need `_shared/` next to them:
+`compose`, `humanize` and `evolve` read the shared rulebook, so they need `_shared/` next to them.
+`evolve` also borrows the rubrics of `compose` and `humanize`, so it wants them beside it:
 
 ```bash
 cp -r crumora/skills/compose crumora/skills/_shared ~/.claude/skills/
 cp -r crumora/skills/humanize crumora/skills/_shared ~/.claude/skills/
+cp -r crumora/skills/evolve crumora/skills/compose crumora/skills/humanize crumora/skills/_shared ~/.claude/skills/
 ```
 
 #### What it should look like afterwards
@@ -498,6 +534,7 @@ cp -r crumora/skills/humanize crumora/skills/_shared ~/.claude/skills/
 ├── humanize/
 │   ├── SKILL.md
 │   └── references/interaction.md
+├── evolve/SKILL.md
 ├── lint/
 │   ├── SKILL.md
 │   └── rules/
@@ -523,14 +560,14 @@ The folder name and the `name:` field in the file's front matter must match, and
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
 rather than a note. `data-report`, `compose` and `humanize` carry `references/` (and `data-report` a
 `scripts/`), `lint` and `gauge` carry `rules/` and `muster` carries `patterns/` — copy the whole
-folder, not just the one file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `compose` and `humanize` read
+folder, not just the one file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `compose`, `humanize` and `evolve` read
 at the start of a run.
 
 #### Verify
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
 appear in a running session. Then type `/` and look for `compose`,
-`humanize`, `lint`, `gauge`, `data-report`, `muster`, `readback`, `know-me`, or just ask *"which skills do you have?"*.
+`humanize`, `evolve`, `lint`, `gauge`, `data-report`, `muster`, `readback`, `know-me`, or just ask *"which skills do you have?"*.
 
 #### Update
 

@@ -1,8 +1,9 @@
 # The tournament — shared rules
 
-Loaded by `compose` and `humanize`. Everything here holds in either mode. The skill's own `SKILL.md` carries
-only what is specific to its move: how a round produces a challenger, its rubric, its extra red
-lines, its table.
+Loaded by `compose`, `humanize` and `evolve`. Everything here holds in each of them unless the skill says
+it overrides a section — `evolve` replaces §4 and §5 and re-scores its parents. The skill's own
+`SKILL.md` carries only what is specific to its move: how a round produces a challenger, its rubric,
+its extra red lines, its table.
 
 ---
 
