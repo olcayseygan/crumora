@@ -1,9 +1,9 @@
 # crumora
 
 > This repo is also a [Claude Code](https://claude.com/claude-code) marketplace named `olcayseygan` —
-> take all seven with one command: `claude plugin install crumora@olcayseygan`.
+> take all eight with one command: `claude plugin install crumora@olcayseygan`.
 
-Seven [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
+Eight [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
 beats the champion** — then hand back an honest post-mortem and a round-by-round table.
 
@@ -16,10 +16,11 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | **`data-report`** | leaves the code alone; measures the data and writes it up | *what do the numbers actually say?* |
 | **`muster`** | checks the interface against 73 UX patterns and edits until it passes | *does this screen pass muster?* |
 | **`readback`** | starts nothing; hands the request back as consequences | *did I understand what you asked?* |
+| **`know-me`** | reads how the project and you work; builds the setup that removes what repeats | *what should Claude already know here?* |
 
 Each name says what it acts on and what it does to it: `compose` and `humanize` build, `lint`, `gauge` and
 `muster` judge and then repair — printing edits instead of prose, one against the code, one against
-the rendered pixels and one against the interface's behaviour — and `data-report` and `readback` write it down. What `compose` and `humanize` add is the
+the rendered pixels and one against the interface's behaviour — `data-report` and `readback` write it down, and `know-me` writes the project's own Claude Code setup. What `compose` and `humanize` add is the
 tournament around the work: every attempt is scored, fought against the version it wants to replace, and thrown
 away if it doesn't win.
 
@@ -66,10 +67,11 @@ Round 2   another attempt →  gate  →  score  →  blind VS champion  →  wi
 rubric, the scoring and VS rules, the stop-and-apply steps and the final-analysis format. Each one's
 own `SKILL.md` carries only what is specific to its move.
 
-`lint`, `gauge`, `data-report`, `muster` and `readback` are the odd ones out: none of them produces
+`lint`, `gauge`, `data-report`, `muster`, `readback` and `know-me` are the odd ones out: none of them produces
 a version to score. In `lint`, `gauge` and `muster` the fight happens between a rule and a violation that
 has to survive an attempt to kill it; in `data-report` between a claim and the data that has to back
-it; in `readback` between a reading of the request and the rival reading that wants to replace it.
+it; in `readback` between a reading of the request and the rival reading that wants to replace it;
+in `know-me` between a proposed artifact and the question *did this ever actually happen?*
 The discipline is identical — nothing reaches you until something tried to kill it.
 
 ## `compose` — rebuild the interface
@@ -335,6 +337,36 @@ request back in a form you can reject, so the misunderstanding surfaces before t
 /readback docs/ticket-482.md
 ```
 
+## `know-me` — build the setup the project already asks for
+
+The one that writes Claude Code itself: it reads **how this project and this person actually work**
+and turns what repeats into the project's own skills, slash commands, subagents, hooks and
+`CLAUDE.md` lines.
+
+- **It reads before it writes.** The build scripts, CI, git history, `CLAUDE.md`, memory — and the
+  prompts you have typed into Claude Code in this project, clustered by intent and counted.
+  Corrections (*"no, not like that"*, *"yine"*) are counted separately: a repeated correction is the
+  strongest signal there is.
+- **Evidence or nothing.** Every artifact names what earned it — a CI step, a commit range, a prompt
+  count. The bar is three occurrences or a standing written rule; twice is reported as *worth
+  watching*, not built. No generic starter kit, no workflow the project does not have yet.
+- **The lightest kind wins:** a `CLAUDE.md` line, then a hook, a command, a skill, a subagent.
+- **Nothing that already exists.** Project, personal and plugin setups and the built-in commands are
+  inventoried first; an overlap is dropped, a name collision reported, never overwritten.
+- **Merged, not replaced.** `settings.json` gains hooks beside the existing ones; `CLAUDE.md` gains
+  lines, nothing you wrote is reworded.
+- **One stop.** The inventory is shown once with its evidence and confirmed with one yes — hooks run
+  on their own, so they are not written unasked.
+- **Every hook is run before it ships**, once with a payload that should pass and once with one that
+  should trip it. Transcripts are read to learn and never quoted into a file.
+- **It ends in a file list**, each line with its evidence, then the verification line.
+
+```
+/know-me
+/know-me just hooks
+/know-me bu proje icin skill hook command agent olustur
+```
+
 ## What you get at the end
 
 When a run is a tournament — `compose` or `humanize` — it closes with five headings, always:
@@ -420,7 +452,7 @@ without the plugin, copy `src/hooks/lint-activate.js` somewhere and register it 
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-#### Install all seven
+#### Install all eight
 
 ```bash
 git clone https://github.com/olcayseygan/crumora.git crumora
@@ -441,8 +473,8 @@ it.
 
 #### Install just one
 
-`lint`, `gauge`, `data-report`, `muster` and `readback` are fully independent — take one on its own,
-copying the whole folder (`lint` and `gauge` carry their `rules/`, `muster` its `patterns/`):
+`lint`, `gauge`, `data-report`, `muster`, `readback` and `know-me` are fully independent — take one on its own,
+copying the whole folder (`lint` and `gauge` carry their `rules/`, `muster` its `patterns/`, `know-me` its `references/`):
 
 ```bash
 cp -r crumora/skills/lint ~/.claude/skills/
@@ -475,6 +507,9 @@ cp -r crumora/skills/humanize crumora/skills/_shared ~/.claude/skills/
 │   ├── SKILL.md
 │   └── rules/core.md
 ├── readback/SKILL.md
+├── know-me/
+│   ├── SKILL.md
+│   └── references/formats.md
 ├── muster/
 │   ├── SKILL.md
 │   └── patterns/
@@ -495,7 +530,7 @@ at the start of a run.
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
 appear in a running session. Then type `/` and look for `compose`,
-`humanize`, `lint`, `gauge`, `data-report`, `muster`, `readback`, or just ask *"which skills do you have?"*.
+`humanize`, `lint`, `gauge`, `data-report`, `muster`, `readback`, `know-me`, or just ask *"which skills do you have?"*.
 
 #### Update
 
