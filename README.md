@@ -1,9 +1,9 @@
 # crumora
 
 > This repo is also a [Claude Code](https://claude.com/claude-code) marketplace named `olcayseygan` —
-> take all nine with one command: `claude plugin install crumora@olcayseygan`.
+> take all ten with one command: `claude plugin install crumora@olcayseygan`.
 
-Nine [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
+Ten [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
 tournament: **do the work, score it, fight it against the previous version, repeat until nothing
 beats the champion** — then hand back an honest post-mortem and a round-by-round table.
 
@@ -18,10 +18,11 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 | **`muster`** | checks the interface against 73 UX patterns and edits until it passes | *does this screen pass muster?* |
 | **`readback`** | starts nothing; hands the request back as consequences | *did I understand what you asked?* |
 | **`know-me`** | reads how the project and you work; builds the setup that removes what repeats | *what should Claude already know here?* |
+| **`conduct`** | makes the main thread only manage; the work goes to parallel subagents | *who should actually do this?* |
 
 Each name says what it acts on and what it does to it: `compose`, `humanize` and `evolve` build, `lint`, `gauge` and
 `muster` judge and then repair — printing edits instead of prose, one against the code, one against
-the rendered pixels and one against the interface's behaviour — `data-report` and `readback` write it down, and `know-me` writes the project's own Claude Code setup. What `compose`, `humanize` and `evolve` add is the
+the rendered pixels and one against the interface's behaviour — `data-report` and `readback` write it down, `know-me` writes the project's own Claude Code setup, and `conduct` writes the rule that hands the work to subagents. What `compose`, `humanize` and `evolve` add is the
 tournament around the work: every attempt is scored, fought against the version it wants to replace, and thrown
 away if it doesn't win.
 
@@ -401,6 +402,25 @@ and turns what repeats into the project's own skills, slash commands, subagents,
 /know-me bu proje icin skill hook command agent olustur
 ```
 
+## `conduct` — the main thread manages, agents do the work
+
+Writes one marked block into `CLAUDE.md` that turns the main thread into a conductor: it plans,
+splits, delegates and merges, and every piece of real work goes to a subagent.
+
+- **As many agents as the work splits into,** launched together so they run in parallel.
+- **Model by the work:** `sonnet` for lookups, searches and context gathering; `opus` for writing
+  code, debugging, design, review and anything that needs real thought.
+- **Short briefs for coders** — the goal, where it lives, what done means. No over-explaining.
+- **Parallel writers never share a file;** overlap is serialised or put in a worktree.
+- **Idempotent.** Re-running replaces the block between its markers; `off` removes it. Nothing else
+  in `CLAUDE.md` is touched.
+
+```
+/conduct
+/conduct global
+/conduct off
+```
+
 ## What you get at the end
 
 When a run is a tournament — `compose`, `humanize` or `evolve` — it closes with five headings, always:
@@ -507,7 +527,7 @@ it.
 
 #### Install just one
 
-`lint`, `gauge`, `data-report`, `muster`, `readback` and `know-me` are fully independent — take one on its own,
+`lint`, `gauge`, `data-report`, `muster`, `readback`, `know-me` and `conduct` are fully independent — take one on its own,
 copying the whole folder (`lint` and `gauge` carry their `rules/`, `muster` its `patterns/`, `know-me` its `references/`):
 
 ```bash
@@ -544,6 +564,7 @@ cp -r crumora/skills/evolve crumora/skills/compose crumora/skills/humanize crumo
 │   ├── SKILL.md
 │   └── rules/core.md
 ├── readback/SKILL.md
+├── conduct/SKILL.md
 ├── know-me/
 │   ├── SKILL.md
 │   └── references/formats.md
@@ -567,7 +588,7 @@ at the start of a run.
 
 **Restart Claude Code** — the skill list is read at session start, so a freshly copied skill will not
 appear in a running session. Then type `/` and look for `compose`,
-`humanize`, `evolve`, `lint`, `gauge`, `data-report`, `muster`, `readback`, `know-me`, or just ask *"which skills do you have?"*.
+`humanize`, `evolve`, `lint`, `gauge`, `data-report`, `muster`, `readback`, `know-me`, `conduct`, or just ask *"which skills do you have?"*.
 
 #### Update
 
