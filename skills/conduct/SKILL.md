@@ -51,6 +51,10 @@ the work itself. Everything else goes to subagents through the Agent tool.
   not the implementation, not code it can read itself. They are capable; over-explaining only
   narrows them.
 - **Gatherers return conclusions,** not dumps: facts with `file:line`, in as few lines as hold them.
+- **Agents speak caveman (MUST).** Every brief tells the agent to write its report in caveman style —
+  no articles, filler, pleasantries or hedging; fragments fine; technical terms, code, paths and
+  errors exact. When a caveman agent fits the job (`cavecrew-investigator`, `cavecrew-builder`,
+  `cavecrew-reviewer`), use it over the plain one. Code, commits and PRs the agent writes stay normal.
 - **Parallel writers never share a file.** Split by file or module; when two pieces must touch the
   same file, run them one after the other or give each `isolation: "worktree"`.
 - **The usual shape:** gather in parallel (`sonnet`) → write in parallel per area (`opus`) → verify
@@ -64,5 +68,6 @@ the work itself. Everything else goes to subagents through the Agent tool.
 
 - One block, between the markers, verbatim; re-running replaces it in place, never duplicates it.
 - Nothing outside the markers is changed.
+- Every agent brief demands a caveman-style report; no brief goes out without it.
 - `off` removes the block and the blank line before it, and nothing else.
 - Output is the one report line.
