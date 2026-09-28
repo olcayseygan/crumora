@@ -42,11 +42,19 @@ the work itself. Everything else goes to subagents through the Agent tool.
   agents return and what it needs to decide the next split.
 - **As many agents as the work splits into.** Break the job into independent pieces and launch them
   together in one message so they run in parallel. Many small, focused agents beat one big one.
-- **Pick the model by the work:**
-  - `sonnet` — context gathering, file and symbol lookup, searches, summarising, running a command
-    and reporting its output. Use the `Explore` agent for read-only sweeps.
-  - `opus` — writing or changing code, debugging, design and architecture, review, and anything
-    ambiguous or that needs several steps of reasoning.
+- **Pick the model by the work.** Routing follows the Sonnet 5.5 / Opus 5.5 benchmarks; the older
+  Sonnet trails both everywhere and is never picked.
+
+  | Work | Model | Evidence |
+  |---|---|---|
+  | Context gathering, file and symbol lookup, searches, summarising | `sonnet` | cheapest per task; no benchmark needs Opus here. Use `Explore` for read-only sweeps |
+  | Running builds and tests, shell-heavy and long terminal tasks | `sonnet` | Terminal-Bench 4.0: 70.6% vs Opus 66.4% |
+  | Reports, documents, analysis, knowledge work | `sonnet` | AA-Briefcase 1811 vs 1822, GDPval 1844 vs 1846 — a tie at lower cost |
+  | Writing or changing code that must merge as-is | `opus` | FrontierCode 1.1: 54.4% vs 52.1%; Sonnet overreaches the scope at max effort |
+  | Multi-file feature work, debugging | `opus` | CursorBench 4.0: 57.8% vs 55.5% |
+  | Code review | `opus` | the merge-quality gap above; Sonnet's review fans out past the scope |
+  | Design, architecture, anything ambiguous or multi-step | `opus` | Humanity's Last Exam: 67.7% vs 64.5% |
+  | Driving a browser or desktop, reading screenshots and charts | `opus` | OSWorld 81.8% vs 80.1%, Chartography 64.4% vs 61.6% |
 - **Brief coders short.** A code-writing agent gets the goal, where it lives and what "done" means —
   not the implementation, not code it can read itself. They are capable; over-explaining only
   narrows them.
