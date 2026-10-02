@@ -43,7 +43,7 @@
 2. Settings group by task, not by org structure or schema order.
 3. Search exists.
 4. Changed values carry a modified indicator and a per-setting reset.
-5. Destructive actions sit at the bottom behind a visual wall, and an irreversible delete is gated by typing the exact resource name.
+5. Destructive actions sit at the bottom behind a visual wall, and an irreversible delete of a high-stakes resource (project, account, repository) is gated by typing the exact resource name; a single item uses hold-to-confirm (destructive-actions#10).
 6. Advanced options collapse behind an expandable section rather than being buried in nested menus.
 
 ### live-cursors — Live Cursors

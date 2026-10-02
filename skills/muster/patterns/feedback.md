@@ -53,12 +53,18 @@
 5. The undo window is never too short for a realistic reaction.
 
 ### destructive-actions — Destructive Actions
-1. A hold-to-confirm ring fills over ~300ms of held press.
+1. A hold-to-confirm fill — a ring, the button background, a border sweep, whatever suits the design — completes over ~1 second of held press.
 2. Red is reserved exclusively for destructive actions — not logout, not badges, not alerts.
 3. The action names itself on the button: "Delete project" / "Keep project", never a generic "Are you sure?".
 4. The destructive button never sits where the confirm button usually sits.
 5. Deletion lives in a bordered, labelled danger zone at the bottom of the page.
 6. An irreversible deletion gets a cancellable cooldown — 14 days to cancel, for example.
+7. Holding Space or Enter drives the same fill; screen readers hear the hold instruction (accessible description only) and the progress.
+8. Releasing before the fill completes rewinds it and nothing happens; the rewind itself is a distinct cancel animation, so the release reads as cancelled.
+9. Under reduced motion the progress, cancel and success still show, without animation — a stepped fill or a state swap.
+10. Hold-to-confirm guards the irreversible delete of a single item; typing the resource name guards a high-stakes resource (project, account, repository, whole dataset) — never both on one action.
+11. The button carries no visible "hold" text or hint; the label stays the action name (#3), and the fill teaches the gesture.
+12. A completed fill ends in a distinct success animation before the item leaves.
 
 ### disabled-buttons — Disabled Buttons
 1. A disabled button drops out of the tab order and its pointer events are dead.

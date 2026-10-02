@@ -41,7 +41,11 @@ named in `trace.md` with its task and step; the caps are hard. Numbers match `mu
 - [ ] A failed request offers retry in place and keeps the input.
 - [ ] Reversible actions execute immediately with an undo — window per `muster` undo-ux: **5s**
       default, **10s** for bulk or delayed send; only truly irreversible ones confirm,
-      naming object and consequence; high-stakes ones require typing the name.
+      naming object and consequence.
+- [ ] Truly irreversible deletion of a single item uses hold-to-confirm per `muster`
+      destructive-actions (~1s hold, keyboard path, no "hold" text on the button, cancel and success each animated); a high-stakes resource
+      (project, account, repository, whole dataset) requires typing its name instead — never both
+      on one action; reversible actions use undo.
 - [ ] Empty states say why and offer the first action.
 
 **Cap:** misses here hold Error prevention & recovery at **≤ 6**.
