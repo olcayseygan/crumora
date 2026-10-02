@@ -1,8 +1,7 @@
 # The 73 patterns — trigger index
 
-Source: <https://designmotionhq.com/patterns>. Every pattern lives in one of eight files in this
-directory. Read the **Trigger** column against the target; load a file only when at least one of its
-patterns fires. Cite violations as `slug#n`.
+Source: <https://designmotionhq.com/patterns>. Load a file only when at least one of its patterns
+fires.
 
 ## foundation.md — 13
 

@@ -4,8 +4,8 @@
 > take all ten with one command: `claude plugin install crumora@olcayseygan`.
 
 Ten [Claude Code](https://claude.com/claude-code) skills that turn *"let me try that again"* into a
-tournament: **do the work, score it, fight it against the previous version, repeat until nothing
-beats the champion** — then hand back an honest post-mortem and a round-by-round table.
+tournament: **do the work three ways at once, have a blind judge rank the attempts against the
+champion, repeat until nothing beats it** — then hand back an honest post-mortem and a round-by-round table.
 
 | Skill | Move | Answers |
 | --- | --- | --- |
@@ -22,60 +22,72 @@ beats the champion** — then hand back an honest post-mortem and a round-by-rou
 
 Each name says what it acts on and what it does to it: `compose`, `humanize` and `evolve` build, `lint`, `gauge` and
 `muster` judge and then repair — printing edits instead of prose, one against the code, one against
-the rendered pixels and one against the interface's behaviour — `data-report` and `readback` write it down, `know-me` writes the project's own Claude Code setup, and `conduct` writes the rule that hands the work to subagents. What `compose`, `humanize` and `evolve` add is the
-tournament around the work: every attempt is scored, fought against the version it wants to replace, and thrown
-away if it doesn't win.
+the rendered pixels and one against the UX patterns — `data-report` and `readback` write it down, `know-me` writes the project's own Claude Code setup, and `conduct` writes the rule that hands the work to subagents. What `compose`, `humanize` and `evolve` add is the
+tournament around the work: every attempt is gated, ranked blind against the version it wants to replace, and thrown
+away if it doesn't beat it.
 
 Redoing something "to see if it comes out better" usually ends in a vibe-based verdict: the new one
-*feels* cleaner, so it ships. These skills replace the vibe with a frozen rubric, head-to-head
-rounds, an incumbent that only loses when it is genuinely beaten, and a written analysis at the end.
+*feels* cleaner, so it ships. These skills replace the vibe with a frozen rubric, blind
+rankings, an incumbent that only loses when it is genuinely beaten, and a written analysis at the end.
 
 ---
 
 ## The shape they share
 
 ```
-Round 0   what exists now                    →  champion
-Round 1   a new attempt   →  gate  →  score  →  blind VS champion  →  winner takes the throne
-Round 2   another attempt →  gate  →  score  →  blind VS champion  →  winner takes the throne
-...
-          two challengers lose in a row      →  loop ends
+Round 0   what exists now                  →  champion
+Round N   3 challengers, built in parallel  →  gate each  →  one blind judge ranks them with the champion
+          challenger strictly beats the champion  →  pre-crown check, down the ranking  →  first survivor crowned
+          ...
+          a round where nobody takes the throne  →  loop ends   (4 rounds, hard cap)
 ```
 
 - **Spec first.** The target is pinned in a few bullets and never grows mid-run — a moving target
   makes every earlier comparison worthless.
 - **Rubric frozen.** Weighted criteria, agreed before round 1, never edited afterwards.
-- **Nothing is re-scored.** A score is earned once and carried forward, so the incumbent can't drift.
-- **The gate runs before the score.** Build, type check, linter, the tests covering the target — or
-  for a design, a clean render with a clean console. Red loses the round outright, before anything is
-  judged. Correctness is the heaviest criterion in the rubric and the easiest one to award by
-  wishful reading; running the checks is what stops that.
-- **The head-to-head is judged blind, in a separate agent.** Two versions labelled A and B, order
-  chosen without reference to which is champion, and the judge is never told which one is the
-  incumbent or who wrote either. Whoever wrote a version cannot rank it honestly.
-- **The VS decides the throne, not the total.** Comparing two concrete versions is a judgement that
-  holds up; deciding whether a criterion deserves a 7 or an 8 in the abstract is not. The score
-  drives the work queue, shows drift across rounds and breaks a split VS — it doesn't crown
-  anything. Ties go to the champion, and spec misses or house-rule violations lose regardless of how
+- **Only same-pass scores compare.** The champion is re-judged in every pass as an unlabelled anchor;
+  a judge drifts between calls, so no total carries from one round to the next.
+- **The gate runs before the score.** Build, type check, linter and tests wherever they exist — and for
+  an interface, a clean render with zero console errors (warnings don't fail). Red gets one repair, then
+  that challenger leaves the round unjudged. Correctness is the heaviest criterion in the rubric and
+  the easiest one to award by wishful reading; running the checks is what stops that.
+- **Three challengers a round, built in parallel.** Three distinct ideas, each written down first and
+  none repeating an earlier round's; each builder gets the target, rubric and champion but never the
+  other challengers, and each is gated on its own.
+- **One blind judge ranks the pool, in a separate agent.** The gated challengers and the champion
+  go in shuffled and labelled A, B, C…; the judge is never told which one is the incumbent or who
+  wrote what. Whoever wrote a version cannot rank it honestly.
+- **The champion falls only to a strictly higher total in the same pass.** Ties go to the champion,
+  and a spec miss, a house-rule violation or a skill red line ranks below every clean version however
   pretty the result is.
-- **One loss doesn't end it.** Round quality is high-variance, so the loop runs until **two
-  challengers lose in a row** — and the round after a loss has to try a different move.
+- **For interfaces, a pre-crown check stands between a challenger and the throne.** It runs on the
+  highest-ranked challenger that beat the champion; its caps lower that challenger's scores, and if
+  the capped total no longer beats the champion's, the next one that beat the champion is checked,
+  and so on. The first survivor is crowned; if none survives, the champion holds. The champion carries
+  the caps of its own check from round 0.
+- **Rounds render the narrowest and widest declared viewport** with the stress content; every
+  viewport and the full stress set are checked once the winner is applied, and a regression found
+  there is fixed in place once or reported.
+- **One round with no new champion ends it.** All gated out, none ahead, a red line, or the pre-crown
+  check pulling every challenger that beat the champion back.
 - **The repo stays clean** until the final champion is decided, and only then is it applied and
   verified.
-- **Six rounds, hard cap.**
+- **Four rounds, hard cap** (`evolve`: six).
 
 `compose`, `humanize` and `evolve` read their rulebook from a separate file —
 [`skills/_shared/tournament.md`](skills/_shared/tournament.md) — holding the setup invariants, the
-rubric, the scoring and VS rules, the stop-and-apply steps and the final-analysis format. Each one's
-own `SKILL.md` carries only what is specific to its move. `evolve` keeps the setup, rubric, gate
-and report format but swaps the one-on-one VS and the two-losses stop for a pooled blind pass and
-a stop on the first round the score does not rise.
+rubric, the gate and scoring rules, the round itself (three challengers, one blind judge, the
+pre-crown check, the crowning), the stop-and-apply steps and the final-analysis format. Each one's
+own `SKILL.md` carries only what is specific to its move. `evolve` keeps all of it but breeds its challengers
+from the leader instead of building fresh ideas, puts both parents in the judge's pool, carries the
+top two forward and stops when the best candidate does not beat the best parent, with a six-round cap.
 
-`lint`, `gauge`, `data-report`, `muster`, `readback` and `know-me` are the odd ones out: none of them produces
+`lint`, `gauge`, `data-report`, `muster`, `readback`, `know-me` and `conduct` are the odd ones out: none of them produces
 a version to score. In `lint`, `gauge` and `muster` the fight happens between a rule and a violation that
 has to survive an attempt to kill it; in `data-report` between a claim and the data that has to back
 it; in `readback` between a reading of the request and the rival reading that wants to replace it;
-in `know-me` between a proposed artifact and the question *did this ever actually happen?*
+in `know-me` between a proposed artifact and the question *did this ever actually happen?*; `conduct`
+writes one block and has nothing to fight.
 The discipline is identical — nothing reaches you until something tried to kill it.
 
 ## `compose` — rebuild the interface
@@ -99,18 +111,19 @@ something, contrast you can read.
 - **The content set is frozen up front — including a stress case**: the longest label, the empty
   state, the biggest number, the 40-item list. A design that only works on Lorem ipsum is not a
   design.
-- **Every round declares its scales** (spacing, type, size, radius, palette) and never steps outside
-  them; existing project tokens win over invented ones.
+- **Every challenger declares its scales** (spacing, type, size, radius, palette) and never steps
+  outside them; existing project tokens win over invented ones.
 - **Render it and look at it — that is the gate.** Scoring a layout from source is how misaligned,
-  overflowing screens get called "clean". A round that fails to render, or renders with errors in
-  the console, loses outright after one repair attempt; nothing is scored off a warning's
-  screenshot.
-- **An alignment audit runs every round** — shared edges, gutter consistency, optical vs.
-  mathematical centring, icon/text alignment, padding symmetry, overflow, rhythm. Unfixed misses cap
-  the alignment score at 7.
+  overflowing screens get called "clean". A challenger that fails to render, or renders with errors in
+  the console, gets one repair attempt and is then out of the round (warnings alone don't fail it);
+  nothing is judged without the pixels.
+- **The alignment audit and the design checklist are the pre-crown check** — shared edges, gutter
+  consistency, optical vs. mathematical centring, icon/text alignment, padding symmetry, overflow,
+  rhythm. They run on round 0 and, down the ranking, on the challengers that beat the champion; any miss caps Layout, grouping &
+  alignment at 7.
 - **Bindings survive every move.** Props, events, `ref`s, slots and conditionals travel with the
   markup they belong to; a layout win that drops a listener is a regression, not a round.
-- **Red lines** (automatic loss): the primary action got harder to find, contrast fails AA, the
+- **Red lines** (rank below every clean version): the primary action got harder to find, contrast fails AA, the
   stress content breaks the layout, the project's design tokens were ignored, or a binding was lost
   in the restructure.
 - Loads `frontend-design` / `dataviz` / `artifact-design` first when they apply — that is where the
@@ -137,20 +150,25 @@ to get out of one. A better-looking obstacle is still an obstacle.
 | Memory & cognitive load | 10 |
 
 - **The people and the tasks are frozen up front** — who uses it, how often, on what input; three to
-  seven tasks written as the person's goal; plus stress paths walked every round: wrong input, empty
-  first run, slow and failing network, reload mid-task, undo, keyboard only, narrow touch viewport.
+  seven tasks written as the person's goal; plus stress paths walked by every challenger: wrong input, empty
+  first run, throttled and aborted network, reload mid-task, undo, long content, keyboard only,
+  narrow touch viewport.
 - **Every task is walked through the render as the person** — knowing the goal, not the interface.
   Each step answers the four cognitive-walkthrough questions; each task totals steps, decisions,
   context switches, recall load, pointer travel, measured latency, dead ends and recovery cost.
 - **Round 0 is walked before anything is designed**, so every later number has a baseline.
-- **Each round rebuilds the interaction, not the paint** — one stated idea, then a flow map, a primary
+- **Each challenger rebuilds the interaction, not the paint** — one stated idea, then a flow map, a primary
   move per screen, a feedback contract, an error contract and the defaults.
-- **The gate is a clean render with every task completable** end to end; a task that cannot be
-  finished loses the round.
-- **The blind judge sees two traces**, not the source — and every verdict names a task and a step.
-- **Red lines** (automatic loss): a task cannot be completed or typed input is lost, the most frequent
-  task got more expensive, an irreversible action lost its undo or confirmation, the keyboard path
-  broke, text fails AA, or a validation, permission check or binding was dropped.
+- **The gate is the shared one plus every task completable** end to end in the render; a task that
+  cannot be finished takes that challenger out of the round.
+- **The blind judge sees every version's trace**, not the source — and every verdict names a task and a
+  step. The challengers that beat the champion then go through the interaction checklist, best first, before one is crowned; a task
+  not completable keyboard-only caps Reach at 5, any miss in the Errors section caps Error prevention
+  at 6.
+- **Red lines** (rank below every clean version): a task cannot be completed or a stress path loses typed input the
+  champion kept, the most frequent task got more expensive, an irreversible action lost its undo or
+  confirmation, the keyboard path broke, text fails AA, a validation, permission check, API call,
+  binding or analytics event was dropped, or the project's tokens and components were ignored.
 - The final analysis always says it: **the walk is a proxy for a real person, not a usability test.**
 
 ```
@@ -160,26 +178,27 @@ to get out of one. A better-looking obstacle is still an obstacle.
 
 ## `evolve` — breed the best forward
 
-The hill-climbing one: `compose` and `humanize` start every round from a blank canvas and fight one
-challenger against one champion; this one **keeps what scored well and builds on it**. Works on code,
+The hill-climbing one: `compose` and `humanize` build every challenger from a blank canvas and rank
+them against the champion; this one **keeps what scored well and builds on it**. Works on code,
 an interface or a document — the rubric is borrowed from whichever skill owns that kind of target.
 
 ```
 Round 0   what exists now                              →  baseline score
-Round N   3 candidates bred from the top two of N-1    →  gate  →  one blind pass scores the pool,
-          parents included, unlabelled                 →  top two carry forward
-          best candidate not above best parent          →  loop ends   (10 rounds, hard cap)
+Round N   3 candidates bred from the top two of N-1    →  gate  →  one blind pass ranks the pool,
+          parents included, unlabelled                 →  pre-crown check down the pool  →  top two carry forward
+          best candidate not above best parent          →  loop ends   (6 rounds, hard cap)
 ```
 
 - **Three candidates a round, all bred from the leader**: two fixes aimed at its two weakest
-  criteria, one graft of the runner-up's winning idea. Each names one move nobody tried before.
+  criteria, one graft of the runner-up's winning idea (a third fix when there is none). Each names
+  one move nobody tried before. A candidate red at the gate leaves the pool; the round goes on.
 - **The rubric follows the target**: the shared code rubric for code and documents, `compose`'s for
-  how a screen looks, `humanize`'s for how it behaves — red lines and per-round audits included.
-- **The parents are re-scored every pass, on purpose.** An LLM judge drifts between calls, so a score
-  from round 3 and one from round 5 do not compare; two versions in the same pass do. The parents go
-  into the pool blind, as anchors, and the drift is written down.
-- **Stops on the first round the score does not rise** — lower, tied, red-lined or all gated out.
-  Ties go to the parent. Ten rounds maximum.
+  how a screen looks, `humanize`'s for how it behaves — red lines and pre-crown checks included.
+- **The parents are re-judged every pass, like the champion elsewhere.** An LLM judge drifts between
+  calls, so a score from round 3 and one from round 5 do not compare; two versions in the same pass
+  do. The parents go into the pool blind, as anchors, and the drift is written down.
+- **Stops on the first round the score does not rise** — lower, tied, red-lined, every candidate pulled back by the
+  pre-crown check, or all gated out. Every parent carried forward has passed the check. Ties go to the parent. Six rounds maximum.
 - The final table is a score curve, and **How we did it** traces the winner's lineage back to R0.
   The risk it always names: building on one line can settle on a local optimum that a blank-canvas
   run would have escaped.
@@ -205,8 +224,9 @@ the output is the edit list, not a report.
   loads per language from `rules/idiom/` — Python, JavaScript/TypeScript, C#/Unity, C, C++.
 - **Every rule the level enables, against every file.** A rule that was not looked for is not silently
   clean — it is checked, or one line says why it could not be.
-- **`.lint.md` at the repo root sets the default depth** with a single `level lite` line, and nothing
-  else. The invocation still wins over it.
+- **The level resolves in a fixed order:** the invocation, then `CRUMORA_LINT_LEVEL`, then the nearest
+  `.lint.md` walking up to the repo root — a single `level lite` line, nothing else is honoured — then
+  `full`.
 - **`injection` is the floor: it runs at every level, lite included**, together with the secrets clause
   of `literals`. Nothing switches either one off.
 - **It ends in a diff, not a question.** One line per edit, then the verification line, then whatever
@@ -229,9 +249,9 @@ already past the gate instead of being fixed afterwards. The rule text itself st
 `rules/core.md` and is read only when you actually run the skill, so the per-session cost is a dozen
 lines rather than five hundred.
 
-The level resolves the same way the skill resolves it — `CRUMORA_LINT_LEVEL` first, then a
-`level lite` line in `.lint.md` at the repository root, then `full`. Setting either to **`off`**
-silences the block entirely and leaves `/lint` working as normal.
+The level resolves the same way the skill resolves it, minus the invocation — `CRUMORA_LINT_LEVEL`
+first, then the nearest `.lint.md` up to the repository root, then `full`. Setting either to **`off`**
+silences the block and nothing else; `/lint` still runs, at `full`.
 
 ```
 level   off
@@ -239,7 +259,7 @@ level   off
 
 ## `gauge` — measure the rendered interface and fix what misses
 
-The measurement gate. **The per-round checklist `compose` walks, pulled out and run on its own** —
+The measurement gate. **A fixed checklist of the type, colour, geometry and access rules, run on its own** —
 every answer taken from the render and written down as a number, every miss fixed in place.
 
 - **Nothing is checked before the target is on screen.** The project is launched, the target is
@@ -249,27 +269,27 @@ every answer taken from the render and written down as a number, every miss fixe
   guessed at.
 - **No number, no violation.** "Feels cramped" never becomes an edit; a 22px gap in a 4/8/16/24 scale
   does. Shared edges differ by 0px, not 1-2px. Contrast pairs are computed and printed, not eyeballed.
-- **Fonts are counted, not felt.** `type` lists every family that actually rendered — at most two plus
-  a monospace — and states why the pair works: different structure, comparable x-height. Then the
-  scale (a stray 15px is a stray 15px), at most three weights and none of them synthesised, line
-  heights that track the size, a 45-75 character measure, tracking that follows size, and one render
+- **Fonts are counted, not felt.** `type` lists every family that actually rendered and states why
+  the pairing works; two near-identical faces collapse to one. Then the scale (a stray 15px is a
+  stray 15px), weights from the declared set and none of them synthesised, line heights that track
+  the size, a 45-75 character measure, tracking that follows size, and one render
   with the web font blocked to prove the fallback is real.
 - **Colours are judged as a set.** `contrast` asks whether a pair can be read; `palette` asks whether
-  the set makes sense — one neutral ramp at one hue, one leading accent, semantic colours that mean
-  one thing each, ramps that are perceptually even in OKLCH rather than nudged by eye, saturation
+  the set makes sense — one neutral ramp at one hue, semantic colours that mean one thing each, ramps that are perceptually even in OKLCH rather than nudged by eye, saturation
   climbing toward the small elements, gradients with no grey dead zone, and a declared categorical set
   for charts.
-- **Three levels, like `lint` — `lite`, `full`, `ultra`, default `full`.** `lite` is what one
-  screenshot answers (`access`, `type`, `palette`, `contrast`, `alignment`); `full` adds what needs
-  re-rendering (`responsive`, `theme`, `states`) — 360/768/1440, both colour modes, every state a
-  component has; `ultra` adds the component system (`reuse`, `variants`).
+- **Three levels, like `lint` — `lite`, `full`, `ultra`, default `full`.** `lite` is one
+  viewport (`access`, `type`, `palette`, `contrast`, `alignment`); `full` adds what needs other
+  viewports, modes and states (`responsive`, `theme`, `states`) — 360/768/1440, both colour modes,
+  every state a component has; `ultra` adds the component system (`reuse`, `variants`).
 - **The floor runs at every level:** keyboard reach with a visible focus ring, and body text at AA.
-  Those two can never be disabled; everything else in `access` and `contrast` relaxes only clause by
-  clause, with a reason.
+  Those two can be neither disabled nor relaxed; everything else in `access` and `contrast` relaxes
+  only clause by clause, with a reason, and each relaxation is printed on every run.
 - **`.gauge.md` at the repo root disables or relaxes a rule** — with a reason, which is the whole
   point. Light-only product, kiosk build at a fixed size, brand-signed optical nudges.
 - **It ends in a diff, not a question.** One line per edit carrying the measurement, then the render
-  line, then the verification line, then whatever genuinely needed your decision.
+  line, the verification line, a `notes` line (pairing reason, measured lists, rules that did not
+  fire), then whatever genuinely needed your decision.
 
 ```
 /gauge the settings panel
@@ -284,12 +304,13 @@ The one that never touches code: it answers a question **with numbers**, then de
 self-contained single-file HTML report an executive and an engineer can read the same copy of.
 
 - **Read-only, always.** Source data and the project's runtime code come out unchanged; intermediates
-  live in the scratchpad, never in your repo.
+  live in the scratchpad; only the final charts and the analysis script are kept, in a visible
+  analysis folder next to the data.
 - **The name is a hint, the content is the evidence.** A column called `duration_ms` holding seconds,
   a file named `run-30fps-high` recorded at another setting — every field and file is opened and
   confirmed before it is allowed into the report.
 - **Confounds are never presented as results.** Sample count, duration, volume and version drift get
-  normalised; whatever can't be normalised is written out in Notes rather than quietly averaged in.
+  normalised; whatever can't be normalised is written out in the report's limits rather than quietly averaged in.
 - **One primary metric** that isolates the question, plus at most two or three supporting ones —
   stated along with what it normalises and what it is blind to. Sample counts are always visible and
   no claim rests on a single sample.
@@ -330,12 +351,12 @@ fixed in place. `lint` gates the code; this gates the interface.
   rendered and the fixed states are confirmed: the ring appears on Tab, the sheet locks body scroll,
   the skeleton matches the loaded size.
 - **Two things are left unfixed, both named**: a `NEEDS DECISION` where only you know the answer
-  (how long the undo window should be, what the empty state should invite) and an `OUT OF TARGET`
+  (what the empty state should invite, what sits behind a caption on a photo) and an `OUT OF TARGET`
   where the real home is a file you didn't point at.
 - **Disagreements have a fixed order**: accessibility beats aesthetics, reachability beats
   decoration, safety beats speed, recoverability beats friction, the project's own scale beats a
   derived one. A `.muster.md` at the repo root can disable or relax a pattern — with a reason, which
-  is required, and never silently for contrast or focus.
+  is required — except `color-accessibility` and `focus-states`, which nothing disables or relaxes.
 
 ```
 /muster src/components/BoardCard.tsx
@@ -363,7 +384,8 @@ request back in a form you can reject, so the misunderstanding surfaces before t
 - **The strongest rival reading gets argued**, never strawmanned, followed by the one question that
   separates it from the chosen one.
 - **It closes with falsifiers**, not with a plan: one to three concrete places you would catch the
-  misunderstanding first. What happens next is your move, not its.
+  misunderstanding first. Then only the questions that change the work, each with what changes, and
+  one line inviting a correction. What happens next is your move, not its.
 - Shorter than the thing it checks, and written in the language you asked in.
 
 ```
@@ -394,7 +416,8 @@ and turns what repeats into the project's own skills, slash commands, subagents,
   on their own, so they are not written unasked.
 - **Every hook is run before it ships**, once with a payload that should pass and once with one that
   should trip it. Transcripts are read to learn and never quoted into a file.
-- **It ends in a file list**, each line with its evidence, then the verification line.
+- **It ends in a file list**, each line with its evidence, then the verification line, at most three
+  watch-list lines and a restart note when skills or agents were written.
 
 ```
 /know-me
@@ -408,8 +431,8 @@ Writes one marked block into `CLAUDE.md` that turns the main thread into a condu
 splits, delegates and merges, and every piece of real work goes to a subagent.
 
 - **As many agents as the work splits into,** launched together so they run in parallel.
-- **Model by the work:** `sonnet` for lookups, searches and context gathering; `opus` for writing
-  code, debugging, design, review and anything that needs real thought.
+- **Model by the work, from a benchmark table:** `sonnet` for lookups, context gathering, builds,
+  tests and reports; `opus` for writing code, debugging, review, design and driving a browser.
 - **Short briefs for coders** — the goal, where it lives, what done means. No over-explaining.
 - **Parallel writers never share a file;** overlap is serialised or put in a worktree.
 - **Idempotent.** Re-running replaces the block between its markers; `off` removes it. Nothing else
@@ -433,19 +456,20 @@ When a run is a tournament — `compose`, `humanize` or `evolve` — it closes w
 - **Rounds** — the summary table
 
 ```
-| Round | Approach            | Gate         | Score | VS            | Champion |
-| ----- | ------------------- | ------------ | ----- | ------------- | -------- |
-| 0     | existing code       | green        | 68    | —             | R0       |
-| 1     | single-pass buffer  | green        | 74    | R1 wins (3-2) | R1       |
-| 2     | event-driven        | red — 1 test | —     | —             | R1       |
-| 3     | flat array + index  | green        | 71    | R1 wins (4-1) | R1       |
+| Round | Ideas (c1 · c2 · c3)           | Gate            | Pool (best → worst)         | Pre-crown check | Champion |
+| ----- | ------------------------------ | --------------- | --------------------------- | --------------- | -------- |
+| 0     | existing code                  | green           | —                           | —               | R0       |
+| 1     | buffer · events · flat array   | c2 red — 1 test | 1c1 74 · R0 68 · 1c3 66     | clean           | 1c1      |
+| 2     | pool · ring · lazy             | green           | 1c1 73 · 2c2 71 · 2c1 70 · 2c3 62 | —         | 1c1      |
 ```
 
-…followed by one sentence on **why the loop ended**.
+…followed by one sentence on **why the loop ended**: no challenger took the throne at round 2, or the
+round cap was reached.
 
-`data-report` writes the same five into the document instead of the chat: Objective is *what we set out to
-do*, Findings and Conclusion are *what we found*, Method is *how we found it*, and Notes & Caveats is
-*possible mistakes* — the section most reports quietly drop.
+`data-report` has no fixed five. Its document runs in three layers — the answer for anyone, the numbers
+for someone who knows the field, the method and limits for the engineer — and every heading names its
+own content; "summary", "overview" and the like are banned. The limits still get their own place in
+the engineer layer, the part most reports quietly drop.
 
 ## Installation
 
@@ -506,7 +530,7 @@ without the plugin, copy `src/hooks/lint-activate.js` somewhere and register it 
 
 Both work at the same time; if a name exists in both, the project copy wins.
 
-#### Install all nine
+#### Install all ten
 
 ```bash
 git clone https://github.com/olcayseygan/crumora.git crumora
@@ -579,7 +603,7 @@ cp -r crumora/skills/evolve crumora/skills/compose crumora/skills/humanize crumo
 
 The folder name and the `name:` field in the file's front matter must match, and the file must stay
 named `SKILL.md`. Don't strip the `---` front matter block at the top — that is what makes it a skill
-rather than a note. `data-report`, `compose` and `humanize` carry `references/` (and `data-report` a
+rather than a note. `data-report`, `compose`, `humanize` and `know-me` carry `references/` (and `data-report` a
 `scripts/`), `lint` and `gauge` carry `rules/` and `muster` carries `patterns/` — copy the whole
 folder, not just the one file. `_shared/` holds no `SKILL.md` and is not a skill; it is the rulebook `compose`, `humanize` and `evolve` read
 at the start of a run.

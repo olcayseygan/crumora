@@ -1,32 +1,22 @@
 ---
 name: conduct
-description: Turns the main Claude Code thread into a conductor that only manages the work and hands every piece of it to subagents — as many as the job splits into, launched in parallel — routing plain lookups and context gathering to Sonnet and code writing, debugging, design and anything that needs real thought to Opus, with short goal-and-done-criteria briefs instead of over-explained instructions. It installs the system by writing one marked orchestration block into CLAUDE.md, so it holds in every later session; re-running replaces the block, "off" removes it. Use when the user says "/conduct", "orchestrate with agents", "work with subagents", "use as many agents as possible", "set up orchestration", "make the main agent only manage", or the Turkish "orkestrasyon kur", "agentlarla calis", "mumkun oldugunca cok agent", "ana agent sadece yonetsin". For turning what repeats in a project into skills, hooks and commands use know-me.
+description: Turns the main Claude Code thread into a conductor that only manages and hands every piece of work to subagents, launched in parallel — lookups, context gathering, builds and tests, reports and analysis on Sonnet; code writing, debugging, review, design and browser driving on Opus, per a benchmark-backed routing table; briefs kept to goal and done criteria. Installs it as one marked orchestration block in CLAUDE.md so it holds in every later session; re-running replaces the block, "off" removes it. Use when the user says "/conduct", "orchestrate with agents", "work with subagents", "use as many agents as possible", "set up orchestration", "make the main agent only manage", or the Turkish "orkestrasyon kur", "agentlarla calis", "mumkun oldugunca cok agent", "ana agent sadece yonetsin". For turning what repeats in a project into skills, hooks and commands use know-me.
 ---
 
 # conduct — the main thread manages, agents do the work
 
-The main thread's context is the scarcest thing in a session. Every file it reads and every line it
-writes is context it no longer has for keeping the whole job straight. So it stops doing the work:
-it splits the job, hands each piece to a subagent on the right model, runs them side by side, and
-merges what comes back.
-
-This skill installs that as a standing rule by writing one block into `CLAUDE.md`. It builds
-nothing else.
+Writes one marked block into `CLAUDE.md`. Builds nothing else.
 
 ## Flow
 
-1. **Pick the file.** Default is `CLAUDE.md` at the repository root. The argument `global` or
-   `everywhere` targets `~/.claude/CLAUDE.md` instead. The argument `off` removes the block and stops.
-2. **Write the block.** Take the block below verbatim, markers included. If the file already holds a
-   `<!-- conduct:start -->` … `<!-- conduct:end -->` pair, replace everything between them; otherwise
-   append the block to the end of the file, one blank line before it. Create the file if it does not
-   exist. Nothing outside the markers is touched, reworded or reordered.
-3. **Apply it now.** The block binds the rest of this session too, not only the next one.
-4. **Report** one line: the file, `new`, `replaced` or `removed`.
-
-```
-CLAUDE.md   new   conduct block — main thread orchestrates, agents do the work
-```
+1. **Pick the file.** Default is `CLAUDE.md` at the repository root; `global` or `everywhere` targets
+   `~/.claude/CLAUDE.md`. `off` removes the block and the blank line before it, nothing else, and
+   stops.
+2. **Write the block** below verbatim, markers included. An existing `<!-- conduct:start -->` …
+   `<!-- conduct:end -->` pair is replaced in place, never duplicated; otherwise append it to the end
+   of the file after one blank line, creating the file if needed. Nothing outside the markers changes.
+3. **Apply it now** — it binds the rest of this session too.
+4. **Report** one line: the file, then `new`, `replaced` or `removed`.
 
 ## The block
 
@@ -71,11 +61,3 @@ the work itself. Everything else goes to subagents through the Agent tool.
   SendMessage, not a fresh agent.
 <!-- conduct:end -->
 ```
-
-## MUST summary
-
-- One block, between the markers, verbatim; re-running replaces it in place, never duplicates it.
-- Nothing outside the markers is changed.
-- Every agent brief demands a caveman-style report; no brief goes out without it.
-- `off` removes the block and the blank line before it, and nothing else.
-- Output is the one report line.

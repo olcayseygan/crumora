@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8">
+<html lang="{{LANG}}"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{TITLE}}</title>
 <style>
@@ -41,17 +41,17 @@
    3. engineers         — how it was measured, limits, data detail; reproducible from here alone
 
  EVERY heading below is a placeholder. Name each one after what is in it — the subject, the
- number, the decision. NEVER "Executive Summary", "Yönetici Özeti", "Yönetim Özeti", "Özet",
- "Overview", "Genel Bakış", "TL;DR", or any label that only announces its abstraction level.
- Headings are written in the report language; update lang="en" to match it too.
+ number, the decision. Never a heading from the banned list in SKILL.md.
+ Headings and every fixed label (meta line, table headers, footer) are written in the report
+ language; {{LANG}} is its code.
 -->
 
 <h1>{{TITLE}}</h1>
 <div class="meta">
- <b>Project:</b> {{PROJECT}} &nbsp;|&nbsp;
- <b>Subject:</b> {{SUBJECT}}<br>
- <b>Analysis date:</b> {{DATE_LONG}} &nbsp;|&nbsp;
- <b>Data source:</b> {{DATA_SOURCE}}
+ <b>{{LABEL_PROJECT}}:</b> {{PROJECT}} &nbsp;|&nbsp;
+ <b>{{LABEL_SUBJECT}}:</b> {{SUBJECT}}<br>
+ <b>{{LABEL_DATE}}:</b> {{DATE_LONG}} &nbsp;|&nbsp;
+ <b>{{LABEL_DATA_SOURCE}}:</b> {{DATA_SOURCE}}
 </div>
 
 <!-- ============ LAYER 1 — anyone ============ -->
@@ -116,12 +116,12 @@
 
 <h2>6. {{Heading naming the underlying data}}</h2>
 <table>
- <tr><th class="left">Record</th><th>Date</th><th>Duration</th><th>Samples</th><th class="left">Condition</th></tr>
+ <tr><th class="left">{{Record}}</th><th>{{Date}}</th><th>{{Duration}}</th><th>{{Samples}}</th><th class="left">{{Condition}}</th></tr>
  <tr><td class="left">{{...}}</td><td>{{...}}</td><td>{{...}}</td><td>{{...}}</td><td class="left">{{...}}</td></tr>
 </table>
 
 <footer>
- Raw charts and analysis scripts: <code>{{ANALYSIS_DIR}}</code><br>
+ {{LABEL_ANALYSIS_DIR}}: <code>{{ANALYSIS_DIR}}</code><br>
  {{PROJECT}} &mdash; {{DATE_LONG}}
 </footer>
 

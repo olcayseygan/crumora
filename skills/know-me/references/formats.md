@@ -1,27 +1,30 @@
 # Claude Code file formats
 
-What `know-me` writes, and where. Project scope is `<repo>/.claude/`; personal scope is `~/.claude/`
-and is written only on request. A project file with the same name as a personal one wins.
+Project scope is `<repo>/.claude/`; personal scope is `~/.claude/`. On a name clash the project file
+shadows the personal one; generated names never clash.
+
+## Transcripts — read only
+
+`~/.claude/projects/<project-slug>/*.jsonl`, the slug being the absolute project path with every
+non-alphanumeric character replaced by `-`. The person's prompts are entries whose `type` is `user`
+and whose content is text they typed — not tool results, which also arrive as `user` entries.
 
 ## Skill — `.claude/skills/<name>/SKILL.md`
 
 ```markdown
 ---
 name: <name>                       # must equal the folder name; lowercase, hyphens
-description: <what it does>. Use when the user says "<phrase>", "<phrase>", or "<phrase in their language>".
+description: <what it does>. Use when the user says "<phrase>", "<phrase>".
 allowed-tools: Read, Grep, Bash    # optional; omit to inherit
 ---
 
-# <name> — <one line>
-
-<procedure with the project's real commands, paths and thresholds>
+<body>
 ```
 
-- The description is the only part loaded every session; it decides whether the skill triggers.
-  Lead with the job, then the trigger phrases — the ones actually found in the transcripts.
-- Reference files and scripts sit next to `SKILL.md` and are linked by relative path; they are read
-  only when the skill runs.
-- Add `disable-model-invocation: true` when the skill must only ever run on `/name`, never on its own.
+- Only the description is loaded every session; it decides whether the skill triggers.
+- Reference files and scripts sit next to `SKILL.md`, linked by relative path, read only when the
+  skill runs.
+- `disable-model-invocation: true` makes it run only on `/name`.
 
 ## Slash command — `.claude/commands/<name>.md`
 
@@ -32,7 +35,7 @@ argument-hint: <version> [--dry]   # optional
 allowed-tools: Bash(git tag:*), Bash(npm version:*)   # optional; needed for ! lines
 ---
 
-<the instruction, as the person types it, with the real commands>
+<the instruction>
 
 Target: $ARGUMENTS
 ```
@@ -51,17 +54,15 @@ Target: $ARGUMENTS
 ```markdown
 ---
 name: <name>                        # must equal the file name without .md
-description: <when the main thread should delegate to it — concrete triggers>
+description: <when the main thread should delegate to it>
 tools: Read, Grep, Glob             # comma list; omit to inherit every tool
-model: haiku                        # sonnet | opus | haiku | inherit; omit to inherit
+model: sonnet                       # sonnet | opus | haiku | inherit; omit to inherit
 ---
 
-<system prompt: the job, the procedure, and the output contract — what it returns, in what shape, how short>
+<system prompt: the job and the output contract>
 ```
 
 - It starts with an empty context: the prompt must carry everything the task needs.
-- Read-only jobs get read-only tools. A reviewer that can `Edit` is a builder.
-- The output contract is the point: the main thread pays for every line it returns.
 
 ## Hook — `.claude/settings.json` + `.claude/hooks/<name>.<ext>`
 
@@ -72,7 +73,7 @@ model: haiku                        # sonnet | opus | haiku | inherit; omit to i
       {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/format-cs.js\"", "timeout": 30 }
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/<name>.js\"", "timeout": 30 }
         ]
       }
     ]
@@ -100,24 +101,21 @@ Payload arrives as JSON on stdin. Always present: `session_id`, `transcript_path
 - Exit `0` passes. Exit `2` blocks or feeds back, per the table. Any other code is a non-blocking
   error shown to the user only.
 - `$CLAUDE_PROJECT_DIR` is the repo root; use it so the hook works from any cwd.
-- A `PreToolUse` or `PostToolUse` hook filters on `tool_input.file_path` itself — the matcher only
-  sees the tool name. Exit `0` fast for files it does not own.
-- Test it before registering:
-  `echo '{"hook_event_name":"PostToolUse","tool_name":"Edit","tool_input":{"file_path":"src/a.cs"},"cwd":"."}' | node .claude/hooks/format-cs.js; echo $?`
+- The matcher only sees the tool name; the hook filters on `tool_input.file_path` itself and exits
+  `0` fast for files it does not own.
+- Test before registering:
+  `echo '{"hook_event_name":"PostToolUse","tool_name":"Edit","tool_input":{"file_path":"src/a.cs"},"cwd":"."}' | node .claude/hooks/<name>.js; echo $?`
 
 ## Prompt — `CLAUDE.md`
 
 - `<repo>/CLAUDE.md` is loaded every session and checked in; `<repo>/CLAUDE.local.md` is personal
   and git-ignored; a `CLAUDE.md` in a sub-folder loads when files there are touched.
-- One fact per line, under the heading it belongs to. Imperative, specific, checkable:
-  *"Run `npm run test:unit` — `npm test` also starts the e2e suite"*, not *"write good tests"*.
-- It costs context every session: a line earns its place only if the model would get it wrong
-  without it.
+- One fact per line, under the heading it belongs to, in the file's existing voice.
 
 ## Permissions — `.claude/settings.json`
 
-Only when a generated command or hook needs it, and only the narrowest pattern:
+Only when a generated command or hook needs it, narrowest pattern:
 
 ```json
-{ "permissions": { "allow": ["Bash(dotnet format:*)"] } }
+{ "permissions": { "allow": ["Bash(<cmd>:*)"] } }
 ```

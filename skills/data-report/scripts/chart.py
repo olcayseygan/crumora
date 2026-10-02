@@ -1,6 +1,6 @@
 """Report charts: consistent styling, base64 embedding, PNG written to a visible folder.
 
-Domain-agnostic; used together with the report skill.
+Domain-agnostic; used together with the data-report skill.
 
 Usage:
     import sys, os; sys.path.insert(0, os.path.join(SKILL_DIR, "scripts"))
@@ -68,7 +68,7 @@ def setup_style(base_size=11):
 def save_and_embed(fig, name, folder, close=True, dpi=110):
     """Writes the figure to <folder>/<name>.png and returns a base64-embedded <img> tag.
 
-    folder = the visible analysis folder next to the data, not the scratchpad.
+    folder = the visible analysis folder from references/paths.md, not the scratchpad.
     """
     os.makedirs(folder, exist_ok=True)
     path = os.path.join(folder, f"{name}.png")

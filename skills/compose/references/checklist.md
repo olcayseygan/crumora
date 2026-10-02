@@ -1,135 +1,84 @@
-# Per-round design checklist
+# Pre-crown design checklist
 
-Walk this on **every round, champion included**, right after the render (§2c) and alongside the
-alignment audit (§4). Each box is answered from the **render**, not the source. Any unticked box is
-a miss and must be named in the round log; the caps below are hard.
-
-The `gauge` skill is this checklist run on its own, against an interface that already exists: same
-boxes, same thresholds, fixed in place instead of scored. Use it when there is no tournament.
+Walk this on round 0 and on each **challenger up for the throne**, highest-ranked first
+(`tournament.md` §4.7), alongside the alignment audit (§4). Each box is answered from the **render**,
+with the numbers written down. Any unticked box is a miss and is named in the round log.
 
 ## Accessibility
-- [ ] Every interactive element is reachable by keyboard, in reading order, with a **visible** focus
-      ring that is not the browser default washed out to invisible.
-- [ ] Every control has an accessible name (label, `aria-label`, or visible text) — an icon-only
-      button without one is a fail.
-- [ ] Semantics carry the structure: headings in order, lists as lists, buttons as `<button>`,
-      landmarks present. Not `<div>` with a click handler.
-- [ ] Nothing is signalled by colour alone — error, selection, status and required each carry a
-      second cue (icon, text, weight, underline).
-- [ ] Images/icons that mean something have alt text; purely decorative ones are hidden from AT.
-- [ ] Touch/click targets ≥ 44×44 CSS px (or the platform minimum), with no two targets closer than
-      one spacing step.
-- [ ] Motion respects `prefers-reduced-motion`; nothing autoplays, flashes or blocks reading.
-- [ ] Text can zoom to 200% without clipping or horizontal scroll.
+- [ ] Keyboard reaches every interactive element in reading order, with a **visible** focus ring.
+- [ ] Every control has an accessible name.
+- [ ] Semantic structure: headings in order, lists, `<button>`, landmarks.
+- [ ] Nothing is signalled by colour alone.
+- [ ] Meaningful images/icons have alt text; decorative ones are hidden from AT.
+- [ ] Touch/click targets ≥ 44×44 CSS px (or the platform minimum), no two closer than one spacing step.
+- [ ] Motion respects `prefers-reduced-motion`.
+- [ ] Text zooms to 200% without clipping or horizontal scroll.
 
 ## Responsive
-- [ ] Rendered at **every declared viewport** — and at minimum a narrow (~360px), a mid (~768px) and
-      a wide (~1440px) one for web.
-- [ ] No horizontal scrollbar at any viewport; nothing clipped, nothing overlapping.
-- [ ] Breakpoints are where the **content** breaks, not at device names copied from a framework.
-- [ ] Reading order survives the reflow — the primary action stays primary at narrow width.
-- [ ] Tables/charts/wide content have a stated strategy (scroll container, stacked cards, collapsed
-      columns), not accidental overflow.
-- [ ] The stress content (longest label, biggest number, 40-item list, empty state) is rendered at
-      the narrowest viewport too.
+- [ ] Rendered at the round's viewports — the narrowest and widest declared (§2c); every declared
+      viewport is re-checked at apply.
+- [ ] No horizontal scrollbar, clipping or overlap at any viewport.
+- [ ] Breakpoints sit where the content breaks.
+- [ ] Reading order and the primary action survive the reflow.
+- [ ] Wide content (tables, charts) has a stated strategy.
+- [ ] The stress content is rendered at the narrowest viewport too.
 
 ## Alignment — mathematical
-Not "looks right". Measure it, write the numbers down.
-- [ ] Every x/y coordinate that elements are meant to share is **listed with its measured value**;
-      shared edges differ by **0px**, not 1-2px.
-- [ ] Every gap between siblings is a value **from the declared spacing scale** — list the distinct
-      gap values found and confirm the set is a subset of the scale. Any stray value (13px, 17px, 22px)
-      is a miss.
-- [ ] Equivalent relationships use equal numbers: all card gaps equal, all label→field gaps equal,
-      all section gaps equal.
-- [ ] Container padding measured on all four sides; left = right unless a stated reason says otherwise.
-- [ ] Repeated blocks have identical measured height and identical internal padding.
-- [ ] Text sits on a consistent baseline grid or line-height rhythm; line heights come from the type
-      scale.
-- [ ] Optical corrections are **deliberate and recorded** — an icon nudged 1px is fine when written
-      down as an optical nudge, not when it is an unexplained leftover.
+- [ ] Every shared x/y coordinate listed with its measured value; shared edges differ by **0px**.
+- [ ] Distinct gap values listed; the set is a subset of the declared spacing scale.
+- [ ] Equivalent relationships use equal gaps.
+- [ ] Container padding measured on all four sides; left = right unless a stated reason.
+- [ ] Repeated blocks have identical measured height and internal padding.
+- [ ] Line heights come from the type scale; baseline rhythm holds.
+- [ ] Optical corrections are recorded, not leftovers.
 - [ ] Numbers right- or decimal-aligned; one alignment per column.
 
-**Cap:** unfixed misses here hold Layout & alignment at **≤ 7**.
-
 ## Typography
-Answered from the computed styles on screen, not from the `@font-face` block.
-- [ ] Every rendered `font-family` is listed — **at most two** (text + display), plus one monospace
-      where code or figures demand it. A third unexplained family is a miss.
-- [ ] The pairing is justified in one sentence: clearly different in structure (serif vs sans,
-      grotesque vs humanist), comparable x-height and width. Two neutral grotesques is not a pairing.
-- [ ] Each family has one job — headings, body, or code. The display face never sets a paragraph.
-- [ ] Distinct rendered `font-size` values listed and confirmed a subset of the type scale. A stray
-      15px or 23px is a miss, exactly as a stray gap is.
-- [ ] **At most three** weights, all from the declared set, and every one shipped by the loaded face —
-      a synthesised bold or oblique is a miss.
-- [ ] Line heights come from the scale and track the size: body ~**1.4-1.6**, headings **1.1-1.3**.
-- [ ] Body measure is **45-75 characters** at every rendered viewport, measured on the rendered line.
-- [ ] Tracking follows size — negative-to-zero on display, zero on body, positive only on uppercase.
-- [ ] Rendered **once with the web font blocked**: the fallback is the same classification and nothing
+Answered from computed styles on screen.
+- [ ] Every rendered `font-family` listed.
+- [ ] The pairing is justified in one sentence.
+- [ ] Each family has one job — headings, body, or code.
+- [ ] Distinct rendered `font-size` values are a subset of the type scale.
+- [ ] Every weight shipped by the loaded face — no synthesised bold or oblique.
+- [ ] Line height: body ~**1.4-1.6**, headings **1.1-1.3**.
+- [ ] Body measure **45-75 characters** at every rendered viewport.
+- [ ] Rendered **once with the web font blocked**: fallback is the same classification and nothing
       reflows past a breakpoint or clips.
 
 ## Palette
-Contrast asks whether a pair can be read; this asks whether the set makes sense together.
-- [ ] Every distinct rendered colour is listed with where it came from. Eleven near-identical greys is
-      not a palette.
-- [ ] All greys come from **one** neutral ramp: one hue, monotonic lightness. A blue-grey border on a
-      warm-grey surface is a miss unless the second ramp is declared.
-- [ ] **One** accent leads the primary action and the selected state. A second exists only with a
-      stated job; a third is a miss.
+- [ ] Every distinct rendered colour listed with its source.
+- [ ] All greys come from **one** neutral ramp unless a second is declared.
 - [ ] Danger, warning, success and info each map to one colour, used for nothing else.
-- [ ] Ramp steps are perceptually even, measured in OKLCH/LCH — lightness in comparable steps, hue not
-      wandering. A ramp nudged by eye typically fails here.
-- [ ] Saturation climbs toward the small, load-bearing elements; large surfaces are the least
-      saturated thing on screen.
-- [ ] Gradients interpolate between two palette colours in a perceptual space — midpoint checked, no
-      grey dead zone, no third hue.
-- [ ] Chart series come from one declared categorical set, ordered and checked for colour-vision
-      deficiencies.
+- [ ] Ramp steps perceptually even, measured in OKLCH/LCH.
+- [ ] Gradients interpolate between two palette colours in a perceptual space — no grey dead zone, no
+      third hue.
+- [ ] Chart series come from one declared categorical set, checked for colour-vision deficiencies.
 
 ## Contrast
-- [ ] Contrast ratios are **computed**, not eyeballed — the pairs and their ratios are written out.
+- [ ] Ratios **computed** and written out.
 - [ ] Body text ≥ **4.5:1**; large text (≥24px, or ≥19px bold) ≥ **3:1**.
-- [ ] UI boundaries that carry meaning — borders, input outlines, icons, chart strokes, focus rings —
-      ≥ **3:1** against their background.
-- [ ] Disabled state is distinguishable without being unreadable, and disabled is never the only cue.
-- [ ] Text over images/gradients checked at its **worst** point, not its best.
-- [ ] Every state (hover, active, selected, error) rechecked — hover is where contrast usually dies.
-
-**Red line:** any text failing AA is an automatic VS loss (§5).
+- [ ] Meaningful UI boundaries (borders, input outlines, icons, chart strokes, focus rings) ≥ **3:1**.
+- [ ] Disabled distinguishable, never the only cue.
+- [ ] Text over images/gradients checked at its **worst** point.
+- [ ] Every state (hover, active, selected, error) rechecked.
 
 ## Dark and light mode
-- [ ] **Both** modes rendered and screenshotted. Not one plus an assumption.
-- [ ] Colours come from **semantic tokens** (surface, on-surface, border, accent, danger), not from
-      literal hex flipped per mode.
-- [ ] Contrast checklist re-run **in full** against the second mode.
-- [ ] Elevation reads correctly in both — dark mode uses lighter surfaces, not the light-mode
-      drop shadows recycled into a black void.
-- [ ] Images, icons, illustrations, charts and code blocks are legible in both; nothing is a white
-      PNG on a white page.
-- [ ] The default follows the system preference, and any explicit toggle overrides it in both
-      directions.
+- [ ] **Both** modes rendered and screenshotted.
+- [ ] Colours from **semantic tokens**, not literal hex flipped per mode.
+- [ ] Contrast section re-run **in full** against the second mode.
+- [ ] Elevation, images, icons, charts and code blocks legible in both.
+- [ ] Default follows system preference; an explicit toggle overrides it in both directions.
 - [ ] No flash of the wrong theme on load.
 
 ## Components
-- [ ] Every element on the surface is either an existing project component or a **new one that is
-      justified in one sentence**.
-- [ ] The project's existing library was searched first — no re-drawn button, card, modal or input
-      that already exists a few files over.
-- [ ] Existing components are used with their existing API; no local override that forks their
-      behaviour.
-- [ ] Project design tokens are used; a parallel scale invented alongside them is a red line (§5).
-- [ ] Every component renders its full state set: default, hover, active, focus, disabled, loading,
-      error, empty.
-- [ ] Nothing is a one-off styled `<div>` where a component belongs.
+- [ ] Every element is an existing project component or a new one justified in one sentence.
+- [ ] The project's library was searched first; existing components used with their existing API.
+- [ ] Project design tokens used, no parallel scale.
+- [ ] Every component renders default, hover, active, focus, disabled, loading, error, empty.
+- [ ] No one-off styled `<div>` where a component belongs.
 
 ## Unique component, variants
-- [ ] **One** component per job across the surface — the same thing never exists twice under two
-      names or two implementations.
-- [ ] Differences between near-duplicates are expressed as **variants/props** of one component
-      (`variant="danger"`, `size="sm"`, `density="compact"`), not as forked copies.
-- [ ] The variant axes are named and bounded — a component with a dozen boolean props that combine
-      into contradictory states is a fail; splitting it or replacing the booleans with one enum is
-      the fix.
-- [ ] No variant exists that this surface does not use. Speculative variants are dead flexibility.
-- [ ] Duplicates found during the round are listed in the round log with what they collapse into.
+- [ ] **One** component per job; near-duplicates become variants/props of one component.
+- [ ] Variant axes named and bounded — no dozen booleans combining into contradictory states.
+- [ ] No variant this surface does not use.
+- [ ] Duplicates found are listed in the round log with what they collapse into.

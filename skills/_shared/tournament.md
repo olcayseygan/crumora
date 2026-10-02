@@ -1,26 +1,32 @@
 # The tournament — shared rules
 
-Loaded by `compose`, `humanize` and `evolve`. Everything here holds in each of them unless the skill says
-it overrides a section — `evolve` replaces §4 and §5 and re-scores its parents. The skill's own
-`SKILL.md` carries only what is specific to its move: how a round produces a challenger, its rubric,
-its extra red lines, its table.
+Loaded by `compose`, `humanize` and `evolve`. This file is the one definition of the loop; everything
+here holds in each of them unless the skill says it overrides a section. The skill's own `SKILL.md`
+carries only what is specific to its move: how a challenger is built, its rubric, its pre-crown
+check, its extra red lines, its table.
+
+`evolve` overrides these defaults: R0 is also gated and scored alone as a baseline, challengers are
+bred from the leader instead of built from fresh ideas, both parents (leader and runner-up) sit in the pool as anchors, the top two carry forward
+instead of one champion, the stop compares the best candidate with the best parent, and the cap is
+6 rounds.
 
 ---
 
 ## 1. Setup invariants (round 0)
 
-1. **Champion = what exists now.** Read it properly, all of it. If nothing exists yet, there is no
-   Round 0 and the first attempt becomes champion outright.
+1. **Champion = what exists now.** If nothing exists yet, there is no Round 0; round 1's
+   highest-ranked challenger that survives its pre-crown check becomes champion outright.
 2. **Freeze the target.** 3-8 bullets — what it must do, which rules it must obey, what it must not
-   break. Fixed for every round; a target that grows mid-run makes every earlier comparison
-   worthless. A deliberate behaviour change is written as a bullet *before* round 1, never
-   discovered in round 4.
+   break. Fixed for every round. A deliberate behaviour change is written as a bullet *before*
+   round 1.
 3. **Freeze the rubric** before round 1.
-4. **Work folder:** `<scratchpad>/<skill>/<target-slug>/`, one `r<N>/` per round holding that
-   round's output. **The repo stays untouched until the final champion is decided.**
-5. **Round log:** `<scratchpad>/<skill>/<target-slug>/rounds.md`, one line per finished round (round
-   no, what it tried, scores, VS result, champion). If context gets compacted, the state survives
-   here.
+4. **Work folder:** `<scratchpad>/<skill>/<target-slug>/`, one `r<N>/` per round with one `c<k>/`
+   per challenger. **The repo stays untouched until the final champion is decided.**
+5. **Round log:** `<scratchpad>/<skill>/<target-slug>/rounds.md`, one line per finished round
+   (round no, the ideas tried, gate results, the pass's ranking with totals, pre-crown check,
+   champion).
+6. **Round 0 runs the skill's pre-crown check on the current version** (§4.7), if the skill has one —
+   its findings cap the champion in every pass until it is dethroned.
 
 ## 2. The code rubric
 
@@ -39,72 +45,76 @@ Five criteria, each **0-10**, weighted total **0-100**:
 
 ## 3. The gate, then the scoring rules (MUST)
 
-**The gate runs before the score.** A challenger is not scored until the target's own checks have
-been run against it and come back clean — build, type check, linter, and the tests covering the
-target, whatever of these the project actually has. Run them; the result is binary:
+**The gate runs before the score.** This is the one gate definition; each skill points here and adds
+only its extras. A challenger is not judged until it has passed:
 
-- **Anything red → the round is lost.** No score, no VS, no argument. The challenger may be repaired
-  and the gate re-run **once** inside the same round; a second red ends the round.
-- **No runnable check exists** → say so in one line and write `unverified` next to Correctness for
-  every version in the run, champion included. "There are no tests here" is a finding to report, not
-  a reason to skip the step quietly.
+- the project's build, type check, linter and the tests covering the target, wherever they exist;
+- for an interface, also a clean render with **zero console errors** (warnings do not fail).
 
-Reading code is not running it. Correctness carries the heaviest weight in the rubric and is the
-easiest criterion to award by wishful reading; the gate is the only thing standing between a score
-and an opinion.
+Outcome:
 
-- **No score without a reason**: half a sentence of justification next to each criterion.
+- **Red → one repair and re-run.** Still red → that challenger leaves the round unjudged; the others
+  go on. All red → no challenger beats the champion this round (§5).
+- **No runnable check exists** → say so in one line and write `unverified` in the score sheet for
+  every version in the run, champion included.
+
+Scoring rules:
+
+- **No score without a reason**: half a sentence next to each criterion.
 - The rubric **may be tailored to the target before round 1** (for a document rebuild, swap
   "Robustness" for "Fidelity to source"), but **once frozen it does not change**.
-- Score by the criterion, **not by authorship**. Newer is not automatically better.
-- **Nothing is ever re-scored.** A version is scored once and carries that score forward as
-  champion; re-scoring the incumbent every round turns it into a moving target.
-- **A measurable claim needs a measurement.** "Faster", "less garbage", "fewer allocations" score
-  zero unless there is a number next to them. Unmeasured performance work is the most common way a
-  loop convinces itself it is winning.
+- Score by the criterion, **not by authorship**.
+- **Only scores from the same pass compare.** The champion is re-judged in every pass as an
+  unlabelled anchor; a judge drifts between calls, so no total carries from one pass to the next.
+- **A measurable claim needs a measurement.** "Faster", "fewer allocations" score zero without a
+  number next to them.
 
-## 4. VS (head-to-head) — the VS decides the throne
+## 4. The round — three challengers, one blind judge
 
-**The head-to-head is the verdict; the total score is narrative and a tie-break, not the
-decision.** Ranking two concrete versions against each other is a judgement that holds up; deciding
-whether a criterion deserves a 7 or an 8 in the abstract is not. A challenger that wins the VS takes
-the throne even if its total came out lower, and one that loses the VS never takes it however high
-it scored. The score still earns its place — it drives the work queue, it makes drift visible across
-rounds, and it breaks a split VS — but it does not crown anything.
-
-- **Judge blind, in a separate agent — this is the default, not an option.** The two versions go to
-  the judging agent as **A** and **B**, in an order chosen without reference to which is champion,
-  together with the frozen rubric and the target, and with **no indication of which one is the
-  incumbent or who wrote either**. Whoever wrote a version cannot rank it honestly; a frozen rubric
-  stops the goalposts moving but does nothing about that. Judge in-line only when no subagent is
-  available, and write `judged in-line` on that round's line.
-- Go criterion by criterion; for each one state **A or B, and why** — one concrete sentence.
-  "Cleaner" without evidence does not count; point at something specific (in this situation X
-  happens / this line does Y / this edge sits 3px off).
-- Winner: **weighted majority of criteria**. A split decision is settled by the total score, and if
-  that is level too, by the champion.
-- **Ties go to the champion.** Changing the throne on a tie ships churn that buys nothing.
-- **Red line:** a missed spec/contract bullet or a violated project MUST rule **loses the VS
-  regardless of score**. Prettier-but-wrong does not win. Each skill adds its own red lines.
+1. **Three ideas.** Before anything is built, write down three ideas, one sentence each — distinct
+   from each other and from every idea already in the round log.
+2. **Build in parallel.** One subagent per idea writes its challenger in `r<N>/c<k>/`. Each is handed
+   the frozen target and rubric, the champion, the round log and its own idea — never the other
+   challengers. Each runs the gate (§3) on its own challenger, repair included.
+3. **Render scope (interfaces).** A round renders at the **narrowest and the widest declared
+   viewport** (just the one, if only one is declared), with the stress content. Every declared
+   viewport and the full stress set are checked only at apply (§5).
+4. **One blind judge.** One **separate agent** gets the gated challengers **plus the champion**,
+   shuffled and labelled `A`, `B`, `C`… with **no hint which is the incumbent or who wrote what**,
+   together with the frozen target and rubric — for interfaces the renders (and the skill's traces),
+   not the source. Per version: every criterion 0-10 with one concrete sentence pointing at something
+   specific, the weighted total, any red line crossed. Judge in-line only when no subagent is
+   available, and write `judged in-line` on that round's line.
+5. **Red lines.** A missed spec/contract bullet or a violated project MUST rule is a red line; each
+   skill adds its own. A version over a red line ranks below everything clean. Red lines worded
+   against the champion are checked by the main thread after unblinding, from the judge's notes.
+6. **Rank** by total. A challenger beats the champion only with a **strictly higher total in the
+   same pass** and no red line. **Ties go to the champion.**
+7. **Pre-crown check, down the ranking.** The highest-ranked challenger that beats the champion goes
+   through the skill's pre-crown check, if it has one. Its caps lower that challenger's criterion
+   scores in the pass; if the capped total no longer beats the champion's (itself capped by its own
+   check, §1.6), the next challenger that beat the champion is checked, and so on. The round has no
+   winner only when none survives. Every check's findings go into the round log and feed the next
+   round's ideas.
+8. **Crown** the first challenger that still beats the champion after its check; its pre-crown
+   findings now cap it.
 
 ## 5. Stopping and applying
 
-The loop ends on **two consecutive challenger losses**, not on the first one. Round quality is
-high-variance: one attempt that loses says that attempt was weak, not that there is nothing left to
-find. A round lost on the gate counts as a loss like any other, and **the round after a loss must
-name a different move** — repeating the losing idea with different padding throws away the second
-life.
+The loop ends on **the first round in which no challenger takes the throne** — all gated out, none
+ahead of the champion, a red line, or the pre-crown check pulling every one of them back.
 
-Hard cap: **6 rounds**. If a challenger is still winning at round 6, stop, say "round cap reached"
-and note it in the table.
+Hard cap: **4 rounds**. If a challenger still takes the throne at round 4, stop, say "round cap
+reached" and note it in the table.
 
 When the loop ends:
 
 1. **Apply the final champion to the repo.** If the champion is Round 0, **change nothing** and say
-   so plainly ("the existing version survived 3 rounds of challenge").
-2. **Verify after applying** — build, console, or a re-render. Applying into the real codebase often
-   shifts things. Fix anything red.
-3. **Do not delete** the scratchpad rounds; a losing attempt is often worth reading. Print the path.
+   so plainly ("the existing version survived round 1").
+2. **Verify after applying** — build, tests, console; for an interface, render **every declared
+   viewport with the full stress set**. A regression found here is fixed in place once and verified
+   again; if it is still there, it is reported under **Possible mistakes**.
+3. **Do not delete** the scratchpad rounds. Print the path.
 4. If the work is significant and the repo keeps progress/changelog docs, add a section.
 
 ## 6. Final analysis (output format)
@@ -120,15 +130,15 @@ Which version won, how many rounds, how often the throne changed hands, score mo
 and whether the gate ran (and on what) or came back unverified.
 
 ## How we did it
-The winner's approach and why it won; which idea was salvaged from a losing round.
+The winner's approach and why it won; which idea was salvaged from a losing challenger.
 
 ## Possible mistakes
 An honest risk list: untested paths, assumptions, claims measured by eye, bullets taken
-on trust. Do not leave it empty — "no risks" is rarely true.
+on trust, anything the apply-time check found and could not fix. Never empty.
 
 ## Rounds
 <table — column shape is defined by each skill>
 ```
 
-One sentence after the table: **why the loop ended** (two consecutive losses — on the gate, on the
-VS, or on a red line — or the round cap was reached).
+One sentence after the table: **why the loop ended** (no challenger took the throne at round N — on
+the gate, the judge, a red line or the pre-crown check — or the round cap was reached).
